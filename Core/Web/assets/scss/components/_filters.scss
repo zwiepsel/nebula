@@ -1,0 +1,39 @@
+﻿html {
+  :hover.form-check.form-check-custom.form-check-solid {
+    background-color: $input-active-hover-bg;
+
+    .form-check-input:not(:checked) {
+      //background-color:#6264A7;
+    }
+  }
+}
+
+.form-check-input {
+  @include transition(background-color 0.2s ease);
+}
+
+table tr.e-filterbar {
+  display: none;
+}
+
+.sticky-filter-panel {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 147px;
+  align-self: flex-start;
+}
+
+.filter-container {
+  height: calc(100vh - 180px);
+  overflow: hidden;
+
+  .card-header {
+    min-height: 61px !important;
+    padding: 0 1rem;
+    border-bottom: 1px solid #00000010 !important;
+  }
+
+  .card-body {
+    padding: 0rem 0rem 1rem 0rem;
+  }
+}

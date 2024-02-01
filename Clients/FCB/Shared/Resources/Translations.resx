@@ -1,0 +1,422 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root"
+                xmlns="">
+        <xsd:element name="root" msdata:IsDataSet="true">
+
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="houses" xml:space="preserve">
+        <value>Houses</value>
+    </data>
+    <data name="relations" xml:space="preserve">
+        <value>Relations</value>
+    </data>
+    <data name="address" xml:space="preserve">
+        <value>Address</value>
+    </data>
+    <data name="code" xml:space="preserve">
+        <value>Code</value>
+    </data>
+    <data name="neighborhood" xml:space="preserve">
+        <value>Neighborhood</value>
+    </data>
+    <data name="complex" xml:space="preserve">
+        <value>Complex</value>
+    </data>
+    <data name="number_of_bedrooms" xml:space="preserve">
+        <value>Number of bedrooms</value>
+    </data>
+    <data name="square_meters_bvo" xml:space="preserve">
+        <value>Square meters (BVO)</value>
+    </data>
+    <data name="square_meters_go" xml:space="preserve">
+        <value>Square meters (GO)</value>
+    </data>
+    <data name="square_meters_fcb" xml:space="preserve">
+        <value>Square meters (FCB)</value>
+    </data>
+    <data name="land_registry_number" xml:space="preserve">
+        <value>Land registry number</value>
+    </data>
+    <data name="market_value" xml:space="preserve">
+        <value>Market value</value>
+    </data>
+    <data name="rent_base_price" xml:space="preserve">
+        <value>Rent base price</value>
+    </data>
+    <data name="rent_base_points" xml:space="preserve">
+        <value>Rent base points</value>
+    </data>
+    <data name="applicants" xml:space="preserve">
+        <value>Applicants</value>
+    </data>
+    <data name="tenants" xml:space="preserve">
+        <value>Tenants</value>
+    </data>
+    <data name="relation" xml:space="preserve">
+        <value>Relation</value>
+    </data>
+    <data name="tenant" xml:space="preserve">
+        <value>Tenant</value>
+    </data>
+    <data name="applicant" xml:space="preserve">
+        <value>Applicant</value>
+    </data>
+    <data name="notes" xml:space="preserve">
+        <value>Notes</value>
+    </data>
+    <data name="years_old" xml:space="preserve">
+        <value>{0} years old</value>
+    </data>
+    <data name="male" xml:space="preserve">
+        <value>Male</value>
+    </data>
+    <data name="female" xml:space="preserve">
+        <value>Female</value>
+    </data>
+    <data name="other" xml:space="preserve">
+        <value>Other</value>
+    </data>
+    <data name="family" xml:space="preserve">
+        <value>Family</value>
+    </data>
+    <data name="lease_agreements" xml:space="preserve">
+        <value>Lease agreements</value>
+    </data>
+    <data name="information" xml:space="preserve">
+        <value>Information</value>
+    </data>
+    <data name="income" xml:space="preserve">
+        <value>Income</value>
+    </data>
+    <data name="yearly_total_income" xml:space="preserve">
+        <value>Yearly total income</value>
+    </data>
+    <data name="first_name" xml:space="preserve">
+        <value>First name</value>
+    </data>
+    <data name="prefix" xml:space="preserve">
+        <value>Prefix</value>
+    </data>
+    <data name="last_name" xml:space="preserve">
+        <value>Last name</value>
+    </data>
+    <data name="type" xml:space="preserve">
+        <value>Type</value>
+    </data>
+    <data name="period" xml:space="preserve">
+        <value>Period</value>
+    </data>
+    <data name="amount" xml:space="preserve">
+        <value>Amount</value>
+    </data>
+    <data name="name" xml:space="preserve">
+        <value>Name</value>
+    </data>
+    <data name="description" xml:space="preserve">
+        <value>Description</value>
+    </data>
+    <data name="start_date" xml:space="preserve">
+        <value>Start date</value>
+    </data>
+    <data name="end_date" xml:space="preserve">
+        <value>End date</value>
+    </data>
+    <data name="yearly_amount" xml:space="preserve">
+        <value>Yearly amount</value>
+    </data>
+    <data name="rent_amount" xml:space="preserve">
+        <value>Rent amount</value>
+    </data>
+    <data name="home_seeker_since" xml:space="preserve">
+        <value>Since</value>
+    </data>
+    <data name="days" xml:space="preserve">
+        <value>Days</value>
+    </data>
+    <data name="phone_number" xml:space="preserve">
+        <value>Phone number</value>
+    </data>
+    <data name="yearly_income" xml:space="preserve">
+        <value>Yearly income</value>
+    </data>
+    <data name="yearly_income_class" xml:space="preserve">
+        <value>Yearly income class</value>
+    </data>
+    <data name="family_number_of_adults" xml:space="preserve">
+        <value>Adults</value>
+    </data>
+    <data name="family_number_of_children" xml:space="preserve">
+        <value>Children</value>
+    </data>
+    <data name="family_number_of_school_going" xml:space="preserve">
+        <value>School going</value>
+    </data>
+    <data name="date_of_birth" xml:space="preserve">
+        <value>Date of birth</value>
+    </data>
+    <data name="home_seeker_urgency" xml:space="preserve">
+        <value>Urgency</value>
+    </data>
+    <data name="home_seeker_number_of_bedrooms" xml:space="preserve">
+        <value>Number of bedrooms</value>
+    </data>
+    <data name="number_of_residents" xml:space="preserve">
+        <value>Family count</value>
+    </data>
+    <data name="home_seeker_interested_in_buying" xml:space="preserve">
+        <value>Interested in buying</value>
+    </data>
+    <data name="asking_rent" xml:space="preserve">
+        <value>Asking rent</value>
+    </data>
+    <data name="bedroom" xml:space="preserve">
+        <value>Bedroom</value>
+    </data>
+    <data name="bedrooms" xml:space="preserve">
+        <value>Bedrooms</value>
+    </data>
+    <data name="home_seeker_preferred_neighborhood_1" xml:space="preserve">
+        <value>Preferred neighborhood 1</value>
+    </data>
+    <data name="home_seeker_preferred_neighborhood_2" xml:space="preserve">
+        <value>Preferred neighborhood 2</value>
+    </data>
+    <data name="home_seeker_preferred_neighborhood_3" xml:space="preserve">
+        <value>Preferred neighborhood 3</value>
+    </data>
+    <data name="home_seeker_preferred_neighborhood" xml:space="preserve">
+        <value>Preferred neighborhood</value>
+    </data>
+    <data name="full_name" xml:space="preserve">
+        <value>Name</value>
+    </data>
+    <data name="house" xml:space="preserve">
+        <value>House</value>
+    </data>
+    <data name="rented" xml:space="preserve">
+        <value>Rented</value>
+    </data>
+    <data name="free" xml:space="preserve">
+        <value>Free</value>
+    </data>
+    <data name="current_tenant" xml:space="preserve">
+        <value>Current tenant</value>
+    </data>
+    <data name="description_placeholder" xml:space="preserve">
+        <value>Enter a description...</value>
+    </data>
+    <data name="surface" xml:space="preserve">
+        <value>Surface</value>
+    </data>
+    <data name="rent_status" xml:space="preserve">
+        <value>Status house</value>
+    </data>
+    <data name="current_lease_agreement" xml:space="preserve">
+        <value>Current lease agreement</value>
+    </data>
+    <data name="house_code" xml:space="preserve">
+        <value>House code</value>
+    </data>
+    <data name="house_rent" xml:space="preserve">
+        <value>House rent</value>
+    </data>
+    <data name="contract_amount" xml:space="preserve">
+        <value>Contract amount</value>
+    </data>
+    <data name="set_price" xml:space="preserve">
+        <value>Set price</value>
+    </data>
+    <data name="temporary_discount" xml:space="preserve">
+        <value>Temporary discount</value>
+    </data>
+    <data name="previous_lease_agreement" xml:space="preserve">
+        <value>Previous lease agreements</value>
+    </data>
+    <data name="construction_date" xml:space="preserve">
+        <value>Date construction</value>
+    </data>
+    <data name="construction_price" xml:space="preserve">
+        <value>Construction costs</value>
+    </data>
+    <data name="taxation_date" xml:space="preserve">
+        <value>Date taxation</value>
+    </data>
+    <data name="renovation_costs" xml:space="preserve">
+        <value>Renovation costs</value>
+    </data>
+    <data name="renovation_date" xml:space="preserve">
+        <value>Date renovation</value>
+    </data>
+    <data name="ground_lease" xml:space="preserve">
+        <value>Ground lease</value>
+    </data>
+    <data name="current_rent" xml:space="preserve">
+        <value>Current rent</value>
+    </data>
+    <data name="until" xml:space="preserve">
+        <value>Unil</value>
+    </data>
+    <data name="email_address" xml:space="preserve">
+        <value>Email address</value>
+    </data>
+    <data name="mobile" xml:space="preserve">
+        <value>Mobile</value>
+    </data>
+    <data name="adult_amount" xml:space="preserve">
+        <value>Amount adults</value>
+    </data>
+    <data name="children_amount" xml:space="preserve">
+        <value>Amount children</value>
+    </data>
+    <data name="minor_amount" xml:space="preserve">
+        <value>Amount minor</value>
+    </data>
+    <data name="child_discount" xml:space="preserve">
+        <value>Child discount</value>
+    </data>
+    <data name="max_rent" xml:space="preserve">
+        <value>Maximum rent</value>
+    </data>
+    <data name="debtor_code" xml:space="preserve">
+        <value>Debtor code</value>
+    </data>
+    <data name="monthly_income" xml:space="preserve">
+        <value>Monthly income</value>
+    </data>
+    <data name="true" xml:space="preserve">
+        <value>Yes</value>
+    </data>
+    <data name="false" xml:space="preserve">
+        <value>No</value>
+    </data>
+    <data name="gender.male" xml:space="preserve">
+        <value>Male</value>
+    </data>
+    <data name="gender.female" xml:space="preserve">
+        <value>Female</value>
+    </data>
+    <data name="gender.other" xml:space="preserve">
+        <value>Other</value>
+    </data>
+    <data name="gender" xml:space="preserve">
+        <value>Gender</value>
+    </data>
+    <data name="value" xml:space="preserve">
+        <value>Value</value>
+    </data>
+    <data name="country_of_birth" xml:space="preserve">
+        <value>Country of birth</value>
+    </data>
+    <data name="left_home" xml:space="preserve">
+        <value>Left home</value>
+    </data>
+    <data name="inactive" xml:space="preserve">
+        <value>Inactive</value>
+    </data>
+    <data name="add_family_member" xml:space="preserve">
+        <value>Add person</value>
+    </data>
+    <data name="house_information" xml:space="preserve">
+        <value>House information</value>
+    </data>
+    <data name="contact_information" xml:space="preserve">
+        <value>Contact information</value>
+    </data>
+    <data name="main_contact" xml:space="preserve">
+        <value>Main contact</value>
+    </data>
+    <data name="nationality" xml:space="preserve">
+        <value>Nationality</value>
+    </data>
+    <data name="new_person" xml:space="preserve">
+        <value>Add new person</value>
+    </data>
+    <data name="new" xml:space="preserve">
+        <value>New</value>
+    </data>
+    <data name="new_income" xml:space="preserve">
+        <value>New income</value>
+    </data>
+    <data name="person" xml:space="preserve">
+        <value>Person</value>
+    </data>
+    <data name="income_type" xml:space="preserve">
+        <value>Income Type</value>
+    </data>
+    <data name="new_client" xml:space="preserve">
+        <value>New client</value>
+    </data>
+    <data name="update_client" xml:space="preserve">
+        <value>Update client</value>
+    </data>
+    <data name="dashboard" xml:space="preserve">
+        <value>Dashboard</value>
+    </data>
+    <data name="employer" xml:space="preserve">
+        <value>Employer</value>
+    </data>
+    <data name="function" xml:space="preserve">
+        <value>Position</value>
+    </data>
+    <data name="itemCode" xml:space="preserve">
+        <value>Item code</value>
+    </data>
+    <data name="add_income" xml:space="preserve">
+        <value>Add income</value>
+    </data>
+    <data name="family_situation" xml:space="preserve">
+        <value>Family situation</value>
+    </data>
+    <data name="adults" xml:space="preserve">
+        <value>Adults</value>
+    </data>
+    <data name="children" xml:space="preserve">
+        <value>Children</value>
+    </data>
+    <data name="next" xml:space="preserve">
+        <value>Next</value>
+    </data>
+    <data name="previous" xml:space="preserve">
+        <value>Previous</value>
+    </data>
+    <data name="adult" xml:space="preserve">
+        <value>Adult</value>
+    </data>
+    <data name="schoolgoing" xml:space="preserve">
+        <value>School going</value>
+    </data>
+    <data name="child" xml:space="preserve">
+        <value>Child</value>
+    </data>
+    <data name="complete" xml:space="preserve">
+        <value>Complete</value>
+    </data>
+    <data name="start_house_selection" xml:space="preserve">
+        <value>Start tenant selection</value>
+    </data>
+    <data name="assigned_employee" xml:space="preserve">
+        <value>Assign employee</value>
+    </data>
+    <data name="select_employee" xml:space="preserve">
+        <value>Select employee</value>
+    </data>
+</root>

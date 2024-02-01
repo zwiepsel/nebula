@@ -1,0 +1,650 @@
+﻿@page "/relation/{personId:int}/edit"
+
+@inject ILocalizer<Translations> localizer
+@inject NavigationManager navigationManager
+@inject PersonRepository personRepository
+@inject ClientRepository clientRepository
+@inject IModalService modalService
+@inject IToastService toastService
+@inject IMapper mapper
+
+<DefaultCulture Culture="@(new CultureInfo("nl-NL"))"/>
+
+<Spinner Loading="@(mainContact == null && clientViewModel == null)" Mode="@SpinnerMode.Overlay">
+<Page ContainerSize="xxl">
+<PageHeader>
+    @if (clientViewModel!.ClientType.Id == 1)
+    {
+        <Header Title="@localizer["applicant"]" Icon="address-card"></Header>
+    }
+    else
+    {
+        <Header Title="@localizer["tenant"]" Icon="address-card"></Header>
+    }
+</PageHeader>
+<PageSubHeader>
+    <SubHeader Title="@mainContact?.FullName" ReturnUri="@returnUri">
+        <Toolbar>
+            <div class="btn btn-sm btn-icon btn-bg-light btn-active-light-danger me-2">
+                <i class="fal fa-lg fa-trash-alt"></i>
+                <div class="tool-tip bottom-left">
+                    <span class="tooltiptext">@localizer["delete"]</span>
+                </div>
+            </div>
+        </Toolbar>
+    </SubHeader>
+</PageSubHeader>
+<PageBody>
+<div class="row row-flex mb-9">
+    <div class="col-lg-8">
+        <div class="card card-lg-stretch">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="d-flex align-items-center position-relative my-1">
+                        <h3 class="fs-5">@mainContact?.FullName</h3>
+                    </div>
+                </div>
+                <div class="card-toolbar">
+                    <div class="d-flex mt-5 ">
+                        <div class="btn btn-sm btn-light-primary" @onclick="@(() => EditClientModal())">
+                            <i class="fal fa-edit me-2"></i>@localizer["edit"]
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body pb-0 pt-0">
+                <div class="d-flex flex-wrap py-5">
+                    <div class="flex-equal me-8">
+                        <table class="table fs-6 fw-bold gs-0 gy-2 gx-2 m-0">
+                            <tbody>
+                            <tr>
+                                <td class="fw-bolder form-label align-middle">@localizer["address"]</td>
+                                @if (clientViewModel!.ClientType.Id == 1)
+                                {
+                                    <td class="fw-bolder form-label text-dark mb-2" >@clientViewModel!.Address</td> 
+                                }
+                                else
+                                {
+                                    <td class="fw-bolder form-label text-dark mb-2 text-hover-primary" style="cursor: pointer" @onclick="GoDetails">@clientViewModel!.Address</td>
+                                }
+                            </tr>
+                            <tr>
+                                <td class="fw-bolder form-label align-middle">@localizer["email_address"]:</td>
+                                <td class="text-gray-800 font-size-14px">@mainContact!.EmailAddress</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bolder form-label align-middle">@localizer["phone_number"]:</td>
+                                <td class="text-gray-800 font-size-14px">@clientViewModel!.PhoneNumber</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex-equal pt-2">
+                        <div class="card bg-light-green no-shadow card-xl-stretch  w-100 pb-0 mb-0">
+                            <div class="card-body d-flex align-items-center ps-5 pe-1 pt-0 pb-0">
+                                <div class="d-flex flex-column flex-grow-1 py-3 py-lg-13 me-2">
+                                    <span class="fw-bolder text-dark fs-4 mb-2 text-hover-primary">@mainContact.FullName</span>
+                                    <span class="mb-2 fw-bold text-muted fs-5">@localizer["gender." + mainContact.Gender.ToString().ToLower()]</span>
+                                    <span class="fw-bold text-muted fs-5">@localizer["years_old", mainContact!.DateOfBirth.ToAge()]</span>
+                                </div>
+                                @PersonAvatarProvider.GetAvatar(mainContact)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="fs-5">@localizer["Notes"]</h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-column fv-row ">
+                    <SfInPlaceEditor Type="@InputType.RichTextEditor" EmptyText="Add a description..."   Value="@clientViewModel!.Memo" CssClass="w-100 h-100">
+                        <EditorComponent>
+                            <SfRichTextEditor  @bind-Value="@clientViewModel!.Memo"/>
+                        </EditorComponent>
+                        <InPlaceEditorEvents TValue="string" OnActionSuccess="@(() => Save())"/>
+                    </SfInPlaceEditor>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card p-0">
+<div class="card-body p-0">
+<SfTab>
+<TabAnimationSettings>
+    <TabAnimationPrevious Effect="@AnimationEffect.FadeIn"></TabAnimationPrevious>
+    <TabAnimationNext Effect="@AnimationEffect.FadeIn"></TabAnimationNext>
+</TabAnimationSettings>
+<TabItems>
+<TabItem>
+    <ChildContent>
+        <TabHeader Text="@localizer["information"]"></TabHeader>
+    </ChildContent>
+    <ContentTemplate>
+        <div class="row ps-9 pe-6 pt-6 pb-6">
+            <div class="col-xl-4">
+                <table class="table fs-6 fw-bold gs-0 gy-2 gx-2 m-0">
+                    <tbody>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["adult_amount"]:</td>
+                        <td class="text-gray-800 font-size-14px">@clientViewModel?.AdultQty</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["children_amount"]:</td>
+                        <td class="text-gray-800 font-size-14px">@clientViewModel?.ChildrenQty</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["minor_amount"]:</td>
+                        <td class="text-gray-800 font-size-14px">@clientViewModel?.MinorQty</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["child_discount"]:</td>
+                        <td class="text-gray-800 font-size-14px">@clientViewModel?.ChildDiscount %</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["yearly_income"]:</td>
+                        <td class="text-gray-800 font-size-14px">@clientViewModel?.YearlyIncome.FormatMoney()</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["yearly_income_class"]:</td>
+                        <td class="text-gray-800 font-size-14px">@clientViewModel?.YearlyIncomeClass</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["max_rent"]:</td>
+                        <td class="text-gray-800 font-size-14px">@(clientViewModel?.LeaseAgreement != null ?  clientViewModel?.LeaseAgreement?.Rent.Amount.FormatMoney() : "$0,00")</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["applicant"]:</td> 
+                        <td class="text-gray-800 font-size-14px">@localizer[clientViewModel!.LookingForHouse.ToString().ToLower()]</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["debtor_code"]:</td>
+                        <td class="text-gray-800 font-size-14px">@clientViewModel!.DebtorCode</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </ContentTemplate>
+</TabItem>
+@if (clientViewModel != null && clientViewModel.LeaseAgreements.Any())
+{
+    <TabItem>
+        <ChildContent>
+            <TabHeader Text="@localizer["lease_agreements"]"></TabHeader>
+        </ChildContent>
+        <ContentTemplate>
+            <div class="row">
+                <div class="ps-12 pt-9 pe-12 pb-9">
+                    <h3 class="fs-5 ps-0 pb-3">@localizer["current_lease_agreement"]</h3>
+                    @if (clientViewModel.LeaseAgreement != null)
+                    {
+                        <div class="border border-gray-300 card-rounded p-5 bg-lighten">
+                            <div class="d-flex flex-wrap">
+                                <div class="flex-equal me-8 pt-6">
+                                    <table class="table fs-6 fw-bold gs-0 gy-2 gx-2 m-0">
+                                        <tbody>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["house_code"]:</td>
+                                            <td class="text-gray-800 font-size-14px">@clientViewModel.LeaseAgreement?.House.Code</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["house_rent"]:</td>
+                                            <td class="text-gray-800 font-size-14px min-w-200px">@clientViewModel.LeaseAgreement?.House.RentBasePrice.FormatMoney()</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["contract_amount"]:</td>
+                                            <td class="text-gray-800 font-size-14px">@clientViewModel.LeaseAgreement?.Rent.ContractPrice.FormatMoney()</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["set_price"]:</td>
+                                            <td class="text-gray-800 font-size-14px">@clientViewModel.LeaseAgreement?.Rent.RentPrice.FormatMoney()</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="flex-equal pt-6">
+                                    <table class="table fs-6 fw-bold gs-0 gy-2 gx-2 m-0">
+                                        <tbody>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["asking_rent"]:</td>
+                                            <td class="text-gray-800 font-size-14px">@clientViewModel.LeaseAgreement?.Rent.AskPrice.FormatMoney()</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["temporary_discount"]</td>
+                                            <td class="text-gray-800 font-size-14px">@clientViewModel.LeaseAgreement?.Rent.Discount.FormatMoney()</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["start_date"]</td>
+                                            <td class="text-gray-800 font-size-14px">@clientViewModel.LeaseAgreement?.StartDate.FormatDate()</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        @localizer["no_results"]
+                    }
+                    @if (previousLeaseAgreements != null && previousLeaseAgreements.Any() && clientViewModel.LeaseAgreements.Any())
+                    {
+                        <h3 class="fs-5 ps-0 pt-6 pb-3">@localizer["previous_lease_agreement"]</h3>
+                        <SfAccordion>
+                            <AccordionItems>
+                                @foreach (var agreement in clientViewModel.LeaseAgreements)
+                                {
+                                    <AccordionItem>
+                                        <HeaderTemplate>
+                                            <div>@agreement.Client.Name | @agreement.StartDate.FormatDate() @localizer["until"] @agreement.EndDate.FormatDate()</div>
+                                        </HeaderTemplate>
+                                        <ContentTemplate>
+                                            <div class="p-5 bg-lighten">
+                                                <div class="d-flex flex-wrap">
+                                                    <div class="flex-equal me-8 pt-6">
+                                                        <table class="table fs-6 fw-bold gs-0 gy-2 gx-2 m-0">
+                                                            <tbody>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["house_code"]:</td>
+                                                                <td class="text-gray-800 font-size-14px">@agreement.House.Code</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["house_rent"]:</td>
+                                                                <td class="text-gray-800 font-size-14px min-w-200px">@agreement.House.RentBasePrice.FormatMoney()</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["contract_amount"]:</td>
+                                                                <td class="text-gray-800 font-size-14px">@agreement.Rent.ContractPrice.FormatMoney()</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["set_price"]:</td>
+                                                                <td class="text-gray-800 font-size-14px">@agreement.Rent.RentPrice.FormatMoney()</td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="flex-equal pt-6">
+                                                        <table class="table fs-6 fw-bold gs-0 gy-2 gx-2 m-0">
+                                                            <tbody>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["asking_rent"]:</td>
+                                                                <td class="text-gray-800 font-size-14px">@agreement.Rent.AskPrice.FormatMoney()</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["temporary_discount"]</td>
+                                                                <td class="text-gray-800 font-size-14px">@agreement.Rent.Discount.FormatMoney()</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["start_date"]</td>
+                                                                <td class="text-gray-800 font-size-14px">@agreement.StartDate.FormatDate()</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["end_date"]</td>
+                                                                <td class="text-gray-800 font-size-14px">@agreement.EndDate.FormatDate()</td>
+                                                            </tr>
+                                                            
+                                                            </tbody>
+                                                            
+                                                        </table>
+                                                    </div>
+                                                    <div class="flex-equal">
+                                                        <div class="card card-xl-stretch w-100 pb-0 mb-0">
+                                                            <div class="card-body d-flex align-items-center ps-5 pe-1 pt-0 pb-0">
+                                                                <div class="d-flex flex-column flex-grow-1 py-3 py-lg-13 me-2">
+                                                                    <span class="fw-bolder text-dark fs-4 mb-2 text-hover-primary">@agreement.Client.Name</span>
+                                                                    <span class="mb-2 fw-bold text-muted fs-5">@agreement.Client.Persons?.Where(x => x.MainContact).FirstOrDefault()?.Gender</span>
+                                                                    <span class="fw-bold text-muted fs-5">@localizer["years_old", agreement.Client.Persons?.Where(x => x.MainContact).FirstOrDefault()?.DateOfBirth.ToAge()!]</span>
+                                                                </div>
+                                                                @PersonAvatarProvider.GetAvatar(agreement.Client.Persons?.Where(x => x.MainContact).FirstOrDefault()!)
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ContentTemplate>
+                                    </AccordionItem>
+                                }
+                            </AccordionItems>
+                        </SfAccordion>
+                    }
+                </div>
+            </div>
+        </ContentTemplate>
+    </TabItem> 
+}
+<TabItem>
+    <ChildContent>
+        <TabHeader Text="@localizer["family"]"></TabHeader>
+    </ChildContent>
+    <ContentTemplate>
+        <div class="row ps-6 pe-6 pt-6 pb-6 family-cards">
+            @if (clientViewModel?.Persons != null && clientViewModel != null && clientViewModel.Persons.Any(x => x.RelationType == RelationType.Family))
+            {
+                foreach (var familyMember in clientViewModel.Persons.Where(x => x.RelationType == RelationType.Family && x.Deleted == false).OrderBy(p => p.DateOfBirth))
+                {
+                    <div class="col-lg-4 d-flex">
+                        <div class="card card-xl-stretch mb-xl-8 w-100">
+                            <div class="card-body d-flex align-items-center pt-3 pb-0">
+                                <div @onclick="@(() => DeletePersonModal(familyMember))" class="btn btn-sm btn-icon btn-light-primary me-2 delete-icon-top-right-absolute">
+                                    <i class="fal fa-lg fa-trash-alt"></i>
+                                    <div class="tool-tip left"> 
+                                        <span  class="tooltiptext">@localizer["delete"]</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column flex-grow-1 py-5 py-lg-13 me-2">
+                                    <span class="fw-bolder text-dark fs-4 mb-2 text-hover-primary">@familyMember.FullName</span>
+                                    <span class="mb-2 fw-bold text-muted fs-5">@localizer[familyMember.Gender.ToString().ToLower()]</span>
+                                    <span class="fw-bold text-muted fs-5">@localizer["years_old", familyMember.DateOfBirth.ToAge()]</span>
+                                    <div class="d-flex mt-5 ">
+                                        <div class="btn btn-sm btn-light-primary" @onclick="@(() => ShowUpdateModal(familyMember))">
+                                            <i class="fal fa-edit me-2"></i>@localizer["edit"]
+                                        </div>
+                                    </div>
+                                </div>
+                                @PersonAvatarProvider.GetAvatar(familyMember)
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                @localizer["no_results"]
+            }
+            <div class="col-lg-4 d-flex">
+                <div  @onclick="() => AddPersonModal()" class="card card-xl-stretch mb-xl-8 w-100">
+                    <div class="card-body d-flex align-items-center pt-3 pb-0">
+                        <div class="d-flex flex-column flex-grow-1 py-5 py-lg-13 me-2 add-family cursor-pointer">
+                            <i class="fa fa-plus-circle"></i>
+                            <span class="fs-4">@localizer["add_family_member"]</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ContentTemplate>
+</TabItem>
+<TabItem>
+    <ChildContent>
+        <TabHeader Text="@localizer["income"]"></TabHeader>
+    </ChildContent>
+    <ContentTemplate>
+        <div class="card-body pb-0">
+            <div class="row">
+                <div class="col-8">
+                    <div class="card card-dashed flex-center min-w-175px my-3 p-6">
+                        <div class="row w-100">
+                            <div class="col-6 text-center border-right-dashed">
+                                <span class="fs-2 fw-bold text-info pb-1 px-2">@localizer["yearly_total_income"]</span>
+                                <span class="fs-2 fw-bolder d-flex justify-content-center">
+                                    <span class="counted">@clientViewModel?.YearlyIncome.FormatMoney()</span>
+                                </span>
+                            </div>
+                            <div class="col-6 text-center">
+                                <span class="fs-2 fw-bold text-success pb-1 px-2">@localizer["monthly_income"]</span>
+                                <span class="fs-2 fw-bolder d-flex justify-content-center">
+                                    <span class="counted">@((clientViewModel?.YearlyIncome / 12).FormatMoney())</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card card-dashed flex-center min-w-175px my-3 p-6">
+                        <span class="fs-2 fw-bold text-primary pb-1 px-2">Korting</span>
+                        <span class="fs-2 fw-bolder d-flex justify-content-center">
+                            <span class="counted">$-</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btn btn-sm btn-light-primary ms-8" @onclick="@(() => AddIncomeModal())" >
+            <i class="fal fa-plus me-2"></i>@localizer["new_income"]
+        </div>
+        <div class="card-body">
+            <SfGrid @ref="@grid" DataSource="@incomeViewModels" AllowPaging="false" AllowGrouping="true">
+                <GridGroupSettings ShowDropArea="false" Columns="@(new[] {"Person.FullName"})">
+                    <CaptionTemplate>
+                        @{
+                            @(((CaptionTemplateContext) context).Key)
+                        }
+                    </CaptionTemplate>
+                </GridGroupSettings>
+                <GridColumns>
+                    <GridColumn Field="Person.FullName" HeaderText="@localizer["name"]"/>
+                    <GridColumn Field="@nameof(IncomeViewModel.Name)" HeaderText="@localizer["employer"]"/>
+                    <GridColumn Field="@nameof(IncomeViewModel.Description)" HeaderText="@localizer["function"]"/>
+                    <GridColumn Field="@nameof(IncomeViewModel.StartDate)" HeaderText="@localizer["start_date"]">
+                        <Template>
+                            @(((IncomeViewModel) context).StartDate.FormatDate(false))
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(IncomeViewModel.EndDate)" HeaderText="@localizer["end_date"]">
+                        <Template>
+                            @(((IncomeViewModel) context).EndDate.FormatDate(false))
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(IncomeViewModel.Type)" HeaderText="@localizer["type"]"/>
+                    <GridColumn Field="@nameof(IncomeViewModel.Period)" HeaderText="@localizer["period"]"/>
+                    <GridColumn Field="@nameof(IncomeViewModel.Amount)" HeaderText="@localizer["amount"]">
+                        <Template>
+                            @(((IncomeViewModel) context).Amount.FormatMoney())
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(IncomeViewModel.YearlyAmount)" HeaderText="@localizer["yearly_amount"]">
+                        <Template>
+                            @(((IncomeViewModel) context).YearlyAmount.FormatMoney())
+                        </Template>
+                    </GridColumn>
+                    <GridColumn>
+                        <Template>
+                            <ul class="table-action"> 
+                                <li class="btn btn-sm btn-light-primary">
+                                    <span>Actie <i class="fas fa-angle-down"></i></span>
+                                    <ul class="dropdownmenu">
+                                        <li class="p-4" @onclick="@(() => UpdateIncomeModal(((IncomeViewModel)context)))">Edit</li>
+                                        <li class="p-4" @onclick="@(() => DeleteIncomeModal(((IncomeViewModel)context).Id))">Delete</li>
+                                    </ul>
+                                </li> 
+                            </ul> 
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+        </div>
+    </ContentTemplate>
+</TabItem>
+</TabItems>
+</SfTab>
+</div>
+</div>
+</PageBody>
+</Page>
+</Spinner>
+
+@code {
+
+    [Parameter]
+    public int PersonId { get; set; }
+
+    private string? returnUri = "/relation";
+    private PersonViewModel? mainContact;
+    private ClientViewModel? clientViewModel;
+    private List<IncomeViewModel> incomeViewModels = null!;
+    private IEnumerable<LeaseAgreementViewModel>? previousLeaseAgreements;
+    private SfGrid<IncomeViewModel> grid = null!;
+    private bool isSubmitting;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        navigationManager.TryGetQueryString("returnUri", out returnUri);
+        clientViewModel = await clientRepository.Get(PersonId);
+        mainContact = clientViewModel.Persons?.Where(x => x.MainContact).FirstOrDefault();
+        if (mainContact != null)
+        {
+            incomeViewModels = new List<IncomeViewModel>();
+            if (clientViewModel.Persons != null) incomeViewModels.AddRange(clientViewModel.Persons.SelectMany(pvm => pvm.Incomes.ToList()));
+            incomeViewModels = incomeViewModels.Count > 0 ? incomeViewModels.Where(ivm => ivm.Deleted == false).OrderByDescending(ivm => ivm.YearlyAmount).ToList() : new List<IncomeViewModel>();
+        }
+
+        previousLeaseAgreements = clientViewModel?.LeaseAgreements.Where(la => la.Id != clientViewModel.LeaseAgreement?.Id);
+    }
+
+
+    private async Task ShowUpdateModal(PersonViewModel person)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("Model", person);
+
+        var modal = modalService.Show<UpdatePersonModal>($"Wijzig persoon ", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled && clientViewModel!.Persons != null)
+        {
+            var index = clientViewModel!.Persons.FindIndex(prs => prs.Id == person.Id);
+            if (index >= 0)
+            {
+                clientViewModel.Persons[index] = (PersonViewModel) result.Data;
+            }
+            if (person.MainContact)
+            {
+                mainContact = (PersonViewModel) result.Data;
+            }
+
+        }
+    }
+    
+    private async Task AddPersonModal()
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("ClientId", clientViewModel!.Id);
+        var modal = modalService.Show<AddPersonModal>("Voeg persoon toe", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled && clientViewModel!.Persons != null)
+        {
+            var person = (PersonViewModel) result.Data; 
+            clientViewModel.Persons.Add(person);
+        }
+    }
+    
+    private async Task AddIncomeModal()
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("Persons", clientViewModel?.Persons);
+        var modal = modalService.Show<AddIncomeModal>("Voeg inkomen toe", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            var income = (IncomeViewModel) result.Data;
+            Console.WriteLine(JsonSerializer.Serialize(income));
+            incomeViewModels.Add(income);
+            grid.Refresh();
+ 
+        }
+    }
+
+    private async Task DeletePersonModal(PersonViewModel person)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("PersonId", person.Id);
+
+        var modal = modalService.Show<PersonDeleteModal>("Verwijder persoon", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            clientViewModel!.Persons = clientViewModel!.Persons!.Where(rmc => rmc.Id != (int)result.Data).ToList();
+        }
+    }
+
+
+    private void GoDetails()
+    {
+        navigationManager.NavigateTo($"/house/{clientViewModel!.LeaseAgreement!.House.Id}/edit?returnUri=/relation/{clientViewModel!.Id}/edit");
+    }
+
+    private async Task UpdateIncomeModal(IncomeViewModel incomeViewModel)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("Income", incomeViewModel);
+
+        var modal = modalService.Show<UpdateIncomeModal>($"Wijzig inkomen ", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            var index = incomeViewModels.FindIndex(inc => inc.Id == incomeViewModel.Id);
+
+            if (index >= 0)
+            {
+                incomeViewModels[index] = (IncomeViewModel) result.Data;
+                grid.Refresh();
+            }
+        }
+    }
+    
+    private async Task DeleteIncomeModal(int incomeId)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("IncomeId", incomeId);
+
+        var modal = modalService.Show<DeleteIncomeModal>("Verwijder inkomen", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            incomeViewModels = incomeViewModels.Where(rmc => rmc.Id != incomeId).ToList();
+            grid.Refresh();
+        }
+    }
+
+    private async Task EditClientModal()
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("ClientViewModel", clientViewModel);
+
+        var modal = modalService.Show<UpdateClientModal>($"Wijzig relatie ", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            clientViewModel = (ClientViewModel) result.Data;
+        }
+    }
+
+    private async Task Save()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+        
+        try
+        {
+            isSubmitting = true;
+            var updateModel = mapper.Map<ClientUpdateModel>(clientViewModel);
+            clientViewModel = await clientRepository.Update(updateModel!);
+            toastService.ShowUpdated("Omschrijving");
+        }
+        catch (HttpRequestException)
+        {
+            toastService.ShowUnexpectedError();
+        }
+        
+        isSubmitting = false;
+    }
+
+}

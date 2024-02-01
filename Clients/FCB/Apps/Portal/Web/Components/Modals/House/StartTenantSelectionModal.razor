@@ -1,0 +1,40 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject ILocalizer<Translations> localizer
+
+<Modal>
+    <ModalSubTitle>@Address</ModalSubTitle>
+    <ModalBody>
+        <div class="mb-5">
+            <InputLabel Value="@localizer["start_date"]" Required="true"/>
+            <SfDatePicker TValue="DateTime?" ShowTodayButton="false" Min='@DateTime.Now'></SfDatePicker>
+        </div>
+        <div class="mb-5">
+            <InputLabel Value="@localizer["assigned_employee"]" Required="true"/>
+            <SfComboBox TValue="string" TItem="Gender" Placeholder="@localizer["select_employee"]" DataSource="@LocalData">
+                <ComboBoxFieldSettings Value="ID" Text="Text"></ComboBoxFieldSettings>
+            </SfComboBox>
+        </div>
+    </ModalBody>
+    <ModalFooter>
+        <SpinnerSubmitButton LoadingText="Saving..." IdleText="Start" Icon="house-user" Size="md" Color="light-primary" Margins="false"/>
+    </ModalFooter>
+</Modal>
+
+@code
+{
+    [Parameter]
+    public string Address { get; set; } = null!;
+    
+    public class Gender
+    {
+        public string ID { get; set; } = null!;
+        public string Text { get; set; } = null!;
+    }
+    
+    List<Gender> LocalData = new List<Gender> { 
+        new Gender() { ID= "male", Text= "Man" },
+        new Gender() { ID= "female", Text= "Vrouw" },
+    };
+}
+

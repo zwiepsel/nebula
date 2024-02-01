@@ -1,0 +1,46 @@
+// Metronic version: v8.0.20
+// Notice: this overwrites the default Metronic variables and styling.
+
+// IMPORTANT: When performing a Metronic upgrade, please do the following:
+// - Step 1: comment out [@import "components/variables.custom";] in "vendors/metronic/_init.scss" on line 13
+// - Step 2: change the node_modules path to the relative NPM path (~bootstrap) in "vendors/metronic/_init.scss"
+// - Step 3: change the node_modules path to the relative NPM path (~bootstrap) in "vendors/metronic/components/components.scss"
+// - Step 4: comment out [@import "vendors/metronic/base/functions";] and [@import "vendors/metronic/base/mixins";] in "vendors/metronic/_init.scss" on line 7 & 8
+// - Step 5: comment out [$mode: default;] in "vendors/metronic/style.scss" on line 6 
+
+@import "vendors/metronic/base/functions";
+@import "vendors/metronic/base/mixins";
+@import "variables";
+
+// Vendors
+@import "vendors/metronic/style";
+@import "vendors/syncfusion/bootstrap4";
+@import "vendors/blazored-toast/blazored-toast";
+@import "~@splidejs/splide/src/css/themes/default";
+
+// Custom
+@import "mixins";
+@import "fonts";
+@import "components/aside";
+@import "components/buttons";
+@import "components/filters";
+@import "components/tooltip";
+@import "components/forms";
+@import "components/helpers";
+@import "components/misc";
+@import "components/tabs";
+@import "components/input";
+@import "components/nav";
+@import "components/sfgrid-action";
+@import "components/inplace-editor-syncfusion";
+@import "components/input-syncfusion";
+@import "components/accordion-syncfusion";
+@import "components/datagrid-syncfusion";
+@import "components/dropdown-syncfusion";
+@import "components/password";
+@import "components/sidesheet";
+@import "components/toast";
+@import "components/carousel-slider";
+
+//Site specific
+@import "sites/myfcb/style";

@@ -1,0 +1,25 @@
+﻿@switch (Score)
+{
+    case > 0 and <= 3:
+        <span class="badge badge-light-success fw-bolder fs-@FontSize">@Score</span>
+        break;
+    case > 3 and <= 6:
+        <span class="badge badge-light-warning fw-bolder fs-@FontSize">@Score</span>
+        break;
+    case > 6 and <= 9:
+        <span class="badge badge-light-danger fw-bolder fs-@FontSize">@Score</span>
+        break;
+    default:
+        <span class="badge badge-light fw-bolder fs-@FontSize">-</span>
+        break;
+}
+
+@code {
+
+    [Parameter]
+    public int? Score { get; set; }
+
+    [Parameter]
+    public int FontSize { get; set; }
+
+}

@@ -1,0 +1,64 @@
+﻿@inherits LayoutComponentBase
+
+@inject NavigationManager navigationManager
+@inject AppState appState
+
+<AuthorizeView Policy="@SiteRequirement.Name">
+    <NotAuthorized>
+        <Redirect Uri="/security/sign-in"/>
+    </NotAuthorized>
+    <Authorized>
+        <div class="page d-flex flex-row flex-column-fluid">
+            @if (appState.Site.Core)
+            {
+                if (navigationManager.ToBaseRelativePath(navigationManager.Uri).StartsWith("admin"))
+                {
+                    <Nebula.Core.Web.Layout.AdminSidebar/>
+                }
+                else
+                {
+                    <Nebula.Core.Web.Layout.Sidebar/>
+                }
+            }
+            else
+            {
+                if (navigationManager.ToBaseRelativePath(navigationManager.Uri).StartsWith("settings"))
+                {
+                    <DynamicComponent Type="@(Type.GetType($"{appState.Site.SystemName}.Layout.SettingsSidebar, {appState.Site.SystemName}"))" Parameters="@(new Dictionary<string, object>())"/>
+                }
+                else
+                {
+                    <DynamicComponent Type="@(Type.GetType($"{appState.Site.SystemName}.Layout.Sidebar, {appState.Site.SystemName}"))" Parameters="@(new Dictionary<string, object>())"/>
+                }
+            }
+            <div class="wrapper d-flex flex-column flex-row-fluid">
+                @Body
+            </div>
+        </div>
+    </Authorized>
+    <Authorizing>
+        <div class="h-100">
+            <div class="container h-100">
+                <div class="d-flex align-items-center justify-content-center h-100">
+                    <div class="d-flex flex-column">
+                        <div class="text-center">
+                            <i class="logo text-primary fal fa-5x fa-solar-system mb-5"></i>
+                            <h1 class="text-center">Nebula</h1>
+                        </div>
+                        <p class="clearfix"><i class="fal fa-spin fa-spinner-third me-2"></i>Authorizing...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Authorizing>
+</AuthorizeView>
+
+<BlazoredToasts Position="ToastPosition.BottomRight"
+                Timeout="5"
+                RemoveToastsOnNavigation="false"
+                ShowProgressBar="true"
+                IconType="IconType.FontAwesome"
+                InfoIcon="fal fa-info-circle"
+                WarningIcon="fal fa-exclamation-triangle"
+                SuccessIcon="fal fa-check"
+                ErrorIcon="fal fa-times"/>

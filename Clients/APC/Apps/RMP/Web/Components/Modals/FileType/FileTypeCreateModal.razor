@@ -1,0 +1,54 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject FileTypeRepository fileTypeRepository
+
+<EditForm Model="@createModel" OnValidSubmit="@Create" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal>
+        <ModalSubTitle>Create a new file type</ModalSubTitle>
+        <ModalBody>
+            <div class="mb-5">
+                <InputLabel Value="Name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Name"/>
+                <ValidationMessage For="@(() => createModel.Name)"/>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Creating..." IdleText="Create" Icon="plus" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    private bool isSubmitting;
+    private readonly FileTypeCreateModel createModel = new();
+
+    private async Task Create()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await fileTypeRepository.Create(createModel);
+            toastService.ShowCreated("File type");
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

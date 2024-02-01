@@ -1,0 +1,27 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" id="Laag_2" data-name="Laag 2" xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 462.22 462.22">
+    <defs>
+        <linearGradient id="linear-gradient" x1="282.15" y1="335.87" x2="282.15" y2="102.04"
+                        gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#23676e"/>
+            <stop offset="1" stop-color="#4aa1ae"/>
+        </linearGradient>
+        <linearGradient id="linear-gradient-2" x1="371.2" y1="395.32" x2="371.2" y2="421.22"
+                        gradientUnits="userSpaceOnUse">
+            <stop offset="0.25" stop-color="#54002a"/>
+            <stop offset="1" stop-color="#902052"/>
+        </linearGradient>
+        <linearGradient id="linear-gradient-3" x1="370.33" y1="350.99" x2="370.33" y2="375.31"
+                        xlink:href="#linear-gradient-2"/>
+        <linearGradient id="linear-gradient-4" x1="282.15" y1="215.18" x2="282.15" y2="564.27"
+                        xlink:href="#linear-gradient-2"/>
+    </defs>
+    <path d="M282.15,187.23,513.2,335.87c0-.91.06-1.81.06-2.71C513.26,205.52,409.78,102,282.15,102S51,205.52,51,333.16c0,.9,0,1.8.06,2.71Z"
+          transform="translate(-51.03 -102.04)" style="fill:url(#linear-gradient)"/>
+    <path d="M369.69,395.32h-9.21v25.9h7.94c8.58,0,13.51-4.29,13.51-12.71C381.93,400.25,377.48,395.32,369.69,395.32Z"
+          transform="translate(-51.03 -102.04)" style="fill:url(#linear-gradient-2)"/>
+    <path d="M380.18,363.07c0-8.26-5.09-12.08-12.08-12.08h-7.62v24.32h5.87C373.66,375.31,380.18,372.44,380.18,363.07Z"
+          transform="translate(-51.03 -102.04)" style="fill:url(#linear-gradient-3)"/>
+    <path d="M282.15,215.18,52.9,362.65C67.39,476.36,164.5,564.27,282.15,564.27S496.9,476.36,511.39,362.65Zm7.3,113.89a69.34,69.34,0,0,1,26.85,5.08l-1.59,24.47c-3.49-2.06-12.23-6.35-21.61-6.35-19.06,0-28,12.39-28,34,0,19.06,10.49,33.68,29.24,33.68a39.47,39.47,0,0,0,21.29-6.2l1.27,25.74a95.68,95.68,0,0,1-27.33,4.29c-32.25,0-55.29-19.22-55.29-58.15C234.32,352.9,253.06,329.07,289.45,329.07ZM158.21,331h65.46V352.9H187.44v22.56h34.64v21.93H187.44v44.49H158.21ZM409.78,493.92H154.51V470.41H409.78Zm-35.32-52H331.88V331h41.94c23.52,0,35,9.69,35,26.21,0,17.8-9.69,24.31-20.82,27v.32c13.83,2.38,22.56,11.28,22.56,26.22C410.52,432.66,395.59,441.88,374.46,441.88Z"
+          transform="translate(-51.03 -102.04)" style="fill:url(#linear-gradient-4)"/>
+</svg>

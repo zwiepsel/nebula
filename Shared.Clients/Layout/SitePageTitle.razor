@@ -1,0 +1,30 @@
+﻿@inject AppState appState
+
+<PageTitle>
+    @GetPageTitle()
+</PageTitle>
+
+@code {
+
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public bool IncludeSiteName { get; set; } = true;
+
+    [Parameter]
+    public string SiteNameSeparator { get; set; } = "|";
+
+    private string GetPageTitle()
+    {
+        var siteName = appState.Site.Name;
+
+        if (Title != null)
+        {
+            return IncludeSiteName ? $"{Title} {SiteNameSeparator} {siteName}" : siteName;
+        }
+
+        return siteName;
+    }
+
+}

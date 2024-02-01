@@ -1,0 +1,17 @@
+﻿@layout PublicLayout
+
+@page "/security/sign-out"
+@attribute [Authorize(Policy = SiteRequirement.Name)]
+
+@inject NavigationManager navigationManager
+@inject SecurityManager securityManager
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await securityManager.SignOutAsync();
+        navigationManager.NavigateTo("/");
+    }
+
+}

@@ -1,0 +1,77 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject MitigationControlRepository mitigationControlRepository
+
+<EditForm Model="@createModel" OnValidSubmit="@Create" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal>
+        <ModalSubTitle>Create a new mitigation control</ModalSubTitle>
+        <ModalBody>
+            <div class="mb-5">
+                <InputLabel Value="Name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Name"/>
+                <ValidationMessage For="@(() => createModel.Name)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Short name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.ShortName"/>
+                <ValidationMessage For="@(() => createModel.ShortName)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Description" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Description"/>
+                <ValidationMessage For="@(() => createModel.Description)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Control type" Required="true"/>
+                <SfDropDownList TValue="MitigationControlType?" TItem="string" Placeholder="Select an option..." @bind-Value="@createModel.ControlType" DataSource="@mitigationControlTypes"/>
+                <ValidationMessage For="@(() => createModel.ControlType)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Trigger" Required="true"/>
+                <SfDropDownList TValue="MitigationControlTrigger?" TItem="string" Placeholder="Select an option..." @bind-Value="@createModel.Trigger" DataSource="@mitigationControlTriggers"/>
+                <ValidationMessage For="@(() => createModel.Trigger)"/>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Creating..." IdleText="Create" Icon="plus" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    private bool isSubmitting;
+    private readonly MitigationControlCreateModel createModel = new();
+
+    private readonly string[] mitigationControlTypes = Enum.GetNames<MitigationControlType>();
+    private readonly string[] mitigationControlTriggers = Enum.GetNames<MitigationControlTrigger>();
+
+    private async Task Create()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await mitigationControlRepository.Create(createModel);
+            toastService.ShowCreated("Mitigation control");
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

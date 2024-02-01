@@ -1,0 +1,46 @@
+﻿@layout PublicLayout
+
+@page "/register"
+
+@inject OnBoardingState onBoardingState
+
+<DefaultCulture Culture="@(new CultureInfo("nl-NL"))"/>
+@if (stepChange == 1)
+{
+    <CreateAccount @bind-Step="@stepChange"></CreateAccount> 
+
+}
+@if (stepChange == 2)
+{
+    <Start @bind-Step="@stepChange"></Start> 
+
+}
+@if (stepChange == 3)
+{
+    <UploadSedula @bind-Step="@stepChange"></UploadSedula>
+}
+@if (stepChange == 4)
+{
+    <AddIncome @bind-Step="@stepChange"></AddIncome>
+}
+@if (stepChange == 5)
+{
+    <FamilyStep1 @bind-Step="@stepChange"></FamilyStep1>
+}
+@if (stepChange == 6)
+{
+    <FamilyStep2 @bind-Step="@stepChange"></FamilyStep2>
+}
+@if (stepChange == 7)
+{
+    <Complete @bind-Step="@stepChange"></Complete>
+}
+@if (stepChange == 8)
+{// Done
+}
+
+
+@code {
+    private int stepChange = 1;
+
+}

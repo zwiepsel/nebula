@@ -1,0 +1,169 @@
+﻿@using Nebula.Clients.FCB.Shared.Models.OnboardingState
+@layout PublicLayout
+
+@inject ILocalizer<Translations> localizer
+
+@inject IMapper mapper;
+
+@inject IToastService toastService;
+@inject NavigationManager navigationManager;
+@inject OnBoardingState onBoardingState;
+
+
+<EditForm Model="@RegisterUserModel" OnValidSubmit="@Register" class="form w-100">
+    <FluentValidationValidator/>
+    <div class="sign-in-bg-gradient d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed">
+        <div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
+            <div class="w-lg-800px bg-white rounded shadow-sm p-10 p-lg-15 mx-auto">
+                <div class="text-center mb-3">
+                    <img src="/dist/img/logos/mijn fcb/logo.svg" class="w-100px mb-5" alt="Mijn FCB"/>
+                </div>
+                <div class="row fv-row">
+                    <div class="col-xl-4 mb-7">
+                        <InputLabel Value="@localizer["gender"]" Required="true"/>
+                        <SfDropDownList TValue="Gender" TItem="string" Placeholder="Select an option..." @bind-Value="@RegisterUserModel.Gender" DataSource="@genders"/>
+                        <ValidationMessage For="@(() => RegisterUserModel.Gender)"/>
+                    </div>
+                    <div class="col-xl-4 mb-7">
+                        <InputLabel Value="@localizer["first_name"]" Required="true"/>
+                        <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@RegisterUserModel.FirstName"/>
+                        <ValidationMessage For="@(() => RegisterUserModel.FirstName)"/>
+                    </div>
+                    <div class="col-xl-4 mb-7">
+                        <InputLabel Value="@localizer["last_name"]" Required="true"/>
+                        <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@RegisterUserModel.LastName"/>
+                        <ValidationMessage For="@(() => RegisterUserModel.LastName)"/>
+                    </div>
+                </div>
+                <div class="row fv-row">
+                    <div class="col-xl-6 mb-7">
+                        <InputLabel Value="Email" Required="true"/>
+                        <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@RegisterUserModel.EmailAddress"/>
+                        <ValidationMessage For="@(() => RegisterUserModel.EmailAddress)"/>
+                    </div>
+                    <div class="col-xl-6 mb-7">
+                        <InputLabel Value="@localizer["phone_number"]" Required="false"/>
+                        <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@RegisterUserModel.PhoneNumber"/>
+                        <ValidationMessage For="@(() => RegisterUserModel.PhoneNumber)"/>
+                    </div>
+                </div>
+                <div class="row fv-row">
+                    <div class="col-xl-6 mb-7">
+                        <InputLabel Value="@localizer["address"]" Required="false"/>
+                        <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@RegisterUserModel.Address"/>
+                        <ValidationMessage For="@(() => RegisterUserModel.Address)"/>
+                    </div>
+                    <div class="col-xl-6 mb-7">
+                        <InputLabel Value="@localizer["date_of_birth"]" Required="true"/>
+                        <SfDatePicker @bind-Value="@RegisterUserModel.DateOfBirth" Placeholder="Select a birthdate..." ShowTodayButton="false" Format="dd-MM-yyyy"/>
+                        <ValidationMessage For="@(() => RegisterUserModel.DateOfBirth)"/>
+                    </div>
+                </div>
+                <div class="row fv-row">
+                    <div class="col-xl-6 mb-7">
+                        <div class="fv-row mb-0 fv-plugins-icon-container">
+                            <InputLabel Value="@localizer["current_password"]" Required="true"/>
+                            <div class="position-relative mb-3 toggle-password-visibility">
+                                <InputTextField type="@currentPasswordType" class="form-control form-control-lg form-control-solid" autocomplete="current-password" @bind-Value="@RegisterUserModel.Password"/>
+                                <span @onclick="@ToggleCurrentPassword" class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2">
+                                    <i class="fa fa-eye fa-lg text-gray-400"></i>
+                                    <i class="fa fa-eye-slash fa-lg text-gray-400"></i>
+                                </span>
+                            </div>
+                            <ValidationMessage For="@(() => RegisterUserModel.Password)"/>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 mb-7">
+                        <div class="fv-row mb-0 fv-plugins-icon-container">
+                            <InputLabel Value="@localizer["new_password"]" Required="true"/>
+                            <div class="position-relative mb-3 toggle-password-visibility">
+                                <InputTextField type="@confirmationPasswordType" class="form-control form-control-lg form-control-solid" autocomplete="new-password" @bind-Value="@RegisterUserModel.ConfirmationPassword"/>
+                                <span @onclick="@ToggleConfirmationPassword" class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2">
+                                    <i class="fa fa-eye fa-lg text-gray-400"></i>
+                                    <i class="fa fa-eye-slash fa-lg text-gray-400"></i>
+                                </span>   </div>
+                            <ValidationMessage For="@(() => RegisterUserModel.ConfirmationPassword)"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="fv-row mb-10">
+                    <label class="form-check form-check-solid form-check-inline">
+                        <InputCheckbox class="form-check-input" type="checkbox" name="toc" @bind-Value="@RegisterUserModel.AgreeTerms"/>
+                        <span class="form-check-label fw-bold text-gray-700 fs-6">Ik ga akkoord met de
+                            <a href="https://fcb.live/disclaimer" target="_blank" class="ms-1 link-primary">Algemene voorwaarden</a>.</span>
+                    </label>
+                    <ValidationMessage For="@(() => RegisterUserModel.AgreeTerms)"/>
+                </div>
+                <div class="text-center">
+                    <SpinnerSubmitButton Loading="@isRegistering" LoadingText="@localizer["register"]" IdleText="@localizer["register"]" Icon="sign-in" Size="lg" Color="light-primary" Class="w-100"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    
+    [Parameter]
+    public int Step { get; set; }
+
+    [Parameter]
+    public EventCallback<int> StepChanged { get; set; }
+    
+    private bool isRegistering = false;
+    private bool isSubmitting;
+    public RegisterUserModel RegisterUserModel = new(); 
+    private readonly string[] genders = Enum.GetNames<Gender>();
+    private string currentPasswordType = "password";
+    private string confirmationPasswordType = "password";
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    private void ToggleCurrentPassword()
+    {
+        currentPasswordType = currentPasswordType == "password" ? "text" : "password";
+    }
+
+    
+    private void ToggleConfirmationPassword()
+    {
+        confirmationPasswordType = confirmationPasswordType == "password" ? "text" : "password";
+    }
+    
+    private async Task Register()
+    {
+
+        try
+        {
+            var registerUser = mapper.Map<PublicRegisterModel>(RegisterUserModel);
+
+            onBoardingState.PublicRegisterModel = registerUser;
+            var mainContactToAdd = new PersonCreateModel()
+            {
+                FirstName = RegisterUserModel.FirstName,
+                LastName = RegisterUserModel.LastName,
+                EmailAddress = RegisterUserModel.EmailAddress,
+                Gender = RegisterUserModel.Gender,
+                PhoneNumber = RegisterUserModel.PhoneNumber,
+                DateOfBirth = RegisterUserModel.DateOfBirth,
+                MainContact = true,
+                RelationType = RelationType.Contact
+            };
+            onBoardingState.PersonCreateModel = mainContactToAdd;
+            if (StepChanged.HasDelegate)
+            {
+                Step = 2;
+                await StepChanged.InvokeAsync(Step);
+            }
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+        
+    }
+}
+

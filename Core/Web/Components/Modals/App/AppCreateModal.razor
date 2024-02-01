@@ -1,0 +1,90 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject AppRepository repository
+@inject SiteRepository siteRepository
+
+<EditForm Model="@createModel" OnValidSubmit="@Create" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal>
+        <ModalSubTitle>Create a new @EntityName.ToLower()</ModalSubTitle>
+        <ModalBody>
+            <div class="mb-5">
+                <InputLabel Value="Name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Name"/>
+                <ValidationMessage For="@(() => createModel.Name)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="System name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.SystemName"/>
+                <ValidationMessage For="@(() => createModel.SystemName)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Display name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.DisplayName"/>
+                <ValidationMessage For="@(() => createModel.DisplayName)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Path" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Path"/>
+                <ValidationMessage For="@(() => createModel.Path)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Icon" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Icon"/>
+                <ValidationMessage For="@(() => createModel.Icon)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Site" Required="true"/>
+                <SfDropDownList @bind-Value="@createModel.SiteId" TValue="int" TItem="SiteViewModel" Placeholder="Select a site..." AllowFiltering="true" DataSource="@sites">
+                    <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                </SfDropDownList>
+                <ValidationMessage For="@(() => createModel.SiteId)"/>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Creating..." IdleText="Create" Icon="plus" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+
+        private const string EntityName = "App";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    private bool isSubmitting;
+    private readonly AppCreateModel createModel = new();
+    private IList<SiteViewModel>? sites;
+
+    protected override async Task OnInitializedAsync()
+    {
+        sites = await siteRepository.GetAll();
+    }
+
+    private async Task Create()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await repository.Create(createModel);
+            toastService.ShowCreated(EntityName);
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

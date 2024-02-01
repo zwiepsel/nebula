@@ -1,0 +1,41 @@
+body {
+  button:disabled {
+    cursor: not-allowed !important;
+  }
+
+  .btn:disabled, .btn.disabled, fieldset:disabled .btn {
+    pointer-events: initial;
+  }
+
+  .btn.btn-light .svg-icon svg [fill]:not(.permanent):not(g) {
+    fill: $primary;
+  }
+
+  .btn.btn-hover-primary:hover:not(.btn-text):not(:disabled):not(.disabled) {
+    background-color: $primary !important;
+    border-color: $primary !important;
+  }
+
+  .btn.btn-hover-primary:hover:not(.btn-text):not(:disabled):not(.disabled) .svg-icon svg g [fill] {
+    fill: $white !important;
+  }
+
+  .e-input-group + .btn {
+    margin-top: 20px;
+    float: right;
+  }
+
+  .btn {
+    &:hover {
+      .tool-tip .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .svg-inline--fa .fa-secondary {
+        fill: $primary;
+      }
+    }
+  }
+
+}

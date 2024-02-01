@@ -1,0 +1,193 @@
+﻿
+@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject IMapper mapper
+@inject HouseRepository repository
+@inject ComplexRepository complexRepository
+@inject NeighborhoodRepository neighborhoodRepository
+@inject ILocalizer<Translations> localizer
+
+<EditForm Model="@updateModel" OnValidSubmit="@Update" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal>
+        <ModalSubTitle>Wijzig een bestaande @EntityName.ToLower()</ModalSubTitle>
+        <ModalBody>
+            <SfTab>
+                <TabAnimationSettings>
+                    <TabAnimationPrevious Effect="@AnimationEffect.FadeIn"></TabAnimationPrevious>
+                    <TabAnimationNext Effect="@AnimationEffect.FadeIn"></TabAnimationNext>
+                </TabAnimationSettings>
+                <TabItems>
+                    <TabItem>
+                        <ChildContent>
+                            <TabHeader Text="@localizer["information"]"></TabHeader>
+                        </ChildContent>
+                        <ContentTemplate>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["address"]" Required="true"/>
+                                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.Address"/>
+                                <ValidationMessage For="@(() => updateModel.Address)"/>
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["type"]" Required="true"/>
+                                <SfDropDownList TValue="HouseType" TItem="string" Placeholder="Select an option..." @bind-Value="@updateModel.Type" DataSource="@houseTypes"/>
+                                <ValidationMessage For="@(() => updateModel.Type)"/>
+                            </div>
+
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["bedrooms"]" Required="false"/>
+                                <InputNumber class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.NumberOfBedrooms"/>
+                                <ValidationMessage For="@(() => updateModel.NumberOfBedrooms)"/>
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["surface"]" Required="false"/>
+                                <InputNumber class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.SquareMetersGo"/>
+                                <ValidationMessage For="@(() => updateModel.SquareMetersGo)"/>
+                            </div>
+                        </ContentTemplate>
+                    </TabItem>
+                    <TabItem>
+                        <ChildContent>
+                            <TabHeader Text="Details"></TabHeader>
+                        </ChildContent>
+                        <ContentTemplate>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["neighborhood"]"  Required="true"/>
+                                <SfDropDownList @bind-Value="@updateModel.NeighborhoodId" TValue="int" TItem="NeighborhoodViewModel" Placeholder="Select a neighborhood" AllowFiltering="true" DataSource="@neighborhoods">
+                                    <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                                </SfDropDownList>
+                                <ValidationMessage For="@(() => updateModel.NeighborhoodId)"/>
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["complex"]" Required="true"/>
+                                <SfDropDownList @bind-Value="@updateModel.ComplexId" TValue="int" TItem="ComplexViewModel" Placeholder="Select a complex" AllowFiltering="true" DataSource="@complexes">
+                                    <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                                </SfDropDownList>
+                                <ValidationMessage For="@(() => updateModel.ComplexId)"/>
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["itemCode"]" Required="true"/>
+                                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.ItemCode"/>
+                                <ValidationMessage For="@(() => updateModel.ItemCode)"/>
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["square_meters_bvo"]" Required="true"/>
+                                <InputNumber class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.SquareMetersBvo"/>
+                                <ValidationMessage For="@(() => updateModel.SquareMetersBvo)"/>
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["square_meters_go"]" Required="true"/>
+                                <InputNumber class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.SquareMetersGo"/> 
+                                <ValidationMessage For="@(() => updateModel.SquareMetersGo)"/>
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["square_meters_fcb"]" Required="true"/>
+                                <InputNumber class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.SquareMetersFcb"/>
+                                <ValidationMessage For="@(() => updateModel.SquareMetersFcb)"/>
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["land_registry_number"]" Required="false"/>
+                                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.LandRegistryNumber"/>
+                                <ValidationMessage For="@(() => updateModel.LandRegistryNumber)"/>
+                            </div>
+                            
+                        </ContentTemplate>
+                    </TabItem>
+                    <TabItem>
+                        <ChildContent>
+                            <TabHeader Text="@localizer["value"]"></TabHeader>
+                        </ChildContent>
+                        <ContentTemplate>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["construction_date"]" Required="true"/>
+                                <SfDatePicker @bind-Value="@updateModel.ConstructionDate" Placeholder="Select a construction date..." ShowTodayButton="false" Format="dd-MM-yyyy" />
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["construction_price"]" Required="true"/>
+                                <SfNumericTextBox  class="form-control form-control-lg form-control-solid" Format="$ ###.##" Placeholder="0.00"  Decimals="2"  @bind-Value="@updateModel.ConstructionCosts" />
+                                <ValidationMessage For="@(() => updateModel.ConstructionCosts)"/>
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["taxation_date"]" Required="false"/>
+                                <SfDatePicker @bind-Value="@updateModel.AppraisalDate" Placeholder="Select a taxation date..." ShowTodayButton="false" Format="dd-MM-yyyy" />
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["renovation_costs"]" Required="false"/>
+                                <SfNumericTextBox class="form-control form-control-lg form-control-solid" Format="$ ###.##" Placeholder="0.00" Decimals="2" @bind-Value="@updateModel.RenovationCosts"/>
+                                <ValidationMessage For="@(() => updateModel.RenovationCosts)"/>
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["renovation_date"]" Required="false"/>
+                                <SfDatePicker @bind-Value="@updateModel.RenovationDate" Placeholder="Select a renovation date..." ShowTodayButton="false" Format="dd-MM-yyyy" />
+                                <ValidationMessage For="@(() => updateModel.RenovationDate)"/>
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["market_value"]" Required="false"/>
+                                <SfNumericTextBox class="form-control form-control-lg form-control-solid"   Format="$ ###.##" Placeholder="0.00" Decimals="2"@bind-Value="@(updateModel.MarketValue)"/>
+                                <ValidationMessage For="@(() => updateModel.MarketValue)"/>
+                            </div>
+                            <div class="mb-5">
+                                <InputLabel Value="@localizer["ground_lease"]" Required="false"/>
+                                <InputNumber class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.GroundLease"/>
+                                <ValidationMessage For="@(() => updateModel.GroundLease)"/>
+                            </div>
+                        </ContentTemplate>
+                    </TabItem>
+                </TabItems>
+            </SfTab>
+
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Saving..." IdleText="Save" Icon="save" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+        private const string EntityName = "Woning";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public HouseViewModel Model { get; set; } = null!;
+
+    private HouseUpdateModel updateModel = null!;
+    private bool isSubmitting;
+    private readonly string[] houseTypes = Enum.GetNames<HouseType>();
+    private IList<ComplexViewModel> complexes = new List<ComplexViewModel>();
+    private IList<NeighborhoodViewModel> neighborhoods = new List<NeighborhoodViewModel>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        updateModel = mapper.Map<HouseUpdateModel>(Model);
+        complexes = await complexRepository.GetAll();
+        neighborhoods = await neighborhoodRepository.GetAll();
+    }
+
+    private async Task Update()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await repository.Update(updateModel);
+            toastService.ShowUpdated(EntityName);
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

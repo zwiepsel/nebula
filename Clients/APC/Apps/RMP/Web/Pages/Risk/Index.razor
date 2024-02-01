@@ -1,0 +1,157 @@
+﻿@page "/risk"
+
+@inject AppState appState
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navigationManager
+@inject IModalService modalService
+@inject RiskRepository riskRepository
+
+<Page ContainerSize="fluid">
+    <PageHeader>
+        <Header Title="Risks" Icon="exclamation-triangle"></Header>
+    </PageHeader>
+    <PageSubHeader>
+        <SubHeader>
+            <Toolbar>
+                <SpinnerButton Loading="false" IdleText="New risk" LoadingText="Creating..." Size="sm" Icon="plus" Color="light-primary" Margins="false" Method="@ShowCreateModal"/>
+            </Toolbar>
+        </SubHeader>
+    </PageSubHeader>
+    <PageBody>
+        <Spinner Loading="@initializing" Mode="@SpinnerMode.Overlay">
+            <div class="d-flex flex-column flex-lg-row">
+                <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-8 mb-lg-0 me-lg-8 me-4 sticky-filter-panel">
+                    <RiskIndexFilters Grid="@grid" GridCreated="@gridCreated"/>
+                </div>
+                <div class="flex-lg-row-fluid">
+                    <div class="card pb-4 h-100">
+                        <SfGrid @ref="@grid" ID="risk-overview-grid" DataSource="@risks" Height="100%" AllowSorting="true" AllowFiltering="true" AllowPaging="true">
+                            <GridEvents RowSelected="@ShowRisk" Created="@SetCreated" TValue="RiskIndexViewModel"/>
+                            <GridPageSettings PageSize="25"/>
+                            <GridTemplates>
+                                <EmptyRecordTemplate>
+                                    @if (risks!.Any())
+                                    {
+                                        <div class="card-px text-center py-6 my-10">
+                                            <h2 class="fs-2x fw-bolder mb-10">No results found</h2>
+                                            <p class="text-gray-400 fs-4 fw-bold mb-7">
+                                                There are no results available based on your filter criteria.
+                                            </p>
+                                            <img class="mw-100 mh-200px" alt="" src="/dist/img/empty.svg"/>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="card-px text-center py-6 my-10">
+                                            <h2 class="fs-2x fw-bolder mb-10">Welcome!</h2>
+                                            <p class="text-gray-400 fs-4 fw-bold mb-7">
+                                                There are no risks added yet.
+                                            </p>
+                                            <img class="mw-100 mh-200px" alt="" src="/dist/img/empty.svg"/>
+                                            <br/>
+                                            <button @onclick="@ShowCreateModal" class="mt-7 btn btn-primary">Add new risk</button>
+                                        </div>
+                                    }
+                                </EmptyRecordTemplate>
+                            </GridTemplates>
+                            <GridColumns>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.Id)" HeaderText="ID" Width="75"></GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.InherentRiskScore)" HeaderText="Inherent risk" Width="120">
+                                    <Template Context="risk">
+                                        <RiskScore Score="@(((RiskIndexViewModel)risk).InherentRiskScore)" FontSize="6"/>
+                                    </Template>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.ResidualRiskScore)" HeaderText="Residual risk" Width="120">
+                                    <Template Context="risk">
+                                        <RiskScore Score="@(((RiskIndexViewModel)risk).ResidualRiskScore)" FontSize="6"/>
+                                    </Template>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.Name)" HeaderText="Title"></GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.Departments)" HeaderText="Department">
+                                    <Template Context="risk">
+                                        @{
+                                            foreach (var department in ((RiskIndexViewModel)risk).Departments)
+                                            {
+                                                <span class="badge badge-light fw-bolder me-2">@department.Name</span>
+                                            }
+                                        }
+                                    </Template>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.Status)" HeaderText="Status" Width="125">
+                                    <Template Context="risk">
+                                        @{
+                                            switch (((RiskIndexViewModel)risk).Status)
+                                            {
+                                                case RiskStatus.NotStarted:
+                                                    <span class="badge badge-light fw-bolder px-4 py-3">To do</span>
+                                                    break;
+                                                case RiskStatus.InProgress:
+                                                    <span class="badge badge-light-info fw-bolder px-4 py-3">In progress</span>
+                                                    break;
+                                                case RiskStatus.Done:
+                                                    <span class="badge badge-light-success fw-bolder px-4 py-3">Done</span>
+                                                    break;
+                                            }
+                                        }
+                                    </Template>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.UpdatedAt)" HeaderText="Updated at" Width="180">
+                                    <Template Context="risk">
+                                        @(((RiskIndexViewModel)risk).UpdatedAt.FormatDateTime())
+                                    </Template>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.DepartmentsFilter)" Visible="false"></GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.ProcessId)" Visible="false"></GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.RiskScoreType)" Visible="false"></GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.CosoId)" Visible="false"></GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.FirmId)" Visible="false"></GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.UpdatedAtFilterFrom)" Visible="false"></GridColumn>
+                                <GridColumn Field="@nameof(RiskIndexViewModel.UpdatedAtFilterTo)" Visible="false"></GridColumn>
+                            </GridColumns>
+                        </SfGrid>
+                    </div>
+                </div>
+            </div>
+        </Spinner>
+    </PageBody>
+</Page>
+
+@code {
+
+    private SfGrid<RiskIndexViewModel>? grid;
+    private IList<RiskIndexViewModel>? risks;
+    private bool initializing;
+    private bool gridCreated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        initializing = true;
+        risks = await riskRepository.GetAllIndex();
+        initializing = false;
+
+        StateHasChanged();
+    }
+
+    private void ShowRisk(RowSelectEventArgs<RiskIndexViewModel> args)
+    {
+        navigationManager.NavigateTo($"/risk/{args.Data.Id}/edit");
+    }
+
+    private void SetCreated()
+    {
+        gridCreated = true;
+    }
+
+    private async Task ShowCreateModal()
+    {
+        var modal = modalService.Show<RiskCreateModal>("New risk");
+        var result = await modal.Result;
+
+        if (!result.Cancelled && risks != null)
+        {
+            var risk = (RiskViewModel)result.Data;
+            navigationManager.NavigateTo($"/risk/{risk.Id}/edit");
+        }
+    }
+
+}

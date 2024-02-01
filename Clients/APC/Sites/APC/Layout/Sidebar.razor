@@ -1,0 +1,9 @@
+﻿@inject AppState appState
+
+<Nebula.Shared.Clients.Layout.Sidebar Title="@appState.Site.Name">
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/" Name="Dashboard" Icon="analytics"/>
+    @foreach (var app in appState.Site.Apps)
+    {
+        <Nebula.Shared.Clients.Layout.SidebarItem Uri="@app.NavigationPath" Name="@app.DisplayName" Icon="@app.Icon" Match="@NavLinkMatch.Prefix"/>
+    }
+</Nebula.Shared.Clients.Layout.Sidebar>

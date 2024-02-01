@@ -1,0 +1,91 @@
+﻿@inject IToastService toastService
+@inject IMapper mapper
+@inject UserRepository repository
+@inject RoleRepository roleRepository
+
+<Spinner Loading="@(isInitializing)" Mode="@SpinnerMode.Overlay">
+    <EditForm Model="@updateModel" OnValidSubmit="@Update" class="form w-100">
+        <FluentValidationValidator/>
+        <Modal>
+            <ModalSubTitle>Edit an existing @EntityName.ToLower()</ModalSubTitle>
+            <ModalBody>
+                <div class="mb-5">
+                    <InputLabel Value="Role" Required="true"/>
+                    <SfDropDownList @bind-Value="@updateModel.RoleId" TValue="int" TItem="RoleViewModel" Placeholder="Select a role..." AllowFiltering="true" DataSource="@roles">
+                        <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                    </SfDropDownList>
+                    <ValidationMessage For="@(() => updateModel.RoleId)"/>
+                </div>
+                @if (Model.IsInRole(CoreRoles.Administrator))
+                {
+                    <div class="mb-5">
+                        <InputLabel Value="Password"/>
+                        <InputTextField type="password" class="form-control form-control-lg form-control-solid" autocomplete="new-password" @bind-Value="@updateModel.Password"/>
+                        <div class="text-muted">Leave empty to keep the existing password.</div>
+                        <ValidationMessage For="@(() => updateModel.Password)"/>
+                    </div>
+                    <div class="mb-5">
+                        <InputLabel Value="Confirmation password"/>
+                        <InputTextField type="password" class="form-control form-control-lg form-control-solid" autocomplete="new-password" @bind-Value="@updateModel.ConfirmationPassword"/>
+                        <div class="text-muted">Leave empty to keep the existing password.</div>
+                        <ValidationMessage For="@(() => updateModel.ConfirmationPassword)"/>
+                    </div>
+                }
+            </ModalBody>
+            <ModalFooter>
+                <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Saving..." IdleText="Save" Icon="save" Size="md" Color="light-primary" Margins="false"/>
+            </ModalFooter>
+        </Modal>
+    </EditForm>
+</Spinner>
+
+@code
+{
+        private const string EntityName = "User";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public UserViewModel Model { get; set; } = null!;
+
+    private bool isInitializing;
+
+    private UserUpdateModel updateModel = null!;
+    private bool isSubmitting;
+
+    private IList<RoleViewModel> roles = new List<RoleViewModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        isInitializing = true;
+
+        updateModel = mapper.Map<UserUpdateModel>(Model);
+        roles = await roleRepository.GetCoreRoles();
+
+        isInitializing = false;
+    }
+
+    private async Task Update()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await repository.Update(updateModel);
+            toastService.ShowUpdated(EntityName);
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+}

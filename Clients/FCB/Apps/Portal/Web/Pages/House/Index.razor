@@ -1,0 +1,119 @@
+﻿@page "/house"
+
+@inject ILocalizer<Translations> localizer
+@inject NavigationManager navigationManager
+@inject HouseRepository houseRepository
+
+<DefaultCulture Culture="@(new CultureInfo("nl-NL"))"/>
+
+<Page ContainerSize="fluid">
+    <PageHeader>
+        <Header Title="@localizer["houses"]" Icon="home"></Header>
+    </PageHeader>
+    <PageBody>
+        <Spinner Loading="@(houseModels == null)" Mode="@SpinnerMode.Overlay">
+            <div class="d-flex flex-column flex-lg-row">
+                <div class="flex-lg-row-fluid">
+                    <div class="card">
+                        <div class="card-header border-0 pt-6">
+                            <div class="card-title">
+                                <div class="d-flex align-items-center position-relative my-1">
+                                    <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                        <i class="fal fa-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="@localizer["search"]" @bind-value="@searchText" @bind-value:event="oninput" @onkeyup="@(() => grid.Search(searchText))">
+                                </div>
+                            </div>
+                            <div class="card-toolbar">
+                                <div class="btn btn-light-primary me-3" @onclick="@(() => grid.OpenColumnChooser())">
+                                    <i class="fal fa-cog me-2"></i>@localizer["columns"]
+                                </div>
+                                <SpinnerButton Loading="@exporting" LoadingText="@localizer["exporting"]" IdleText="@localizer["export"]" Icon="file-export" Color="light-primary" Method="@Export"/>
+                            </div>
+                        </div>
+                        <div class="card-body px-10 py-0">
+                            <SfGrid @ref="@grid" DataSource="@houseModels" AllowSorting="true" AllowPaging="true" ShowColumnChooser="true" AllowExcelExport="true">
+                                <GridEvents RowSelected="@ShowHouse" TValue="HouseIndexViewModel"></GridEvents>
+                                <GridTemplates>
+                                    <EmptyRecordTemplate>
+                                        @if (houseModels!.Any())
+                                        {
+                                            <div class="card-px text-center py-6 my-10">
+                                                <h2 class="fs-2x fw-bolder mb-10">@localizer["no_results"]</h2>
+                                                <p class="text-gray-400 fs-4 fw-bold mb-7">
+                                                    @localizer["no_results_description"]
+                                                </p>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="card-px text-center py-6 my-10">
+                                                <h2 class="fs-2x fw-bolder mb-10">@localizer["no_data"]</h2>
+                                                <p class="text-gray-400 fs-4 fw-bold mb-7">
+                                                    @localizer["no_data_description"]
+                                                </p>
+                                            </div>
+                                        }
+                                    </EmptyRecordTemplate>
+                                </GridTemplates>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.Address)" HeaderText="@localizer["address"]"/>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.TenantFullName)" HeaderText="@localizer["full_name"]"/>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.Rented)" HeaderText="Status">
+                                        <Template>
+                                            @(((HouseIndexViewModel)context).Rented ? localizer["rented"] : localizer["free"])
+                                        </Template>
+                                    </GridColumn>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.RentAmount)" HeaderText="@localizer["rent_amount"]">
+                                        <Template>
+                                            @(((HouseIndexViewModel)context).RentAmount.FormatMoney())
+                                        </Template>
+                                    </GridColumn>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.Code)" HeaderText="@localizer["code"]" Visible="false"/>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.NeighborhoodName)" HeaderText="@localizer["neighborhood"]" Visible="false"/>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.ComplexName)" HeaderText="@localizer["complex"]" Visible="false"/>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.NumberOfBedrooms)" HeaderText="@localizer["number_of_bedrooms"]" Visible="false"/>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.SquareMetersBvo)" HeaderText="@localizer["square_meters_bvo"]" Visible="false"/>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.SquareMetersGo)" HeaderText="@localizer["square_meters_go"]" Visible="false"/>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.SquareMetersFcb)" HeaderText="@localizer["square_meters_fcb"]" Visible="false"/>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.LandRegistryNumber)" HeaderText="@localizer["land_registry_number"]" Visible="false"/>
+                                    <GridColumn Field="@nameof(HouseIndexViewModel.MarketValue)" HeaderText="@localizer["market_value"]" Visible="false">
+                                        <Template>
+                                            @(((HouseIndexViewModel)context).MarketValue.FormatMoney())
+                                        </Template>
+                                    </GridColumn>
+                                </GridColumns>
+                            </SfGrid>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Spinner>
+    </PageBody>
+</Page>
+
+@code {
+
+    private SfGrid<HouseIndexViewModel> grid = null!;
+    private IList<HouseIndexViewModel>? houseModels;
+    private string? searchText;
+    private bool exporting;
+
+    protected override async Task OnInitializedAsync()
+    {
+        houseModels = await houseRepository.GetAllIndex();
+    }
+
+    private void ShowHouse(RowSelectEventArgs<HouseIndexViewModel> args)
+    {
+        navigationManager.NavigateTo($"/house/{args.Data.Id}/edit");
+    }
+
+    private async Task Export()
+    {
+        exporting = true;
+        await grid.ExcelExport();
+        exporting = false;
+    }
+
+}

@@ -1,0 +1,73 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject IMapper mapper
+@inject AppState appState
+@inject SiteSettingsPermissionRepository repository
+
+<Spinner Loading="@(isInitializing)" Mode="@SpinnerMode.Overlay">
+    <EditForm Model="@updateModel" OnValidSubmit="@Update" class="form w-100 change-password">
+        <FluentValidationValidator/>
+        <Modal>
+            <ModalSubTitle>Edit an existing @EntityName.ToLower()</ModalSubTitle>
+            <ModalBody>
+                <div class="mb-5">
+                    <InputLabel Value="Name" Required="true"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.Name"/>
+                    <ValidationMessage For="@(() => updateModel.Name)"/>
+                </div>
+            </ModalBody>
+            <ModalFooter>
+                <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Saving..." IdleText="Save" Icon="save" Size="md" Color="light-primary" Margins="false"/>
+            </ModalFooter>
+        </Modal>
+    </EditForm>
+</Spinner>
+
+@code
+{
+        private const string EntityName = "Permission";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public PermissionViewModel Model { get; set; } = null!;
+
+    private bool isInitializing;
+
+    private PermissionUpdateModel updateModel = null!;
+    private bool isSubmitting;
+
+    protected override void OnInitialized()
+    {
+        isInitializing = true;
+
+        updateModel = mapper.Map<PermissionUpdateModel>(Model);
+
+        isInitializing = false;
+    }
+
+    private async Task Update()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await repository.Update(appState.Site.Id, updateModel);
+            toastService.ShowUpdated(EntityName);
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

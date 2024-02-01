@@ -1,0 +1,95 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject SiteRepository repository
+@inject ClientRepository clientRepository
+
+<EditForm Model="@createModel" OnValidSubmit="@Create" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal>
+        <ModalSubTitle>Create a new @EntityName.ToLower()</ModalSubTitle>
+        <ModalBody>
+            <div class="mb-5">
+                <InputLabel Value="Name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Name"/>
+                <ValidationMessage For="@(() => createModel.Name)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="System name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.SystemName"/>
+                <ValidationMessage For="@(() => createModel.SystemName)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Host" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Host"/>
+                <ValidationMessage For="@(() => createModel.Host)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Port"/>
+                <InputNumber class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Port"/>
+                <ValidationMessage For="@(() => createModel.Port)"/>
+            </div>
+            <div class="mb-5">
+                <div class="form-check form-switch form-check-custom form-check-solid justify-content-between px-0">
+                    <label class="form-check-label fw-bolder ms-0" for="@nameof(createModel.AllowPublicRegistration)">
+                        Allow public registration
+                    </label>
+                    <InputCheckbox class="form-check-input" id="@nameof(createModel.AllowPublicRegistration)" @bind-Value="@createModel.AllowPublicRegistration"/>
+                </div>
+                <div class="text-muted">Allow public registration on this site.</div>
+                <ValidationMessage For="@(() => createModel.AllowPublicRegistration)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Client" Required="true"/>
+                <SfDropDownList @bind-Value="@createModel.ClientId" TValue="int" TItem="ClientViewModel" Placeholder="Select a client..." AllowFiltering="true" DataSource="@clients">
+                    <DropDownListFieldSettings Text="Name" Value="Id"/>
+                </SfDropDownList>
+                <ValidationMessage For="@(() => createModel.ClientId)"/>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Creating..." IdleText="Create" Icon="plus" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+
+        private const string EntityName = "Site";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    private bool isSubmitting;
+    private readonly SiteCreateModel createModel = new();
+    private IList<ClientViewModel>? clients;
+
+    protected override async Task OnInitializedAsync()
+    {
+        clients = await clientRepository.GetAll();
+    }
+
+    private async Task Create()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await repository.Create(createModel);
+            toastService.ShowCreated(EntityName);
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

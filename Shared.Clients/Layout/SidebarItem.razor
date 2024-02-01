@@ -1,0 +1,27 @@
+﻿<div class="menu-item">
+    <NavLink class="menu-link m-0" href="@Uri" Match="@Match">
+        <span class="menu-icon">
+            <i class="fal fa-lg fa-fw fa-@Icon"></i>
+        </span>
+        <div class="tool-tip right">
+            <span class="tooltiptext">@Name</span>
+        </div>
+        <span class="menu-title">@Name</span>
+    </NavLink>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Uri { get; set; } = null!;
+
+    [Parameter]
+    public string Name { get; set; } = null!;
+
+    [Parameter]
+    public string Icon { get; set; } = null!;
+
+    [Parameter]
+    public NavLinkMatch Match { get; set; } = NavLinkMatch.All;
+
+}

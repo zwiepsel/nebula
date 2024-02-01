@@ -1,0 +1,24 @@
+﻿@inject AppState appState
+@inject NavigationManager navigationManager
+
+@code {
+
+    [Parameter]
+    public CultureInfo Culture { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!await appState.HasConfiguredCulture())
+        {
+            var currentCulture = await appState.GetCurrentCulture();
+
+            if (currentCulture.Name != Culture.Name)
+            {
+                await appState.SetCurrentCulture(Culture);
+                navigationManager.NavigateTo(navigationManager.Uri, true);
+                await Task.Delay(int.MaxValue);
+            }
+        }
+    }
+
+}

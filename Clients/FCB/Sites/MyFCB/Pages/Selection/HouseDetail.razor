@@ -1,0 +1,132 @@
+﻿@layout PublicLayout
+
+@inject IModalService modalService
+
+@page "/house-detail"
+
+<SitePageTitle Title="house detail" />
+
+@attribute [Authorize(Policy = SiteRequirement.Name)]
+
+<header class="fixed-top">
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <a class="navbar-brand">
+                <img src="/dist/img/logos/mijn fcb/logo.svg" alt="" class="logo"/>
+            </a>
+            <div class="flex-shrink-0">
+                <ul class="table-action my-account-menu mt-5">
+                    <li class="btn btn-sm btn-light-primary">
+                        <i class="fas fa-lg fa-user-circle"></i><span> My account</span>
+                        <ul class="dropdownmenu">
+                            <li class="p-4">Change password</li>
+                            <li class="p-4">Logout</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="full-width-slider">
+    <div class="container-fluid p-0">
+        <Slider>
+            <SliderItem ImgSrc="https://i.imgur.com/rIjCLS3.jpeg" AltText="Woning 1" />
+            <SliderItem ImgSrc="https://i.imgur.com/wjLnNoo.jpeg" AltText="Woning 2" />
+            <SliderItem ImgSrc="https://i.imgur.com/CMHPMy9.jpeg" AltText="Woning 3" />
+            <SliderItem ImgSrc="https://i.imgur.com/oqDhOuo.jpeg" AltText="Woning 4" />
+            <SliderItem ImgSrc="https://i.imgur.com/jlAhwfz.jpeg" AltText="Woning 5" />
+            <SliderItem ImgSrc="https://i.imgur.com/dmzOXhB.jpeg" AltText="Woning 6" />
+        </Slider>
+    </div>
+</section>
+
+<section class="bg-white pt-4 pb-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Mijn FCB</a></li>
+                    <li class="breadcrumb-item"><a href="#">Huurwoning aanbod</a></li>
+                    <li class="breadcrumb-item active">Rinconweg 45B</li>
+                  </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container pt-8">
+        <div class="d-md-flex justify-content-between mb-4">
+           <div class="pe-9">
+                <h1 class="mb-3">Rinconweg 45B</h1>
+                <ul class="house-attributes clearfix">
+                   <li>
+                      <i class="fas fa-bed"></i>
+                      <span class="">3 kamers</span>
+                   </li>
+                   <li>
+                      <i class="fas fa-map-marked"></i>
+                      <span class="">Tera Kora</span>
+                   </li>
+                   <li>
+                      <i class="fas fa-ruler-combined"></i>
+                      <span class="">75m2</span>
+                   </li>
+                </ul>
+              <p>Gelegen in Rincon ligt deze bijzondere en opvallende woning. Deze woning heeft een woonoppervlakte van 75m2 en is voorzien van 3 kamer(s). De opleverstaat van deze woning is kaal.</p>
+              <p>Vivamus aliquet nec tortor non consequat. Nulla tristique metus mi, quis commodo enim fringilla quis. Aenean fermentum pharetra leo, sit amet finibus metus facilisis et. Vestibulum euismod blandit augue, at rutrum ipsum volutpat tincidunt. Proin pulvinar orci et magna tristique, eget feugiat sapien ultricies. Morbi gravida nisl vitae venenatis convallis.</p>
+           </div>
+            <div class="flex-shrink-0">
+               <button class="mb-8 btn btn-sm btn-light-primary me-auto" @onclick="@(ShowHouseApplyModal)">Reageren op deze woning</button>
+                <div class="card bg-body card-xl-stretch">
+                    <div class="card-body text-center">
+                        <div class="fw-bold">Huur per maand</div>
+                        <div class="price-tag mt-4 mb-4"><span class="dollar">$</span><span class="net-wage-full"><span class="full">250</span>,<span class="cents">00</span></span></div>
+                        <span class="text-gray-400 fst-italic">Eenmalig borg: $250</span>
+                    </div>
+                </div>
+                <span @onclick="@(ShowHouseAppliedModal)">Click hier voor end confirmation</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="footer">
+    <div class="row w-100">
+        <div class="col-12 p-6 text-center">
+            <span class="text-muted font-weight-bold mr-2">@DateTime.Now.Year © Fundashon Cas Bonairiano</span>
+        </div>
+    </div>
+</section>
+
+
+@code {
+    public class Gender
+    {  
+        public string ID { get; set; }
+        public string Text { get; set; }
+    }
+
+    List<Gender> LocalData = new List<Gender> { 
+        new Gender() { ID= "male", Text= "Man" },
+        new Gender() { ID= "female", Text= "Vrouw" },
+    };
+
+    private void ShowHouseApplyModal()
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("HouseName", "Rinconweg 88D");
+        modalService.Show<HouseApplyModal>("Reageren op", modalParameters);
+    }
+    
+    private void ShowHouseAppliedModal()
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("HouseName", "Rinconweg 88D");
+        modalService.Show<HouseAppliedModal>("Uw aanvraag is ingediend", modalParameters);
+    }
+}

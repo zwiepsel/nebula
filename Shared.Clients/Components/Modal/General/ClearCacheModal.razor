@@ -1,0 +1,46 @@
+﻿@inject ILocalizer<Translations> localizer
+@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject AppState appState
+
+<Modal>
+    <ModalSubTitle>@localizer["clear_cache_confirmation"]</ModalSubTitle>
+    <ModalFooter>
+        <SpinnerButton Method="@Clear" Loading="@isSubmitting" LoadingText="@localizer["clearing_cache"]" IdleText="@localizer["clear_cache"]" Icon="retweet" Size="md" Color="light-danger" Margins="false"/>
+    </ModalFooter>
+</Modal>
+
+@code
+{
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private bool isSubmitting;
+
+    private async Task Clear()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            await appState.Clear();
+        }
+        catch (Exception)
+        {
+            await Modal.CancelAsync();
+            toastService.ShowUnexpectedError();
+        }
+
+        navigationManager.NavigateTo("/", true);
+    }
+
+}

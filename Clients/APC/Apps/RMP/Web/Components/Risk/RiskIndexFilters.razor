@@ -1,0 +1,430 @@
+﻿@* ReSharper disable Html.IdNotResolved *@
+
+@inject DepartmentRepository departmentRepository
+@inject ProcessRepository processRepository
+@inject CosoRepository cosoRepository
+@inject FirmRepository firmRepository
+
+<div class="card filter-container">
+    <div class="card-header align-items-center border-0 mt-1">
+        <h3 class="card-title align-items-start flex-column">
+            <span class="fw-bold font-size-14px">Filters</span>
+        </h3>
+        <div class="card-toolbar">
+            @if (HasFilters())
+            {
+                <button class="btn btn-sm btn-light w-100" @onclick="@ClearFilters">Clear filters</button>
+            }
+        </div>
+    </div>
+    <div class="card-body card-scroll">
+        <Spinner Loading="@initializing" Mode="@SpinnerMode.AbsoluteCentered">
+            <div class="p-4">
+                <div class="mb-5">
+                    <label class="my-4 form-label text-muted fw-bolder text-uppercase">Title</label>
+                    <RiskTitleFilter @bind-Value="@filterTitle" OnChange="@FilterTitle"/>
+                </div>
+                <div class="mb-5">
+                    <label class="my-4 form-label text-muted fw-bolder text-uppercase">Date</label>
+                    <SfDateRangePicker TValue="DateTime?" Placeholder="Select a date range" Format="dd-MMM-yyyy" @bind-StartDate="@startDate" @bind-EndDate="@endDate" @ref="@filterDate">
+                        <DateRangePickerEvents TValue="DateTime?" ValueChange="@FilterDate"/>
+                    </SfDateRangePicker>
+                </div>
+                <div class="mb-5">
+                    <label class="my-4 form-label text-muted fw-bolder text-uppercase">Status (@Enum.GetNames(typeof(RiskStatus)).Length)</label>
+                    <div class="form-check form-check-custom form-check-solid">
+                        @{
+                            var notStartedFilterCount = Grid?.DataSource.Count(item => item.Status == RiskStatus.NotStarted);
+                        }
+                        <input class="form-check-input" type="checkbox" id="risk-status-filter-@RiskStatus.NotStarted" @bind="@FilterByStatusNotStarted" disabled="@(notStartedFilterCount == 0)">
+                        <label class="form-check-label flex-grow-1" for="risk-status-filter-@RiskStatus.NotStarted">To do</label>
+                        <span class="text-gray-400 fw-bolder">@notStartedFilterCount</span>
+                    </div>
+                    <div class="form-check form-check-custom form-check-solid">
+                        @{
+                            var inProgressFilterCount = Grid?.DataSource.Count(item => item.Status == RiskStatus.InProgress);
+                        }
+                        <input class="form-check-input" type="checkbox" id="risk-status-filter-@RiskStatus.InProgress" @bind="@FilterByStatusInProgress" disabled="@(inProgressFilterCount == 0)">
+                        <label class="form-check-label flex-grow-1" for="risk-status-filter-@RiskStatus.InProgress">In progress</label>
+                        <span class="text-gray-400 fw-bolder">@inProgressFilterCount</span>
+                    </div>
+                    <div class="form-check form-check-custom form-check-solid">
+                        @{
+                            var doneFilterCount = Grid?.DataSource.Count(item => item.Status == RiskStatus.Done);
+                        }
+                        <input class="form-check-input" type="checkbox" id="risk-status-filter-@RiskStatus.Done" @bind="@FilterByStatusDone" disabled="@(doneFilterCount == 0)">
+                        <label class="form-check-label flex-grow-1" for="risk-status-filter-@RiskStatus.Done">Done</label>
+                        <span class="text-gray-400 fw-bolder">@doneFilterCount</span>
+                    </div>
+                </div>
+                @if (departments != null && departments.Any())
+                {
+                    <label class="my-4 form-label text-muted fw-bolder text-uppercase">Department (@departments.Count)</label>
+
+                    for (var i = 0; i < departments.Count; i++)
+                    {
+                        var departmentCount = i;
+                        var department = departments[departmentCount];
+                        var departmentFilterCount = Grid?.DataSource.Count(item => item.DepartmentsFilter.Contains(department.FilterHash));
+
+                        <div class="form-check form-check-custom form-check-solid">
+                            <input class="form-check-input" type="checkbox" id="department-filter-@department.Id" @bind="@filterDepartmentValues[departmentCount]" @onclick="@(() => FilterDepartment(department))" disabled="@(departmentFilterCount == 0)">
+                            <label class="form-check-label flex-grow-1" for="department-filter-@department.Id">@department.Name</label>
+                            <span class="text-gray-400 fw-bolder">@departmentFilterCount</span>
+                        </div>
+                    }
+                }
+                @if (processes != null && processes.Any())
+                {
+                    <label class="my-4 form-label text-muted fw-bolder text-uppercase">Process (@processes.Count)</label>
+                    <SfDropDownList @bind-Value="@filterProcessIdValue" TValue="int?" TItem="ProcessViewModel" Placeholder="Select a process..." AllowFiltering="true" DataSource="@processes">
+                        <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                        <DropDownListEvents TValue="int?" TItem="ProcessViewModel" ValueChange="@FilterProcess"></DropDownListEvents>
+                    </SfDropDownList>
+                }
+                @if (cosos != null && cosos.Any())
+                {
+                    <label class="my-4 form-label text-muted fw-bolder text-uppercase">COSO (@cosos.Count)</label>
+
+                    for (var i = 0; i < cosos.Count; i++)
+                    {
+                        var cosoCount = i;
+                        var coso = cosos[cosoCount];
+                        var cosoFilterCount = Grid?.DataSource.Count(item => item.CosoId == coso.Id);
+
+                        <div class="form-check form-check-custom form-check-solid">
+                            <input class="form-check-input" type="checkbox" id="coso-filter-@coso.Id" @bind="@filterCosoValues[cosoCount]" @onclick="@(() => FilterCoso(coso))" disabled="@(cosoFilterCount == 0)">
+                            <label class="form-check-label flex-grow-1" for="coso-filter-@coso.Id">@coso.Name</label>
+                            <span class="text-gray-400 fw-bolder">@cosoFilterCount</span>
+                        </div>
+                    }
+                }
+                @if (firms != null && firms.Any())
+                {
+                    <label class="my-4 form-label text-muted fw-bolder text-uppercase">FIRM (@firms.Count)</label>
+
+                    for (var i = 0; i < firms.Count; i++)
+                    {
+                        var firmCount = i;
+                        var firm = firms[firmCount];
+                        var firmFilterCount = Grid?.DataSource.Count(item => item.FirmId == firm.Id);
+
+                        <div class="form-check form-check-custom form-check-solid">
+                            <input class="form-check-input" type="checkbox" id="firm-filter-@firm.Id" @bind="@filterFirmValues[firmCount]" @onclick="@(() => FilterFirm(firm))" disabled="@(firmFilterCount == 0)">
+                            <label class="form-check-label flex-grow-1" for="firm-filter-@firm.Id">@firm.Name</label>
+                            <span class="text-gray-400 fw-bolder">@firmFilterCount</span>
+                        </div>
+                    }
+                }
+            </div>
+        </Spinner>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public SfGrid<RiskIndexViewModel>? Grid { get; set; }
+
+    [Parameter]
+    public bool GridCreated { get; set; }
+
+    private bool initializing;
+
+    private string? filterTitle;
+    private SfDateRangePicker<DateTime?> filterDate = null!;
+
+    private IList<DepartmentViewModel>? departments;
+    private IList<ProcessViewModel>? processes;
+    private IList<CosoViewModel>? cosos;
+    private IList<FirmViewModel>? firms;
+
+    private IList<bool> filterDepartmentValues = new List<bool>();
+    private IList<bool> filterCosoValues = new List<bool>();
+    private IList<bool> filterFirmValues = new List<bool>();
+
+    private readonly IList<RiskStatus> filterStatusValues = new List<RiskStatus>();
+    private IList<string> filterDepartmentHashValues = new List<string>();
+    private int? filterProcessIdValue;
+    private IList<int> filterCosoIdValues = new List<int>();
+    private IList<int> filterFirmIdValues = new List<int>();
+
+    private DateTime? startDate;
+    private DateTime? endDate;
+
+    private bool filterByStatusNotStarted;
+    private bool filterByStatusInProgress;
+    private bool filterByStatusDone;
+
+    private bool filtersLoaded;
+
+    private bool FilterByStatusNotStarted
+    {
+        get => filterByStatusInProgress;
+        set
+        {
+            filterByStatusInProgress = value;
+#pragma warning disable 4014
+            FilterStatus();
+#pragma warning restore 4014
+        }
+    }
+
+    private bool FilterByStatusInProgress
+    {
+        get => filterByStatusNotStarted;
+        set
+        {
+            filterByStatusNotStarted = value;
+#pragma warning disable 4014
+            FilterStatus();
+#pragma warning restore 4014
+        }
+    }
+
+    private bool FilterByStatusDone
+    {
+        get => filterByStatusDone;
+        set
+        {
+            filterByStatusDone = value;
+#pragma warning disable 4014
+            FilterStatus();
+#pragma warning restore 4014
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        initializing = true;
+        departments = (await departmentRepository.GetAll()).OrderBy(department => department.Name).ToList();
+        processes = (await processRepository.GetAll()).OrderBy(process => process.Name).ToList();
+        cosos = (await cosoRepository.GetAll()).OrderBy(coso => coso.Name).ToList();
+        firms = (await firmRepository.GetAll()).OrderBy(firm => firm.Name).ToList();
+
+        for (var i = 0; i < departments.Count; i++)
+        {
+            filterDepartmentValues.Add(false);
+        }
+        for (var i = 0; i < cosos.Count; i++)
+        {
+            filterCosoValues.Add(false);
+        }
+        for (var i = 0; i < firms.Count; i++)
+        {
+            filterFirmValues.Add(false);
+        }
+
+        initializing = false;
+
+        StateHasChanged();
+    }
+
+    private async Task FilterTitle()
+    {
+        await Grid!.ClearFiltering(nameof(RiskIndexViewModel.Name));
+
+        if (filterTitle != null && filterTitle.Length >= 3)
+        {
+            await Grid!.FilterByColumn(nameof(RiskIndexViewModel.Name), "contains", filterTitle);
+        }
+    }
+
+    private async Task FilterDate()
+    {
+        if (startDate != null && endDate != null)
+        {
+            var filterStartDate = startDate.Value.StartOfDay().FormatDateTime(false);
+            var filterEndDate = endDate.Value.EndOfDay().FormatDateTime(false);
+
+            await Grid!.ClearFiltering(nameof(RiskIndexViewModel.UpdatedAtFilterFrom));
+            await Grid!.ClearFiltering(nameof(RiskIndexViewModel.UpdatedAtFilterTo));
+            await Grid!.FilterByColumn(nameof(RiskIndexViewModel.UpdatedAtFilterFrom), "greaterthanorequal", filterStartDate);
+            await Grid!.FilterByColumn(nameof(RiskIndexViewModel.UpdatedAtFilterTo), "lessthanorequal", filterEndDate);
+        }
+    }
+
+    private async Task FilterStatus()
+    {
+        if (FilterByStatusNotStarted && !filterStatusValues.Contains(RiskStatus.NotStarted))
+        {
+            filterStatusValues.Add(RiskStatus.NotStarted);
+        }
+        else if (!FilterByStatusNotStarted && filterStatusValues.Contains(RiskStatus.NotStarted))
+        {
+            filterStatusValues.Remove(RiskStatus.NotStarted);
+        }
+
+        if (FilterByStatusInProgress && !filterStatusValues.Contains(RiskStatus.InProgress))
+        {
+            filterStatusValues.Add(RiskStatus.InProgress);
+        }
+        else if (!FilterByStatusInProgress && filterStatusValues.Contains(RiskStatus.InProgress))
+        {
+            filterStatusValues.Remove(RiskStatus.InProgress);
+        }
+
+        if (FilterByStatusDone && !filterStatusValues.Contains(RiskStatus.Done))
+        {
+            filterStatusValues.Add(RiskStatus.Done);
+        }
+        else if (!FilterByStatusDone && filterStatusValues.Contains(RiskStatus.Done))
+        {
+            filterStatusValues.Remove(RiskStatus.Done);
+        }
+
+        await Grid!.ClearFiltering(nameof(RiskIndexViewModel.Status));
+        await Grid!.FilterByColumn(nameof(RiskIndexViewModel.Status), "contains", filterStatusValues);
+    }
+
+    private async Task FilterDepartment(DepartmentViewModel department)
+    {
+        if (!filterDepartmentHashValues.Contains(department.FilterHash))
+        {
+            filterDepartmentHashValues.Add(department.FilterHash);
+        }
+        else
+        {
+            filterDepartmentHashValues.Remove(department.FilterHash);
+        }
+
+        await Grid!.ClearFiltering(nameof(RiskIndexViewModel.DepartmentsFilter));
+        await Grid!.FilterByColumn(nameof(RiskIndexViewModel.DepartmentsFilter), "contains", filterDepartmentHashValues);
+    }
+
+    private async Task FilterProcess()
+    {
+        await Grid!.ClearFiltering(nameof(RiskIndexViewModel.ProcessId));
+        await Grid!.FilterByColumn(nameof(RiskIndexViewModel.ProcessId), "equal", filterProcessIdValue);
+    }
+
+    private async Task FilterCoso(CosoViewModel coso)
+    {
+        if (!filterCosoIdValues.Contains(coso.Id))
+        {
+            filterCosoIdValues.Add(coso.Id);
+        }
+        else
+        {
+            filterCosoIdValues.Remove(coso.Id);
+        }
+
+        await Grid!.ClearFiltering(nameof(RiskIndexViewModel.CosoId));
+        await Grid!.FilterByColumn(nameof(RiskIndexViewModel.CosoId), "contains", filterCosoIdValues);
+    }
+
+    private async Task FilterFirm(FirmViewModel firm)
+    {
+        if (!filterFirmIdValues.Contains(firm.Id))
+        {
+            filterFirmIdValues.Add(firm.Id);
+        }
+        else
+        {
+            filterFirmIdValues.Remove(firm.Id);
+        }
+
+        await Grid!.ClearFiltering(nameof(RiskIndexViewModel.FirmId));
+        await Grid!.FilterByColumn(nameof(RiskIndexViewModel.FirmId), "contains", filterFirmIdValues);
+    }
+
+    private async Task ClearFilters()
+    {
+        for (var i = 0; i < filterDepartmentValues.Count; i++)
+        {
+            filterDepartmentValues[i] = false;
+        }
+        for (var i = 0; i < filterCosoValues.Count; i++)
+        {
+            filterCosoValues[i] = false;
+        }
+        for (var i = 0; i < filterFirmValues.Count; i++)
+        {
+            filterFirmValues[i] = false;
+        }
+
+        filterTitle = null;
+        startDate = null;
+        endDate = null;
+        FilterByStatusNotStarted = false;
+        FilterByStatusInProgress = false;
+        FilterByStatusDone = false;
+        filterDepartmentHashValues = new List<string>();
+        filterProcessIdValue = null;
+        filterCosoIdValues = new List<int>();
+        filterFirmIdValues = new List<int>();
+
+        await Grid!.ClearFiltering();
+        Grid!.Refresh();
+    }
+
+    private bool HasFilters()
+    {
+        return !filterTitle.IsNullOrEmpty() && filterTitle!.Length >= 3 ||
+               startDate != null ||
+               endDate != null ||
+               filterDepartmentValues.Any(value => value) ||
+               filterCosoValues.Any(value => value) ||
+               filterFirmValues.Any(value => value) ||
+               filterProcessIdValue != null ||
+               filterCosoIdValues.Any() ||
+               filterFirmIdValues.Any() ||
+               FilterByStatusNotStarted ||
+               FilterByStatusInProgress ||
+               FilterByStatusDone;
+    }
+
+    private void HandleInitialFilterValues()
+    {
+        if (Grid!.FilterSettings.Columns != null)
+        {
+            var gridFilterColumns = Grid!.FilterSettings.Columns.ToList();
+
+            foreach (var gridFilterColumn in gridFilterColumns)
+            {
+                switch (gridFilterColumn.Field)
+                {
+                    case nameof(RiskIndexViewModel.Name):
+                        filterTitle = gridFilterColumn.Value.ToString();
+                        break;
+                    case nameof(RiskIndexViewModel.UpdatedAtFilterFrom):
+                        startDate = DateTime.Parse(gridFilterColumn.Value.ToString()!);
+                        break;
+                    case nameof(RiskIndexViewModel.UpdatedAtFilterTo):
+                        endDate = DateTime.Parse(gridFilterColumn.Value.ToString()!);
+                        break;
+                    case nameof(RiskIndexViewModel.Status):
+                        switch ((RiskStatus)gridFilterColumn.Value)
+                        {
+                            case RiskStatus.NotStarted:
+                                FilterByStatusNotStarted = true;
+                                break;
+                            case RiskStatus.InProgress:
+                                FilterByStatusInProgress = true;
+                                break;
+                            case RiskStatus.Done:
+                                FilterByStatusDone = true;
+                                break;
+                        }
+                        break;
+                    case nameof(RiskIndexViewModel.DepartmentsFilter):
+                        var departmentIndex = departments!.FindIndex(d => d.FilterHash == gridFilterColumn.Value.ToString());
+                        filterDepartmentValues[departmentIndex] = true;
+                        break;
+                    case nameof(RiskIndexViewModel.ProcessId):
+                        filterProcessIdValue = int.Parse(gridFilterColumn.Value.ToString()!);
+                        break;
+                    case nameof(RiskIndexViewModel.CosoId):
+                        var cosoIndex = cosos!.FindIndex(c => c.Id == int.Parse(gridFilterColumn.Value.ToString()!));
+                        filterCosoValues[cosoIndex] = true;
+                        break;
+                    case nameof(RiskIndexViewModel.FirmId):
+                        var firmIndex = firms!.FindIndex(c => c.Id == int.Parse(gridFilterColumn.Value.ToString()!));
+                        filterFirmValues[firmIndex] = true;
+                        break;
+                }
+            }
+        }
+    }
+
+}

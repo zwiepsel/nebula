@@ -1,0 +1,15 @@
+﻿@page "/admin"
+@attribute [Authorize(Policy = AdministratorRequirement.Name)]
+
+<AdminPage>
+    <PageSubHeader>
+        <SubHeader Title="Dashboard" Icon="analytics"/>
+    </PageSubHeader>
+    <PageBody>
+        <div class="card">
+            <div class="card-body">
+                <p class="mb-0">Nebula administration dashboard.</p>
+            </div>
+        </div>
+    </PageBody>
+</AdminPage>

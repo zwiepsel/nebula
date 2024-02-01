@@ -1,0 +1,294 @@
+﻿@inject ILocalizer<Translations> localizer
+@inject OnBoardingState onBoardingState
+@inject PublicClientRepository clientRepository;
+@inject PublicPersonRepository personRepository;
+@inject SecurityManager securityManager;
+@inject AppState appState;
+@inject IMapper mapper;
+
+<EditForm Model="@FamilyModel" OnValidSubmit="@NextStep" class="form w-100">
+    <FluentValidationValidator/>
+<div class="sign-in-bg-gradient d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed">
+    <div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
+        <div class="w-lg-1000px bg-white rounded shadow-sm p-10 p-lg-15 mx-auto">
+            <div class="stepper stepper-pills stepper-column d-flex flex-column flex-xl-row flex-row-fluid">
+                <div class="d-xl-flex justify-content-center justify-content-xl-start flex-row-auto w-100 w-xl-300px position-relative">
+                    <div class="stepper-nav d-none d-xl-block">
+                        <div class="stepper-item completed">
+                            <div class="stepper-line w-40px"></div>
+                            <div class="stepper-icon w-40px h-40px">
+                                <svg class="svg-inline--fa fa-check fa-w-16 stepper-check" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                    <path fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+                                </svg>
+                                <span class="stepper-number">1</span>
+                            </div>
+                            <div class="stepper-label">
+                                <h3 class="stepper-title">Upload sedula</h3>
+                            </div>
+                        </div>
+                        <div class="stepper-item completed">
+                            <div class="stepper-line w-40px"></div>
+                            <div class="stepper-icon w-40px h-40px">
+                                <svg class="svg-inline--fa fa-check fa-w-16 stepper-check" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                    <path fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+                                </svg>
+                                <span class="stepper-number">2</span>
+                            </div>
+                            <div class="stepper-label">
+                                <h3 class="stepper-title">@localizer["add_income"] </h3>
+                            </div>
+                        </div>
+                        <div class="stepper-item current">
+                            <div class="stepper-line w-40px"></div>
+                            <div class="stepper-icon w-40px h-40px">
+                                <svg class="svg-inline--fa fa-check fa-w-16 stepper-check" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                    <path fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+                                </svg>
+                                <span class="stepper-number">3</span>
+                            </div>
+                            <div class="stepper-label">
+                                <h3 class="stepper-title">@localizer["family_situation"] </h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="steps w-100 d-xl-none">
+                        <ul class="">
+                            <li role="tab" aria-disabled="false" class="first checked">
+                                <a
+                                    id="wizard-t-0" href="#wizard-h-0" aria-controls="wizard-p-0"><span
+                                                                                                      class="current-info audible">current step: </span><span class="number">1.</span> </a>
+                            </li>
+                            <li role="tab" aria-disabled="false" class="checked" aria-selected="false"><a id="wizard-t-1"
+                                                                                                          href="#wizard-h-1"
+                                                                                                          aria-controls="wizard-p-1"><span
+                                                                                                                                         class="number">2.</span> </a></li>
+                            <li role="tab" aria-disabled="false" class="last current"><a id="wizard-t-2"
+                                                                                         href="#wizard-h-2"
+                                                                                         aria-controls="wizard-p-2"><span
+                                                                                                                        class="number">3.</span> </a></li>
+                        </ul>
+                    </div>
+                    <img src="/dist/img/mijn-fcb/family.svg" class="onboarding-illustration" alt=""/>
+                </div>
+                <div class="flex-row-fluid">
+                    <div class="current min-height-400-desktop">
+                        <div class="w-100 lh-lg">
+                            <h2 class="mb-4">@localizer["family_situation"] </h2>
+                            <!--Start loop-->
+                            <div>
+                                <h6 class="mt-5">@localizer["adult"]  </h6>
+                                <div class="card card-dashed p-6">
+                                    <div class="row fv-row">
+                                        <div class="col-xl-6 mb-7">
+                                            <label class="form-label fw-bolder text-dark fs-6">@localizer["first_name"] </label>
+                                            <input class="form-control form-control-solid" type="text" placeholder="" disabled @bind="@FamilyModel.MainContact.FirstName" name="firstName">
+                                            <ValidationMessage For="@(() => FamilyModel.MainContact.FirstName)"/>
+                                        </div>
+                                        <div class="col-xl-6 mb-7">
+                                            <label class="form-label fw-bolder text-dark fs-6">@localizer["last_name"] </label>
+                                            <input class="form-control form-control-solid" type="text" placeholder="" disabled  @bind="@FamilyModel.MainContact.LastName" name="LastName">
+                                            <ValidationMessage For="@(() => FamilyModel.MainContact.LastName)"/>
+                                        </div>
+                                    </div>
+                                    <div class="row fv-row">
+                                        <div class="col-xl-4 mb-7">
+                                            <label class="form-label fw-bolder text-dark fs-6">@localizer["date_of_birth"] </label>
+                                            <SfDatePicker TValue="DateTime?"  Value='@FamilyModel.MainContact.DateOfBirth' ShowTodayButton="false" disabled Min='@MinDate' Max='@DateTime.Now'></SfDatePicker>
+                                              <ValidationMessage For="@(() => FamilyModel.MainContact.DateOfBirth)"/>
+                                        </div>
+                                        <div class="col-xl-4 mb-7">
+                                            <label class="form-label fw-bolder text-dark fs-6">@localizer["gender"] </label>
+                                            <SfDropDownList TValue="Gender" TItem="string" Placeholder="Select an option..." disabled @bind-Value="@FamilyModel.MainContact.Gender" DataSource="@genders"/> 
+                                            <ValidationMessage For="@(() => FamilyModel.MainContact.Gender)"/>
+                                        </div>
+                                        <div class="col-xl-4 ps-1 pe-0 mb-7 d-flex align-items-end">
+                                            <label class="mb-2 form-check form-check-solid form-check-inline">
+                                                <input class="form-check-input" type="checkbox" @bind="@FamilyModel.MainContact.SchoolGoing" name="toc" value="1">
+                                                <span class="form-check-label fw-bold text-gray-700 fs-6">@localizer["schoolgoing"] </span>
+                                            </label> 
+                                        </div>
+                                    </div>
+                                </div>
+                                @foreach (PersonCreateModel adult in FamilyModel.Adults)
+                                {
+                                    <h6 class="mt-5">@localizer["adult"]  </h6>
+                                    <div class="card card-dashed p-6">
+                                        <div class="row fv-row">
+                                            <div class="col-xl-6 mb-7">
+                                                <label class="form-label fw-bolder text-dark fs-6">@localizer["first_name"] </label>
+                                                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@adult.FirstName"/>
+                                                <ValidationMessage For="@(() => adult.FirstName)"/>
+                                            </div>
+                                            <div class="col-xl-6 mb-7">
+                                                <label class="form-label fw-bolder text-dark fs-6">@localizer["last_name"] </label>
+                                                <input class="form-control form-control-solid" type="text" placeholder="" @bind="@adult.LastName" name="LastName">
+                                                <ValidationMessage For="@(() => adult.LastName)"/>
+                                            </div>
+                                        </div>
+                                        <div class="row fv-row">
+                                            <div class="col-xl-4 mb-7">
+                                                <label class="form-label fw-bolder text-dark fs-6">@localizer["date_of_birth"] </label>
+                                                <SfDatePicker TValue="DateTime?" Value='@adult.DateOfBirth' ShowTodayButton="false" Min='@MinDate' Max='@DateTime.Now'></SfDatePicker>
+                                                <ValidationMessage For="@(() => adult.DateOfBirth)"/>
+                                            </div>
+                                            <div class="col-xl-4 mb-7">
+                                                <label class="form-label fw-bolder text-dark fs-6">@localizer["gender"] </label>
+                                                <SfDropDownList TValue="Gender" TItem="string" Placeholder="Select an option..." disabled @bind-Value="@adult.Gender" DataSource="@genders"/>
+                                                <ValidationMessage For="@(() => adult.Gender)"/>
+                                            </div>
+                                            <div class="col-xl-4 ps-1 pe-0 mb-7 d-flex align-items-end">
+                                                <label class="mb-2 form-check form-check-solid form-check-inline">
+                                                    <input class="form-check-input" type="checkbox"  @bind="@adult.SchoolGoing" name="toc" value="1"> 
+                                                    <span class="form-check-label fw-bold text-gray-700 fs-6">@localizer["schoolgoing"] </span> 
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            @foreach (PersonCreateModel child in FamilyModel.Children)
+                            {
+                                <h6 class="mt-5">@localizer["child"]  </h6>
+                                <div class="card card-dashed p-6">
+                                    <div class="row fv-row">
+                                        <div class="col-xl-6 mb-7">
+                                            <label class="form-label fw-bolder text-dark fs-6">@localizer["first_name"] </label>
+                                            <input class="form-control form-control-solid" type="text" placeholder="" @bind="@child.FirstName" name="voornaam">
+                                                  <ValidationMessage For="@(() => child.FirstName)"/>
+                                        </div>
+                                        <div class="col-xl-6 mb-7">
+                                            <label class="form-label fw-bolder text-dark fs-6">@localizer["last_name"] </label>
+                                            <input class="form-control form-control-solid" type="text" placeholder="" @bind="@child.LastName"  name="achternaam">
+                                                  <ValidationMessage For="@(() => child.FirstName)"/>
+                                        </div>
+                                    </div>
+                                    <div class="row fv-row">
+                                        <div class="col-xl-4 mb-7">
+                                            <label class="form-label fw-bolder text-dark fs-6">@localizer["date_of_birth"] </label>
+                                            <SfDatePicker TValue="DateTime?" Value='@child.DateOfBirth' ShowTodayButton="false" Min='@MinDate' Max='@DateTime.Now'></SfDatePicker>
+                                                <ValidationMessage For="@(() => child.DateOfBirth)"/>
+                                        </div>
+                                        <div class="col-xl-4 mb-7">
+                                            <label class="form-label fw-bolder text-dark fs-6">@localizer["gender"] </label>
+                                            <SfDropDownList TValue="Gender" TItem="string" Placeholder="Select an option..." @bind-Value="@child.Gender" DataSource="@genders"/> 
+                                             <ValidationMessage For="@(() => child.Gender)"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <!--End loop-->
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end pt-10">
+                        <div class="me-2">
+                            <button @onclick="@PreviousStep"  type="button" class="btn btn-lg btn-link me-3">
+                                <span class="svg-icon svg-icon-3 me-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <rect opacity="0.5" x="6" y="11" width="13" height="2" rx="1" fill="black"></rect>
+                                        <path d="M8.56569 11.4343L12.75 7.25C13.1642 6.83579 13.1642 6.16421 12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75L5.70711 11.2929C5.31658 11.6834 5.31658 12.3166 5.70711 12.7071L11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25C13.1642 17.8358 13.1642 17.1642 12.75 16.75L8.56569 12.5657C8.25327 12.2533 8.25327 11.7467 8.56569 11.4343Z" fill="black"></path>
+                                    </svg>
+                                </span>
+                                @localizer["previous"] 
+                            </button>
+                        </div>
+                        <div>
+                            <button  type="submit" class="btn btn-lg btn-primary" >
+                                @localizer["complete"] 
+                                <span class="svg-icon svg-icon-3 ms-1 me-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <rect opacity="0.5" x="18" y="13" width="13" height="2" rx="1" transform="rotate(-180 18 13)" fill="black"></rect>
+                                        <path d="M15.4343 12.5657L11.25 16.75C10.8358 17.1642 10.8358 17.8358 11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25L18.2929 12.7071C18.6834 12.3166 18.6834 11.6834 18.2929 11.2929L12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75C10.8358 6.16421 10.8358 6.83579 11.25 7.25L15.4343 11.4343C15.7467 11.7467 15.7467 12.2533 15.4343 12.5657Z" fill="black"></path>
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</EditForm>
+
+
+@code {
+                
+    [Parameter]
+    public int Step { get; set; }
+    [Parameter]
+    public EventCallback<int> StepChanged { get; set; }
+
+    public List<PersonCreateModel> Adults { get; set; } = new();
+    public List<PersonCreateModel> Children { get; set; } = new();
+    public OnBoardingFamilyModel FamilyModel { get; set; } = new();
+    private readonly string[] genders = Enum.GetNames<Gender>(); 
+    private readonly RegisterUserModel registerUserModel = new(); 
+
+    protected override void OnInitialized()
+    {
+        FamilyModel.Adults = new List<PersonCreateModel>();
+        FamilyModel.Children = new List<PersonCreateModel>();
+        FamilyModel.MainContact = new();
+        for (var i = 0; i < onBoardingState.AdultQty -1; i++)
+        {
+            Adults.Add(new PersonCreateModel {DateOfBirth = DateTime.Now});
+        }
+        for (var i = 0; i < onBoardingState.ChildrenQty; i++)
+        {
+            Children.Add(new PersonCreateModel {DateOfBirth = DateTime.Now});
+        }
+        FamilyModel.Adults = Adults;
+
+        FamilyModel.Children = Children;
+        if (onBoardingState.PersonCreateModel != null) 
+        {
+            FamilyModel.MainContact = onBoardingState.PersonCreateModel;
+        }
+
+    }
+
+    private async Task NextStep()
+    {
+        onBoardingState.PublicRegisterModel!.SiteId = appState.Site.Id;
+        await securityManager.RegisterPublic(onBoardingState.PublicRegisterModel!);
+
+        await securityManager.SignInAsync(new SignInModel()
+        {
+            Password = onBoardingState.PublicRegisterModel!.Password,
+            EmailAddress = onBoardingState.PublicRegisterModel!.EmailAddress,
+            SiteId = appState.Site.Id
+        });
+
+        var clientToAdd = new ClientCreateModel()
+        {
+            Name = registerUserModel.FirstName + " " + registerUserModel.LastName,
+            Address = registerUserModel.Address,
+            PhoneNumber = registerUserModel.PhoneNumber,
+            ClientTypeId = 1,
+            ClientStatus = ClientStatus.Onboarding
+        };
+
+        var createdClient = await clientRepository.Create(clientToAdd);
+        FamilyModel.ClientId = createdClient.Id;
+        FamilyModel.Adults.Add(FamilyModel.MainContact);
+        await personRepository.CreatePersons(FamilyModel);
+        if (StepChanged.HasDelegate)
+        {
+            Step = 7;
+            await StepChanged.InvokeAsync(Step);
+        }
+        
+    }
+    
+    private async Task PreviousStep()
+    {
+        if (StepChanged.HasDelegate)
+        {
+            Step = 5;
+            await StepChanged.InvokeAsync(Step);
+        }
+        
+    }
+    public DateTime MinDate {get;set;} = new DateTime(DateTime.Now.Year,DateTime.Now.Month,05);
+}

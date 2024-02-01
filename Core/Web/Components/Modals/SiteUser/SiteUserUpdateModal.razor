@@ -1,0 +1,163 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject IMapper mapper
+@inject AppState appState
+@inject SiteSettingsSiteUserRepository repository
+@inject SiteSettingsGroupRepository siteSettingsGroupRepository
+@inject RoleRepository roleRepository
+
+<Spinner Loading="@(isInitializing)" Mode="@SpinnerMode.Overlay">
+    <EditForm Model="@updateModel" OnValidSubmit="@Update" class="form w-100 change-password">
+        <FluentValidationValidator/>
+        <Modal Width="modal-xl">
+            <ModalSubTitle>Edit an existing @EntityName.ToLower()</ModalSubTitle>
+            <ModalBody>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="mb-5">
+                            <InputLabel Value="First name" Required="true"/>
+                            <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.FirstName"/>
+                            <ValidationMessage For="@(() => updateModel.FirstName)"/>
+                        </div>
+                        <div class="mb-5">
+                            <InputLabel Value="Last name" Required="true"/>
+                            <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.LastName"/>
+                            <ValidationMessage For="@(() => updateModel.LastName)"/>
+                        </div>
+                        <div class="mb-5">
+                            <InputLabel Value="Role" Required="true"/>
+                            <SfDropDownList @bind-Value="@updateModel.RoleId" TValue="int" TItem="RoleViewModel" Placeholder="Select a role..." AllowFiltering="true" DataSource="@roles">
+                                <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                            </SfDropDownList>
+                            <div class="text-muted">Changing a user's role requires the user to sign out and sign in again in order for the role change to take effect.</div>
+                            <ValidationMessage For="@(() => updateModel.RoleId)"/>
+                        </div>
+                        <div class="mb-5">
+                            <InputLabel Value="Password"/>
+                            <div class="position-relative toggle-password-visibility">
+                                <InputTextField type="@newPasswordType" class="form-control form-control-lg form-control-solid" autocomplete="new-password" @bind-Value="@updateModel.Password"/>
+                                <span @onclick="@ToggleNewPassword" class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2">
+                                    <i class="fa fa-eye fa-lg text-gray-400"></i>
+                                    <i class="fa fa-eye-slash fa-lg text-gray-400"></i>
+                                </span>
+                            </div>
+                            <div class="text-muted">Leave empty to keep the existing password.</div>
+                            <ValidationMessage For="@(() => updateModel.Password)"/>
+                        </div>
+                        <div class="mb-5">
+                            <InputLabel Value="Confirmation password"/>
+                            <div class="position-relative toggle-password-visibility">
+                                <InputTextField type="@confirmationPasswordType" class="form-control form-control-lg form-control-solid" autocomplete="new-password" @bind-Value="@updateModel.ConfirmationPassword"/>
+                                <span @onclick="@ToggleConfirmationPassword" class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2">
+                                    <i class="fa fa-eye fa-lg text-gray-400"></i>
+                                    <i class="fa fa-eye-slash fa-lg text-gray-400"></i>
+                                </span>
+                            </div>
+                            <div class="text-muted">Leave empty to keep the existing password.</div>
+                            <ValidationMessage For="@(() => updateModel.ConfirmationPassword)"/>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="mb-5">
+                            <label class="form-label fw-bolder text-dark mb-5">Group memberships</label>
+                            @if (groups.Any())
+                            {
+                                foreach (var group in groups)
+                                {
+                                    var index = group.Id;
+
+                                    if (!updateModel.GroupCheckboxValues.ContainsKey(index))
+                                    {
+                                        updateModel.GroupCheckboxValues.Add(index, Model.Groups.Any(g => g.Id == group.Id));
+                                    }
+
+                                    <div class="mb-5">
+                                        <label class="form-check form-check-inline form-check-solid">
+                                            <input id="group-@group.Id" class="form-check-input" type="checkbox" @bind="@updateModel.GroupCheckboxValues[index]"/>
+                                            <label class="form-check-label" for="group-@group.Id">
+                                                @group.Name
+                                            </label>
+                                        </label>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <p class="mb-0">No groups defined yet.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </ModalBody>
+            <ModalFooter>
+                <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Saving..." IdleText="Save" Icon="save" Size="md" Color="light-primary" Margins="false"/>
+            </ModalFooter>
+        </Modal>
+    </EditForm>
+</Spinner>
+
+@code
+{
+        private const string EntityName = "User";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public SiteUserViewModel Model { get; set; } = null!;
+
+    private bool isInitializing;
+    private bool isSubmitting;
+
+    private SiteUserUpdateModel updateModel = null!;
+    private IList<RoleViewModel> roles = new List<RoleViewModel>();
+    private IList<GroupViewModel> groups = new List<GroupViewModel>();
+
+    private string newPasswordType = "password";
+    private string confirmationPasswordType = "password";
+
+    protected override async Task OnInitializedAsync()
+    {
+        isInitializing = true;
+
+        updateModel = mapper.Map<SiteUserUpdateModel>(Model);
+        roles = await roleRepository.GetSiteRoles();
+        groups = await siteSettingsGroupRepository.GetGroupsBySite(appState.Site.Id);
+
+        isInitializing = false;
+    }
+
+    private async Task Update()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await repository.Update(appState.Site.Id, updateModel);
+            toastService.ShowUpdated(EntityName);
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+    private void ToggleNewPassword()
+    {
+        newPasswordType = newPasswordType == "password" ? "text" : "password";
+    }
+
+    private void ToggleConfirmationPassword()
+    {
+        confirmationPasswordType = confirmationPasswordType == "password" ? "text" : "password";
+    }
+
+}

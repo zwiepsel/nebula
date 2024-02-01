@@ -1,0 +1,50 @@
+﻿@inject IToastService toastService
+@inject DepartmentRepository departmentRepository
+@inject RiskRepository riskRepository
+
+<SfMultiSelect @bind-Value="@selectedDepartmentIds" TValue="int[]?" TItem="DepartmentViewModel?" Mode="@VisualMode.Box" ShowDropDownIcon="false" Placeholder="Select departments..." DataSource="@departments" ShowClearButton="false">
+    <MultiSelectFieldSettings Text="Name" Value="Id"></MultiSelectFieldSettings>
+    <MultiSelectEvents TValue="int[]" TItem="DepartmentViewModel" OnValueSelect="@AddDepartment" OnValueRemove="@RemoveDepartment"/>
+</SfMultiSelect>
+
+@code {
+
+    [Parameter]
+    public RiskViewModel Risk { get; set; } = null!;
+
+    private int[] selectedDepartmentIds = { };
+    private IList<DepartmentViewModel>? departments;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        departments = await departmentRepository.GetAll();
+        selectedDepartmentIds = Risk.Departments.Select(d => d.Id).ToArray();
+    }
+
+    private async Task AddDepartment(SelectEventArgs<DepartmentViewModel> args)
+    {
+        try
+        {
+            await riskRepository.CreateRiskDepartment(Risk.Id, args.ItemData.Id);
+            toastService.ShowAdded("Department");
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+    }
+
+    private async Task RemoveDepartment(RemoveEventArgs<DepartmentViewModel> args)
+    {
+        try
+        {
+            await riskRepository.DeleteRiskDepartment(Risk.Id, args.ItemData.Id);
+            toastService.ShowRemoved("Department");
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+    }
+
+}

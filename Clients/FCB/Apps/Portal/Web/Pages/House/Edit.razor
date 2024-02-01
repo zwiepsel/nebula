@@ -1,0 +1,457 @@
+﻿@page "/house/{houseId:int}/edit"
+
+@inject IToastService toastService
+@inject IMapper mapper
+
+@inject ILocalizer<Translations> localizer
+@inject IJSRuntime jsRuntime
+@inject HouseRepository houseRepository
+@inject NavigationManager navigationManager
+@inject IModalService modalService
+
+<DefaultCulture Culture="@(new CultureInfo("nl-NL"))"/>
+
+<Spinner Loading="@(houseViewModel == null)" Mode="@SpinnerMode.Overlay">
+<Page ContainerSize="xxl">
+<PageHeader>
+    <Header Title="@localizer["house"]" Icon="home"></Header>
+</PageHeader>
+<PageSubHeader>
+    <SubHeader Title="@houseViewModel?.DisplayName" ReturnUri="/house"/>
+</PageSubHeader>
+<PageBody>
+<div class="row row-flex mb-9">
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="d-flex align-items-center position-relative my-1">
+                        <h3 class="fs-5">@localizer["house_information"]</h3>
+                    </div>
+                </div>
+                <div class="card-toolbar">
+                    <div class="d-flex justify-content-end">
+                        @if (houseViewModel!.Rented != true)
+                        {
+                            <div class="btn btn-sm btn-light-primary me-4"  @onclick="StartTenantSelectionModal">
+                                <i class="fal fa-house-user me-2"></i>@localizer["start_house_selection"]
+                            </div>
+                        }
+                        <div class="btn btn-sm btn-light-primary" @onclick="ShowUpdateModal">
+                            <i class="fal fa-edit me-2"></i>@localizer["edit"]
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body pb-0 pt-0">
+                <div class="d-flex flex-wrap py-5">
+                    <div class="flex-equal me-8">
+                        <table class="table fs-6 fw-bold gs-0 gy-2 gx-2 m-0">
+                            <tbody>
+                            <tr>
+                                <td class="fw-bolder form-label align-middle">@localizer["address"]:</td>
+                                <td class="text-gray-800 font-size-14px">
+                                    @houseViewModel?.Address
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bolder form-label align-middle">@localizer["type"]:</td>
+                                <td class="text-gray-800 font-size-14px min-w-200px">
+                                    @houseViewModel?.Type
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bolder form-label align-middle">@localizer["complex"]:</td>
+                                <td class="text-gray-800 font-size-14px">
+                                   @houseViewModel?.Complex.Id - @houseViewModel?.Complex.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bolder form-label align-middle">@localizer["number_of_bedrooms"]:</td>
+                                <td class="text-gray-800 font-size-14px">
+                                    @houseViewModel?.NumberOfBedrooms
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bolder form-label align-middle">@localizer["surface"]:</td>
+                                <td class="text-gray-800 font-size-14px">@houseViewModel?.SquareMetersGo m2</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bolder form-label align-middle">@localizer["rent_status"]:</td>
+                                <td class="text-gray-800 font-size-14px">@(houseViewModel!.Rented ? localizer["rented"] : localizer["free"])</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (houseViewModel!.Tenant != null)
+                    {
+                        <div class="flex-equal pt-2">
+                            <h3 class="fs-6">@localizer["current_tenant"]:</h3>
+                            <div class="card bg-light-green no-shadow card-xl-stretch w-100 pb-0 mb-0">
+                                <div class="card-body d-flex align-items-center ps-5 pe-1 pt-0 pb-0">
+                                    <div class="d-flex flex-column flex-grow-1 py-2 py-lg-10 me-2">
+                                        <span class="fw-bolder text-dark fs-4 mb-2 text-hover-primary" style="cursor: pointer;" @onclick="GoDetails">@houseViewModel!.Tenant.Name</span>
+                                        <span class="mb-2 fw-bold text-muted fs-5">@localizer["gender." + houseViewModel!.Tenant?.Persons?.FirstOrDefault(x => x.MainContact)?.Gender.ToString().ToLower()]</span>
+                                        <span class="fw-bold text-muted fs-5">@localizer["years_old", houseViewModel!.Tenant?.Persons?.FirstOrDefault(x => x.MainContact)?.DateOfBirth.ToAge()!]</span>
+                                    </div>
+                                    @PersonAvatarProvider.GetAvatar(houseViewModel!.Tenant?.Persons?.FirstOrDefault(x => x.MainContact)!)
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="fs-5">@localizer["notes"]</h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-column fv-row">
+                    <SfInPlaceEditor Type="@InputType.RichTextEditor" EmptyText="Add a description..."   Value="@houseViewModel!.Memo" CssClass="w-100 h-100">
+                        <EditorComponent>
+                            <SfRichTextEditor  @bind-Value="@houseViewModel!.Memo"/>
+                        </EditorComponent>
+                        <InPlaceEditorEvents TValue="string" OnActionSuccess="@(() => Save())"/>
+                    </SfInPlaceEditor>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card p-0">
+<div class="card-body p-0">
+<SfTab>
+<TabAnimationSettings>
+    <TabAnimationPrevious Effect="@AnimationEffect.FadeIn"></TabAnimationPrevious> 
+    <TabAnimationNext Effect="@AnimationEffect.FadeIn"></TabAnimationNext>
+</TabAnimationSettings>
+<TabItems>
+<TabItem>
+    <ChildContent>
+        <TabHeader Text="@localizer["information"]"></TabHeader>
+    </ChildContent>
+    <ContentTemplate>
+        <div class="row ps-9 pe-6 pt-6 pb-6">
+            <div class="col-xl-4">
+                <table class="table fs-6 fw-bold gs-0 gy-2 gx-2 m-0">
+                    <tbody>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["neighborhood"]:</td>
+                        <td class="text-gray-800 font-size-14px">@houseViewModel!.Neighborhood.Name</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["code"]:</td>
+                        <td class="text-gray-800 font-size-14px min-w-200px">@houseViewModel!.Code</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["surface"] BVO:</td>
+                        <td class="text-gray-800 font-size-14px">@houseViewModel!.SquareMetersBvo m2</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["surface"] GO:</td>
+                        <td class="text-gray-800 font-size-14px">@houseViewModel!.SquareMetersGo m2</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["surface"] FCB:</td>
+                        <td class="text-gray-800 font-size-14px">@houseViewModel!.SquareMetersFcb m2</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["bedrooms"]:</td>
+                        <td class="text-gray-800 font-size-14px">@houseViewModel!.NumberOfBedrooms</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["land_registry_number"]:</td>
+                        <td class="text-gray-800 font-size-14px">@houseViewModel!.LandRegistryNumber</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bolder form-label align-middle">@localizer["rent_amount"]:</td>
+                        <td class="text-gray-800 font-size-14px">@houseViewModel!.RentBasePrice.FormatMoney()</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </ContentTemplate>
+</TabItem>
+@if (houseViewModel.LeaseAgreements.Any())
+{
+    <TabItem>
+        <ChildContent>
+            <TabHeader Text="@localizer["lease_agreements"]"></TabHeader>
+        </ChildContent>
+        <ContentTemplate>
+            <div class="row">
+                <div class="ps-12 pt-9 pe-12 pb-9">
+
+                    <h3 class="fs-5 ps-0 pb-3">@localizer["current_lease_agreement"]</h3>
+                    @if (houseViewModel.LeaseAgreement != null)
+                    {
+                        <div class="border border-gray-300 card-rounded p-5 bg-lighten">
+                            <div class="d-flex flex-wrap">
+                                <div class="flex-equal me-8 pt-6">
+                                    <table class="table fs-6 fw-bold gs-0 gy-2 gx-2 m-0">
+                                        <tbody>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["house_code"]:</td>
+                                            <td class="text-gray-800 font-size-14px">@houseViewModel.Code</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["house_rent"]:</td>
+                                            <td class="text-gray-800 font-size-14px min-w-200px">@houseViewModel.RentBasePrice.FormatMoney()</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["contract_amount"]:</td>
+                                            <td class="text-gray-800 font-size-14px">@houseViewModel.LeaseAgreement?.Rent.ContractPrice.FormatMoney()</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["set_price"]:</td>
+                                            <td class="text-gray-800 font-size-14px">@houseViewModel.LeaseAgreement?.Rent.RentPrice.FormatMoney()</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="flex-equal pt-6">
+                                    <table class="table fs-6 fw-bold gs-0 gy-2 gx-2 m-0">
+                                        <tbody>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["asking_rent"]:</td>
+                                            <td class="text-gray-800 font-size-14px">@houseViewModel.LeaseAgreement?.Rent.AskPrice.FormatMoney()</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["temporary_discount"]</td>
+                                            <td class="text-gray-800 font-size-14px">@houseViewModel.LeaseAgreement?.Rent.Discount.FormatMoney()</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bolder form-label align-middle">@localizer["start_date"]</td>
+                                            <td class="text-gray-800 font-size-14px">@houseViewModel.LeaseAgreement?.StartDate.FormatDate()</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        @localizer["no_results"]
+                    }
+                    @if (previousLeaseAgreements != null && previousLeaseAgreements.Any())
+                    {
+                        <h3 class="fs-5 ps-0 pt-6 pb-3">@localizer["previous_lease_agreement"]</h3>
+                        <SfAccordion>
+                            <AccordionItems>
+                                @foreach (var agreement in houseViewModel.LeaseAgreements)
+                                {
+                                    <AccordionItem>
+                                        <HeaderTemplate>
+                                            <div>@agreement.Client.Name | @agreement.StartDate.FormatDate() @localizer["until"] @agreement.EndDate.FormatDate()</div>
+                                        </HeaderTemplate>
+                                        <ContentTemplate>
+                                            <div class="p-5 bg-lighten">
+                                                <div class="d-flex flex-wrap">
+                                                    <div class="flex-equal me-8 pt-6">
+                                                        <table class="table fs-6 fw-bold gs-0 gy-2 gx-2 m-0">
+                                                            <tbody>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["house_code"]:</td>
+                                                                <td class="text-gray-800 font-size-14px">@houseViewModel.Code</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["house_rent"]:</td>
+                                                                <td class="text-gray-800 font-size-14px min-w-200px">@houseViewModel.RentBasePrice.FormatMoney()</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["contract_amount"]:</td>
+                                                                <td class="text-gray-800 font-size-14px">@agreement.Rent.ContractPrice.FormatMoney()</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["set_price"]:</td>
+                                                                <td class="text-gray-800 font-size-14px">@agreement.Rent.RentPrice.FormatMoney()</td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="flex-equal pt-6">
+                                                        <table class="table fs-6 fw-bold gs-0 gy-2 gx-2 m-0">
+                                                            <tbody>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["current_rent"]:</td>
+                                                                <td class="text-gray-800 font-size-14px">@agreement.Rent.AskPrice.FormatMoney()</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["temporary_discount"]</td>
+                                                                <td class="text-gray-800 font-size-14px">@agreement.Rent.Discount.FormatMoney()</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bolder form-label align-middle">@localizer["start_date"]</td>
+                                                                <td class="text-gray-800 font-size-14px">@agreement.StartDate.FormatDate()</td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="flex-equal">
+                                                        <div class="card card-xl-stretch w-100 pb-0 mb-0">
+                                                            <div class="card-body d-flex align-items-center ps-5 pe-1 pt-0 pb-0">
+                                                                <div class="d-flex flex-column flex-grow-1 py-3 py-lg-13 me-2">
+                                                                    <span class="fw-bolder text-dark fs-4 mb-2 text-hover-primary">@agreement.Client.Name</span>
+                                                                    <span class="mb-2 fw-bold text-muted fs-5">@agreement.Client.Persons?.Where(x => x.MainContact).FirstOrDefault()?.Gender</span>
+                                                                    <span class="fw-bold text-muted fs-5">@localizer["years_old", agreement.Client.Persons?.Where(x => x.MainContact).FirstOrDefault()?.DateOfBirth.ToAge()!]</span>
+                                                                </div>
+                                                                @PersonAvatarProvider.GetAvatar(agreement.Client.Persons?.Where(x => x.MainContact).FirstOrDefault()!)
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ContentTemplate>
+                                    </AccordionItem>
+                                }
+                            </AccordionItems>
+                        </SfAccordion>
+                    }
+                </div>
+            </div>
+        </ContentTemplate>
+    </TabItem>
+}
+<TabItem>
+    <ChildContent>
+        <TabHeader Text="Waarde"></TabHeader>
+    </ChildContent>
+    <ContentTemplate>
+        <div class="row p-8">
+            <div class="col-lg-3">
+                <div class="card mt-0 card-dashed flex-center min-w-175px my-3 p-6">
+                    <i class="fas fa-4x icon-color-primary fa-calendar-alt mb-4"></i>
+                    <span class="fs-4 fw-bolder pb-1 px-2">@localizer["construction_date"]</span>
+                    <span class="fs-6 fw-bold d-flex justify-content-center">@houseViewModel.ConstructionDate.FormatDate()</span>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card mt-0 card-dashed flex-center min-w-175px my-3 p-6">
+                    <i class="fas fa-4x icon-color-primary fa-hard-hat mb-4"></i>
+                    <span class="fs-4 fw-bolder  pb-1 px-2">@localizer["construction_price"]</span>
+                    <span class="fs-6 fw-bold d-flex justify-content-center">@houseViewModel.ConstructionCosts.FormatMoney()</span>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card mt-0 card-dashed flex-center min-w-175px my-3 p-6">
+                    <i class="fas fa-4x icon-color-primary fa-calendar-alt mb-4"></i>
+                    <span class="fs-4 fw-bolder pb-1 px-2">@localizer["taxation_date"]</span>
+                    <span class="fs-6 fw-bold d-flex justify-content-center">@houseViewModel.AppraisalDate.FormatDate()</span>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card mt-0 card-dashed flex-center min-w-175px my-3 p-6">
+                    <i class="fas fa-4x icon-color-primary fa-wrench mb-4"></i>
+                    <span class="fs-4 fw-bolder pb-1 px-2">@localizer["renovation_costs"]</span>
+                    <span class="fs-6 fw-bold d-flex justify-content-center">@houseViewModel.RenovationCosts.FormatMoney()</span>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card mt-0 card-dashed flex-center min-w-175px my-3 p-6">
+                    <i class="fas fa-4x icon-color-primary fa-calendar-alt mb-4"></i>
+                    <span class="fs-4 fw-bolder pb-1 px-2">@localizer["renovation_date"]</span>
+                    <span class="fs-6 fw-bold d-flex justify-content-center">@houseViewModel.RenovationDate.FormatDate()</span>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card mt-0 card-dashed flex-center min-w-175px my-3 p-6">
+                    <i class="fas fa-4x icon-color-primary fa-dollar-sign mb-4"></i>
+                    <span class="fs-4 fw-bolder pb-1 px-2">@localizer["market_value"]</span>
+                    <span class="fs-6 fw-bold d-flex justify-content-center">@houseViewModel.MarketValue.FormatMoney()</span>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card mt-0 card-dashed flex-center min-w-175px my-3 p-6">
+                    <i class="fas fa-4x icon-color-primary fa-map mb-4"></i>
+                    <span class="fs-4 fw-bolder pb-1 px-2">@localizer["ground_lease"]</span>
+                    <span class="fs-6 fw-bold d-flex justify-content-center">@houseViewModel.GroundLease.FormatMoney()</span>
+                </div>
+            </div>
+        </div>
+    </ContentTemplate>
+</TabItem>
+<TabItem>
+    <ChildContent>
+        <TabHeader Text="Log"></TabHeader>
+    </ChildContent>
+</TabItem>
+</TabItems>
+</SfTab>
+</div>
+</div>
+</PageBody>
+</Page>
+</Spinner>
+
+@code {
+
+    [Parameter]
+    public int HouseId { get; set; }
+
+    private HouseViewModel? houseViewModel;
+    private IEnumerable<LeaseAgreementViewModel>? previousLeaseAgreements;
+    private bool isSubmitting;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        houseViewModel = await houseRepository.Get(HouseId);
+        previousLeaseAgreements = houseViewModel.LeaseAgreements.Where(la => la.Id != houseViewModel.LeaseAgreement?.Id);
+    }
+    
+    
+    
+    private async Task ShowUpdateModal()
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("Model", houseViewModel);
+
+        var modal = modalService.Show<UpdateHouseModal>($"Edit ", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            houseViewModel = (HouseViewModel) result.Data;
+        }
+    }
+
+    private void  GoDetails()
+    {
+        navigationManager.NavigateTo($"/relation/{houseViewModel!.LeaseAgreement!.Client.Id}/edit?returnUri=/house/{houseViewModel.Id}/edit");
+    }
+    
+    private async Task Save()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+        
+        try
+        {
+            isSubmitting = true;
+            var updateModel = mapper.Map<HouseUpdateModel>(houseViewModel);
+            houseViewModel = await houseRepository.Update(updateModel!);
+            toastService.ShowUpdated("Omschrijving");
+        }
+        catch (HttpRequestException)
+        {
+            toastService.ShowUnexpectedError();
+        }
+        
+        isSubmitting = false;
+    }
+    
+    private void StartTenantSelectionModal()
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("Address", houseViewModel?.Address);
+        modalService.Show<StartTenantSelectionModal>(@localizer["start_house_selection"], modalParameters);
+    }
+}

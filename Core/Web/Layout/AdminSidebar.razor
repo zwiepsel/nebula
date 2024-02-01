@@ -1,0 +1,10 @@
+﻿@inject ILocalizer<Translations> localizer
+@inject AppState appState
+
+<Nebula.Shared.Clients.Layout.Sidebar Title="Nebula" ReturnUri="/" SeparatorText="@localizer["administration"]">
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/admin" Name="Dashboard" Icon="analytics"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/admin/client" Name="Clients" Icon="address-card"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/admin/site" Name="Sites" Icon="layer-group"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/admin/app" Name="Apps" Icon="browser"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/admin/user" Name="Users" Icon="users"/>
+</Nebula.Shared.Clients.Layout.Sidebar>

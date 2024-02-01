@@ -1,0 +1,16 @@
+﻿@inject ILocalizer<Translations> localizer
+@inject NavigationManager navigationManager
+
+@localizer["redirecting"]
+
+@code {
+
+    [Parameter]
+    public string Uri { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        navigationManager.NavigateTo(Uri);
+    }
+
+}

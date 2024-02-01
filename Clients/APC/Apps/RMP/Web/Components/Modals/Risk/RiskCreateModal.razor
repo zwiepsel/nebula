@@ -1,0 +1,69 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject RiskRepository riskRepository
+@inject ProcessRepository processRepository
+
+<EditForm Model="@createModel" OnValidSubmit="@Create" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal>
+        <ModalSubTitle>Create a new risk</ModalSubTitle>
+        <ModalBody>
+            <div class="mb-5">
+                <InputLabel Value="Name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Name"/>
+                <ValidationMessage For="@(() => createModel.Name)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Process" Required="true"/>
+                <SfDropDownList @bind-Value="@createModel.ProcessId" TValue="int?" TItem="ProcessViewModel" Placeholder="Select a process" AllowFiltering="true" DataSource="@processes">
+                    <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                </SfDropDownList>
+                <ValidationMessage For="@(() => createModel.ProcessId)"/>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Creating..." IdleText="Create" Icon="plus" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    private IList<ProcessViewModel>? processes = new List<ProcessViewModel>();
+
+    private bool isSubmitting;
+    private readonly RiskCreateModel createModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        processes = await processRepository.GetAll();
+    }
+
+    private async Task Create()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await riskRepository.Create(createModel);
+            toastService.ShowCreated("Risk");
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

@@ -1,0 +1,97 @@
+﻿@page "/settings/coso"
+@attribute [Authorize(Policy = SiteAdministratorRequirement.Name)]
+
+@inject IModalService modalService
+@inject AppState appState
+@inject CosoRepository repository
+
+<SettingPage>
+    <PageSubHeader>
+        <SubHeader Title="@Title" Icon="@Icon">
+            <Toolbar>
+                <SpinnerButton Loading="false" IdleText="@CreateButtonIdleText" LoadingText="Creating..." Size="sm" Icon="plus" Color="light-primary" Margins="false" Method="@ShowCreateModal"/>
+            </Toolbar>
+        </SubHeader>
+    </PageSubHeader>
+    <PageBody>
+        <div class="card">
+            <Spinner Loading="@(models == null)" Mode="@SpinnerMode.Overlay">
+                <div class="card-header border-0 pt-6">
+                    <div class="card-title">
+                        <div class="d-flex align-items-center position-relative my-1">
+                            <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                <i class="fal fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="Search" @bind-value="@searchText" @bind-value:event="oninput" @onkeyup="@SearchGrid">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <SfGrid @ref="@grid" DataSource="@models" AllowSorting="true" AllowPaging="true">
+                        <GridEvents RowSelected="@ShowUpdateModal" TValue="CosoViewModel"/>
+                        <GridColumns>
+                            <GridColumn Field="@nameof(CosoViewModel.Id)" HeaderText="Id"/>
+                            <GridColumn Field="@nameof(CosoViewModel.Name)" HeaderText="Name"/>
+                        </GridColumns>
+                    </SfGrid>
+                </div>
+            </Spinner>
+        </div>
+    </PageBody>
+</SettingPage>
+
+@code {
+
+        private const string Title = "COSOs";
+        private const string Icon = "tags";
+        private const string EntityName = "COSO";
+        private const string CreateButtonIdleText = $"New {EntityName}";
+
+    private SfGrid<CosoViewModel> grid = null!;
+    private IList<CosoViewModel>? models;
+    private string? searchText;
+
+    protected override async Task OnInitializedAsync()
+    {
+        models = await repository.GetAll();
+    }
+
+    private void SearchGrid()
+    {
+        grid.Search(searchText);
+    }
+
+    private async Task ShowCreateModal()
+    {
+        var modal = modalService.Show<CosoCreateModal>($"New {EntityName}");
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            models!.Add((CosoViewModel)result.Data);
+            grid.Refresh();
+        }
+    }
+
+    private async Task ShowUpdateModal(RowSelectEventArgs<CosoViewModel> args)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("Model", args.Data);
+
+        var modal = modalService.Show<CosoUpdateModal>($"Edit {EntityName}", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            var model = (CosoViewModel)result.Data;
+            var index = models!.FindIndex(m => m.Id == model.Id);
+
+            if (index >= 0)
+            {
+                models![index] = model;
+                grid.Refresh();
+            }
+        }
+    }
+
+}

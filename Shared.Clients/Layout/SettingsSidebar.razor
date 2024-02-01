@@ -1,0 +1,28 @@
+﻿<Sidebar Title="@Title" ReturnUri="@ReturnUri" SeparatorText="@SeparatorText">
+    <SiteSettingsContent>
+        <AuthorizeView Policy="@SiteAdministratorRequirement.Name">
+            <SidebarItemSeparator Text="Site settings"/>
+            <SidebarItem Uri="/settings/site-user" Name="Users" Icon="users"/>
+            <SidebarItem Uri="/settings/security" Name="Security" Icon="lock" Match="@NavLinkMatch.Prefix"/>
+        </AuthorizeView>
+    </SiteSettingsContent>
+    <ChildContent>
+        @ChildContent
+    </ChildContent>
+</Sidebar>
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; } = null!;
+
+    [Parameter]
+    public string ReturnUri { get; set; } = null!;
+
+    [Parameter]
+    public string SeparatorText { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+}

@@ -1,0 +1,101 @@
+﻿@typeparam TViewModel
+@typeparam TCreateModal
+@typeparam TUpdateModal
+
+@inject IModalService modalService
+
+<Nebula.Shared.Clients.Layout.Header Title="Settings" Icon="cogs"/>
+<div class="content d-flex flex-column flex-column-fluid">
+    <Nebula.Shared.Clients.Layout.SubHeader Title="@Title" Icon="@Icon">
+        <Toolbar>
+            <SpinnerButton Loading="false" IdleText="@CreateButtonIdleText" LoadingText="Creating..." Size="sm" Icon="plus" Color="light-primary" Margins="false" Method="@ShowCreateModal"/>
+        </Toolbar>
+    </Nebula.Shared.Clients.Layout.SubHeader>
+    <div class="post d-flex flex-column-fluid">
+        <div class="container">
+            <div class="card">
+                <Spinner Loading="@(Models == null)" Mode="@SpinnerMode.Overlay">
+                    <div class="card-header border-0 pt-6">
+                        <div class="card-title">
+                            <div class="d-flex align-items-center position-relative my-1">
+                                <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                    <i class="fal fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="Search" @bind-value="@searchText" @bind-value:event="oninput" @onkeyup="@SearchGrid">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <SfGrid @ref="@grid" DataSource="@Models" AllowSorting="true" AllowPaging="true">
+                            <GridEvents RowSelected="@ShowUpdateModal" TValue="TViewModel"/>
+                            @GridColumns
+                        </SfGrid>
+                    </div>
+                </Spinner>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; } = null!;
+
+    [Parameter]
+    public string Icon { get; set; } = null!;
+
+    [Parameter]
+    public string EntityName { get; set; } = null!;
+
+    [Parameter]
+    public IList<TViewModel>? Models { get; set; }
+
+    [Parameter]
+    public GridColumns GridColumns { get; set; } = null!;
+
+    private string CreateButtonIdleText => $"New {EntityName}";
+
+    private SfGrid<TViewModel> grid = null!;
+
+    private string? searchText;
+
+    private void SearchGrid()
+    {
+        grid.Search(searchText);
+    }
+
+    private async Task ShowCreateModal()
+    {
+        var modal = modalService.Show<TCreateModal>($"New {EntityName}");
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            Models!.Add((TViewModel)result.Data);
+            grid.Refresh();
+        }
+    }
+
+    private async Task ShowUpdateModal(RowSelectEventArgs<TViewModel> args)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("Model", args.Data);
+
+        var modal = modalService.Show<TUpdateModal>($"Edit {EntityName}", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            var model = (TViewModel)result.Data;
+            var index = Models!.FindIndex(m => m.Id == model.Id);
+
+            if (index >= 0)
+            {
+                Models![index] = model;
+                grid.Refresh();
+            }
+        }
+    }
+
+}

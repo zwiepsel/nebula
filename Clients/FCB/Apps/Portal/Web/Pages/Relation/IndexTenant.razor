@@ -1,0 +1,140 @@
+﻿@page "/relation/tenant"
+
+@inject ILocalizer<Translations> localizer
+@inject NavigationManager navigationManager
+@inject PersonRepository personRepository
+@inject ClientRepository clientRepository
+
+<DefaultCulture Culture="@(new CultureInfo("nl-NL"))"/>
+
+<Page ContainerSize="fluid">
+    <PageHeader>
+        <Header Title="@localizer["relations"]" Icon="address-card"></Header>
+    </PageHeader>
+    <PageSubHeader>
+        <SubHeader>
+            <Navigation>
+                <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x fs-6" style="margin-top: 10px;">
+                    <li class="nav-item">
+                        <a style="height: 44px;" class="fw-bold text-dark nav-link" href="/relation/applicant">@localizer["applicants"]</a>
+                    </li>
+                    <li class="nav-item">
+                        <a style="height: 44px;" class="fw-bold text-dark nav-link active" href="/relation/tenant">@localizer["tenants"]</a>
+                    </li>
+                </ul>
+            </Navigation>
+        </SubHeader>
+    </PageSubHeader>
+    <PageBody>
+        <Spinner Loading="@(clientModels == null)" Mode="@SpinnerMode.Overlay">
+            <div class="d-flex flex-column flex-lg-row">
+                <div class="flex-lg-row-fluid">
+                    <div class="card">
+                        <div class="card-header border-0 pt-6">
+                            <div class="card-title">
+                                <div class="d-flex align-items-center position-relative my-1">
+                                    <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                        <i class="fal fa-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="@localizer["search"]" @bind-value="@searchText" @bind-value:event="oninput" @onkeyup="@(() => grid!.Search(searchText))">
+                                </div>
+                            </div>
+                            <div class="card-toolbar">
+                                <div class="btn btn-light-primary me-3" @onclick="@(() => grid!.OpenColumnChooser())">
+                                    <i class="fal fa-cog me-2"></i>@localizer["columns"]
+                                </div>
+                                <SpinnerButton Loading="@exporting" LoadingText="@localizer["exporting"]" IdleText="@localizer["export"]" Icon="file-export" Color="light-primary" Method="@Export"/>
+                            </div>
+                        </div>
+                        <div class="card-body px-10 py-0">
+                            <SfGrid @ref="@grid" DataSource="@clientModels" AllowFiltering="true"  AllowSorting="true" AllowPaging="true" AllowExcelExport="true" ShowColumnChooser="true">
+                                <GridEvents RowSelected="@ShowPerson" OnActionBegin="OnActionBegin" TValue="ClientIndexViewModel"></GridEvents>
+                                <GridTemplates>
+                                    <EmptyRecordTemplate>
+                                        @if (clientModels!.Any())
+                                        {
+                                            <div class="card-px text-center py-6 my-10">
+                                                <h2 class="fs-2x fw-bolder mb-10">@localizer["no_results"]</h2>
+                                                <p class="text-gray-400 fs-4 fw-bold mb-7">
+                                                    @localizer["no_results_description"]
+                                                </p>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="card-px text-center py-6 my-10">
+                                                <h2 class="fs-2x fw-bolder mb-10">@localizer["no_data"]</h2>
+                                                <p class="text-gray-400 fs-4 fw-bold mb-7">
+                                                    @localizer["no_data_description"]
+                                                </p>
+                                            </div>
+                                        }
+                                    </EmptyRecordTemplate>
+                                </GridTemplates>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.DebtorCode)" HeaderText="@localizer["debtor_code"]" AutoFit="true"/>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.Name)" HeaderText="@localizer["full_name"]" AutoFit="true"/>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.Address)" HeaderText="@localizer["address"]" AutoFit="true"/>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.PhoneNumber)" HeaderText="@localizer["phone_number"]" AutoFit="true"/>
+                                    @* <GridColumn Field="@nameof(PersonIndexViewModel.FamilyCount)" HeaderText="@localizer["number_of_residents"]"/> *@
+                                    <GridColumn Visible="false" Field="@nameof(ClientIndexViewModel.MaxRent)" HeaderText="@localizer["max_rent"]">
+                                        <Template>
+                                            @(((ClientIndexViewModel)context).MaxRent.FormatMoney())
+                                        </Template>
+                                    </GridColumn>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.LookingForHouse)" HeaderText="@localizer["applicant"]">
+                                        <Template>
+                                            @(((ClientIndexViewModel)context).LookingForHouse ? localizer["yes"] : localizer["no"])
+                                        </Template>
+                                    </GridColumn>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.InterestedInBuying)" HeaderText="@localizer["home_seeker_interested_in_buying"]">
+                                        <Template>
+                                            @(((ClientIndexViewModel)context).InterestedInBuying ? localizer["yes"] : localizer["no"])
+                                        </Template>
+                                    </GridColumn>
+                                </GridColumns>
+                            </SfGrid>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Spinner>
+    </PageBody>
+</Page>
+
+@code {
+
+    private SfGrid<ClientIndexViewModel>? grid;
+    private IList<ClientIndexViewModel>? clientModels;
+    private string? searchText;
+    private bool exporting;
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        clientModels = await clientRepository.GetAllTenants();
+    }
+
+    private void ShowPerson(RowSelectEventArgs<ClientIndexViewModel> args)
+    {
+        navigationManager.NavigateTo($"/relation/{args.Data.Id}/edit?returnUri=/relation/tenant");
+    }
+
+    private async Task Export()
+    {
+        exporting = true;
+        await grid!.ExcelExport();
+        exporting = false;
+    }
+    
+
+    private  void OnActionBegin(Syncfusion.Blazor.Grids.ActionEventArgs<ClientIndexViewModel> args)
+    {
+        if (args.RequestType.ToString() == "Sorting")
+        {
+            grid!.SortColumn(nameof(ClientIndexViewModel.Name), SortDirection.Ascending, false);
+        }
+
+    }
+
+}

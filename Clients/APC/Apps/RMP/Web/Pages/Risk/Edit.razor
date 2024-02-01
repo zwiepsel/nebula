@@ -1,0 +1,562 @@
+﻿@page "/risk/{riskId:int}/edit"
+
+@using AnimationEffect = Syncfusion.Blazor.AnimationEffect
+@using InputType = Syncfusion.Blazor.InPlaceEditor.InputType
+
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navigationManager
+@inject IModalService modalService
+@inject IToastService toastService
+@inject IMapper mapper
+@inject RiskRepository riskRepository
+@inject ProcessRepository processRepository
+@inject CosoRepository cosoRepository
+@inject FirmRepository firmRepository
+@inject DepartmentRepository departmentRepository
+@inject RiskScoreRepository riskScoreRepository
+
+<Page>
+<PageHeader>
+    <Header Title="Risks" Icon="exclamation-triangle"></Header>
+</PageHeader>
+<PageSubHeader>
+    <SubHeader Title="@riskUpdateModel?.ShortName.TruncateWithEllipsis(90)" ReturnUri="/risk">
+        <Toolbar>
+            <div class="btn btn-sm btn-icon btn-bg-light btn-active-light-primary me-1" @onclick="@ShowFileCreateModal">
+                <i class="fal fa-lg fa-paperclip"></i>
+                <div class="tool-tip bottom-left">
+                    <span class="tooltiptext">Add attachment</span>
+                </div>
+            </div>
+            <div class="btn btn-sm btn-icon btn-bg-light btn-active-light-primary me-2" @onclick="@ShowRiskMitigationControlCreateModal">
+                <i class="fal fa-lg fa-shield-check"></i>
+                <div class="tool-tip bottom-left">
+                    <span class="tooltiptext">Add mitigation control</span>
+                </div>
+            </div>
+            <div class="btn btn-sm btn-icon btn-bg-light btn-active-light-primary me-2" @onclick="@ShowRiskPossibleOptimizationCreateModal">
+                <i class="fal fa-lg fa-arrow-circle-up"></i>
+                <div class="tool-tip bottom-left">
+                    <span class="tooltiptext">Add possible optimization</span>
+                </div>
+            </div>
+            <div class="btn btn-sm btn-icon btn-bg-light btn-active-light-danger me-2" @onclick="@ShowRiskDeleteModal">
+                <i class="fal fa-lg fa-trash-alt"></i>
+                <div class="tool-tip bottom-left">
+                    <span class="tooltiptext">Delete risk</span>
+                </div>
+            </div>
+        </Toolbar>
+    </SubHeader>
+</PageSubHeader>
+<PageBody>
+<div class="card">
+<Spinner Loading="@(riskUpdateModel == null)" Mode="@SpinnerMode.Overlay">
+<SfTab>
+<TabEvents Selecting="@OnSelecting"/>
+<TabAnimationSettings>
+    <TabAnimationPrevious Effect="@AnimationEffect.FadeIn"></TabAnimationPrevious>
+    <TabAnimationNext Effect="@AnimationEffect.FadeIn"></TabAnimationNext>
+</TabAnimationSettings>
+<TabItems>
+<TabItem>
+<ChildContent>
+    <TabHeader Text="Details"></TabHeader>
+</ChildContent>
+<ContentTemplate>
+<div class="card-body extra-card-padding transparent-border-edit-panel">
+<EditForm Model="@riskUpdateModel" @ref="@editForm" class="form">
+<FluentValidationValidator/>
+<div class="post">
+<div class="inline-h1-title d-flex align-items-center mb-5">
+    <SfInPlaceEditor @bind-Value="@riskUpdateModel!.Name" TValue="string" EmptyText="Enter a name..." CssClass="w-100">
+        <EditorComponent>
+            <SfTextBox @bind-Value="@riskUpdateModel!.Name" Placeholder="Enter a name..."/>
+            <ValidationMessage For="@(() => riskUpdateModel!.Name)"/>
+        </EditorComponent>
+        <InPlaceEditorEvents TValue="string" OnActionSuccess="@(() => Save(nameof(riskUpdateModel.Name)))"/>
+    </SfInPlaceEditor>
+</div>
+<div class="form-group row mb-5">
+    <RiskStatusDropDownButton @bind-Value="@riskUpdateModel!.Status" OnStatusChanged="@(() => Save(nameof(riskUpdateModel.Status)))"/>
+</div>
+<div class="form-group row mb-5 button-fix-inline-editor">
+    <label class="fw-bolder form-label mb-2">
+        <span class="">Description</span>
+    </label>
+    <SfInPlaceEditor Type="@InputType.RichTextEditor" EmptyText="Add a description..." Value="@riskUpdateModel!.Description" CssClass="w-100">
+        <EditorComponent>
+            <SfRichTextEditor @bind-Value="@riskUpdateModel!.Description"/>
+        </EditorComponent>
+        <InPlaceEditorEvents TValue="string" OnActionSuccess="@(() => Save(nameof(riskUpdateModel.Description)))"/>
+    </SfInPlaceEditor>
+</div>
+<div class="form-group row mb-5 button-fix-inline-editor">
+    <label class="fw-bolder form-label mb-2">
+        <span class="">Notes</span>
+    </label>
+    <SfInPlaceEditor Type="@InputType.RichTextEditor" EmptyText="Add notes..." Value="@riskUpdateModel!.Notes" TValue="string" CssClass="w-100">
+        <EditorComponent>
+            <SfRichTextEditor @bind-Value="@riskUpdateModel!.Notes"/>
+        </EditorComponent>
+        <InPlaceEditorEvents TValue="string" OnActionSuccess="@(() => Save(nameof(riskUpdateModel.Notes)))"/>
+    </SfInPlaceEditor>
+</div>
+<div class="form-group row mb-5 button-fix-inline-editor">
+    <label class="fw-bolder form-label mb-2">
+        <span class="">Context</span>
+    </label>
+    <SfInPlaceEditor Type="@InputType.RichTextEditor" EmptyText="Add a context..." Value="@riskUpdateModel!.Context" TValue="string" CssClass="w-100">
+        <EditorComponent>
+            <SfRichTextEditor @bind-Value="@riskUpdateModel!.Context"/>
+        </EditorComponent>
+        <InPlaceEditorEvents TValue="string" OnActionSuccess="@(() => Save(nameof(riskUpdateModel.Context)))"/>
+    </SfInPlaceEditor>
+</div>
+<div class="form-group row mb-5 button-fix-inline-editor">
+    <label class="fw-bolder form-label mb-2">
+        <span class="">Additional information</span>
+    </label>
+    <SfInPlaceEditor Type="@InputType.RichTextEditor" EmptyText="Add additional information..." Value="@riskUpdateModel!.AdditionalInformation" TValue="string" CssClass="w-100">
+        <EditorComponent>
+            <SfRichTextEditor @bind-Value="@riskUpdateModel!.AdditionalInformation"/>
+        </EditorComponent>
+        <InPlaceEditorEvents TValue="string" OnActionSuccess="@(() => Save(nameof(riskUpdateModel.AdditionalInformation)))"/>
+    </SfInPlaceEditor>
+</div>
+<div class="form-group row mb-5 button-fix-inline-editor">
+    <label class="fw-bolder form-label mb-2">
+        <span class="">Objective</span>
+    </label>
+    <SfInPlaceEditor Type="@InputType.RichTextEditor" EmptyText="Add an objective..." Value="@riskUpdateModel!.Objective" TValue="string" CssClass="w-100">
+        <EditorComponent>
+            <SfRichTextEditor @bind-Value="@riskUpdateModel!.Objective"/>
+        </EditorComponent>
+        <InPlaceEditorEvents TValue="string" OnActionSuccess="@(() => Save(nameof(riskUpdateModel.Objective)))"/>
+    </SfInPlaceEditor>
+</div>
+<div class="form-group row mb-5">
+    <label class="col-4 col-form-label fw-bolder">Short name</label>
+    <div class="col-8">
+        <SfInPlaceEditor @bind-Value="@riskUpdateModel!.ShortName" TValue="string" EmptyText="Enter a short name...">
+            <EditorComponent>
+                <SfTextBox @bind-Value="@riskUpdateModel!.ShortName" Placeholder="Enter a short name..."/>
+                <ValidationMessage For="@(() => riskUpdateModel!.ShortName)"/>
+            </EditorComponent>
+            <InPlaceEditorEvents TValue="string" OnActionSuccess="@(() => Save(nameof(riskUpdateModel.ShortName)))"/>
+        </SfInPlaceEditor>
+    </div>
+</div>
+<div class="form-group row mb-5">
+    <label class="col-4 col-form-label fw-bolder">Process</label>
+    <div class="col-8">
+        <SfDropDownList @bind-Value="@riskUpdateModel!.ProcessId" TValue="int?" TItem="ProcessViewModel" Placeholder="Select a process..." AllowFiltering="true" DataSource="@processes">
+            <DropDownListFieldSettings Text="Name" Value="Id"/>
+            <DropDownListEvents TValue="int?" TItem="ProcessViewModel" ValueChange="@(() => Save(nameof(riskUpdateModel.ProcessId)))"/>
+        </SfDropDownList>
+    </div>
+</div>
+<div class="form-group row mb-5">
+    <label class="col-4 col-form-label fw-bolder">COSO</label>
+    <div class="col-8">
+        <SfDropDownList @bind-Value="@riskUpdateModel!.CosoId" TValue="int?" TItem="CosoViewModel" Placeholder="Select a COSO..." AllowFiltering="true" DataSource="@cosos">
+            <DropDownListFieldSettings Text="Name" Value="Id"/>
+            <DropDownListEvents TValue="int?" TItem="CosoViewModel" ValueChange="@(() => Save(nameof(riskUpdateModel.CosoId)))"/>
+        </SfDropDownList>
+    </div>
+</div>
+<div class="form-group row mb-5">
+    <label class="col-4 col-form-label fw-bolder">FIRM</label>
+    <div class="col-8">
+        <SfDropDownList @bind-Value="@riskUpdateModel!.FirmId" TValue="int?" TItem="FirmViewModel" Placeholder="Select a FIRM..." AllowFiltering="true" DataSource="@firms">
+            <DropDownListFieldSettings Text="Name" Value="Id"/>
+            <DropDownListEvents TValue="int?" TItem="FirmViewModel" ValueChange="@(() => Save(nameof(riskUpdateModel.FirmId)))"/>
+        </SfDropDownList>
+    </div>
+</div>
+<div class="form-group row mb-5">
+    <label class="col-4 col-form-label fw-bolder">Risk type</label>
+    <div class="col-8">
+        <SfDropDownList @bind-Value="@riskUpdateModel!.RiskScoreType" TValue="RiskScoreType?" TItem="string" Placeholder="Select a risk type..." AllowFiltering="true" DataSource="@riskScoreTypes">
+            <DropDownListEvents TValue="RiskScoreType?" TItem="string" ValueChange="@SaveRiskScoreType"/>
+        </SfDropDownList>
+    </div>
+</div>
+@if (riskUpdateModel?.RiskScoreType != null)
+{
+    <div class="form-group row mb-5 parent-tree-item position-relative">
+        <label class="col-4 col-form-label fw-bolder text-indent-3rem child-tree-item">
+            <InputLabel Value="Inherent risk"/>
+        </label>
+        <div class="col-8 d-flex mb-5 child-two-input">
+            <div class="col-5 me-5">
+                <RiskScoreDropDown @bind-RiskScore="@riskUpdateModel.InherentFrequencyRiskScoreId" RiskScores="@filteredRiskScores" OnRiskScoreChanged="@(() => SaveRiskScore(nameof(riskUpdateModel.InherentFrequencyRiskScoreId)))">
+                    <Template Context="itemContext">
+                        @itemContext.Frequency (@itemContext.Score)
+                    </Template>
+                </RiskScoreDropDown>
+            </div>
+            <div class="col-5 me-5">
+                <RiskScoreDropDown @bind-RiskScore="@riskUpdateModel.InherentImpactRiskScoreId" RiskScores="@filteredRiskScores" OnRiskScoreChanged="@(() => SaveRiskScore(nameof(riskUpdateModel.InherentImpactRiskScoreId)))">
+                    <Template Context="itemContext">
+                        @itemContext.Impact (@itemContext.Score)
+                    </Template>
+                </RiskScoreDropDown>
+            </div>
+            <div class="w-100 fs-6 full-width-badge">
+                <RiskScore Score="@riskViewModelRiskScores?.InherentRiskScore" FontSize="2"/>
+            </div>
+        </div>
+        <label class="col-4 col-form-label fw-bolder text-indent-3rem pb-0 child-tree-item">
+            <InputLabel Value="Residual risk"/>
+        </label>
+        <div class="col-8 d-flex child-two-input">
+            <div class="col-5 me-5">
+                <RiskScoreDropDown @bind-RiskScore="@riskUpdateModel.ResidualFrequencyRiskScoreId" RiskScores="@filteredRiskScores" OnRiskScoreChanged="@(() => SaveRiskScore(nameof(riskUpdateModel.ResidualFrequencyRiskScoreId)))">
+                    <Template Context="itemContext">
+                        @itemContext.Frequency (@itemContext.Score)
+                    </Template>
+                </RiskScoreDropDown>
+            </div>
+            <div class="col-5 me-5">
+                <RiskScoreDropDown @bind-RiskScore="@riskUpdateModel.ResidualImpactRiskScoreId" RiskScores="@filteredRiskScores" OnRiskScoreChanged="@(() => SaveRiskScore(nameof(riskUpdateModel.ResidualImpactRiskScoreId)))">
+                    <Template Context="itemContext">
+                        @itemContext.Impact (@itemContext.Score)
+                    </Template>
+                </RiskScoreDropDown>
+            </div>
+            <div class="w-100 fs-6 full-width-badge">
+                <RiskScore Score="@riskViewModelRiskScores?.ResidualRiskScore" FontSize="2"/>
+            </div>
+        </div>
+    </div>
+}
+<div class="form-group row mb-5">
+    <label class="col-4 col-form-label fw-bolder">Departments</label>
+    <div class="col-8">
+        <RiskDepartments Risk="@riskViewModel"/>
+    </div>
+</div>
+<div class="form-group row mb-5">
+    <label class="col-4 col-form-label fw-bolder">Identification date</label>
+    <div class="col-8">
+        <SfDatePicker @bind-Value="@riskUpdateModel!.IdentificationDate" Placeholder="Select an identification date..." ShowTodayButton="false" Format="dd-MMM-yyyy" Min="@DateTime.Now.AddDays(1)" @ref="@identificationDate">
+            <DatePickerEvents TValue="DateTime?" ValueChange="@(() => Save(nameof(riskUpdateModel.IdentificationDate)))" Focus="@(() => identificationDate.Show())"/>
+        </SfDatePicker>
+    </div>
+</div>
+<div class="form-group row mb-5">
+    <label class="col-4 col-form-label fw-bolder">Review date</label>
+    <div class="col-8">
+        <SfDatePicker @bind-Value="@riskUpdateModel!.ReviewDate" Placeholder="Select a review date..." ShowTodayButton="false" Format="dd-MMM-yyyy" Min="@DateTime.Now.AddDays(1)" @ref="@reviewDate">
+            <DatePickerEvents TValue="DateTime?" ValueChange="@(() => Save(nameof(riskUpdateModel.ReviewDate)))" Focus="@(() => reviewDate.Show())"/>
+        </SfDatePicker>
+        <ValidationMessage For="@(() => riskUpdateModel!.ReviewDate)"/>
+    </div>
+</div>
+<div class="form-group row mb-5">
+    <label class="col-4 col-form-label fw-bolder">Reminder date</label>
+    <div class="col-8">
+        <SfDatePicker @bind-Value="@riskUpdateModel!.ReminderDate" Placeholder="Select a reminder date..." ShowTodayButton="false" Format="dd-MMM-yyyy" Min="@DateTime.Now.AddDays(1)" @ref="@reminderDate">
+            <DatePickerEvents TValue="DateTime?" ValueChange="@(() => Save(nameof(riskUpdateModel.ReminderDate)))" Focus="@(() => reminderDate.Show())"/>
+        </SfDatePicker>
+        <ValidationMessage For="@(() => riskUpdateModel!.ReminderDate)"/>
+    </div>
+</div>
+@if (riskViewModel!.RiskMitigationControls.Any())
+{
+    <div class="fv-row mb-5">
+        <div class="separator my-10"></div>
+        <label class="fw-bolder form-label mb-2">
+            <span class="">Mitigation controls</span>
+        </label>
+        <RiskMitigationControls @bind-RiskMitigationControlModels="@riskViewModel.RiskMitigationControls" Risk="@riskViewModel" OnRiskMitigationControlSelected="@ShowMitigationControl"/>
+    </div>
+}
+@if (riskViewModel!.RiskPossibleOptimizations.Any())
+{
+    <div class="fv-row mb-5">
+        <div class="separator my-10"></div>
+        <label class="fw-bolder form-label mb-2">
+            <span class="">Possible optimizations</span>
+        </label>
+        <RiskPossibleOptimizations @bind-RiskPossibleOptimizationModels="@riskViewModel.RiskPossibleOptimizations" Risk="@riskViewModel" OnRiskPossibleOptimizationSelected="@ShowPossibleOptimization"/>
+    </div>
+}
+@if (riskViewModel!.Files.Any())
+{
+    <div class="fv-row mb-5">
+        <div class="separator my-10"></div>
+        <label class="fw-bolder form-label mb-2">
+            <span class="">Files</span>
+        </label>
+        <FileList @bind-Files="@riskViewModel.Files"/>
+    </div>
+}
+</div>
+</EditForm>
+</div>
+</ContentTemplate>
+</TabItem>
+<TabItem>
+    <ChildContent>
+        <TabHeader Text="Activity"/>
+    </ChildContent>
+    <ContentTemplate>
+        <div class="card-body extra-card-padding transparent-border-edit-panel">
+            <div class="post">
+                @if (riskViewModel != null && riskViewModel.Revisions.Any())
+                {
+                    foreach (var riskRevision in riskViewModel!.Revisions.OrderByDescending(revision => revision.CreatedAt))
+                    {
+                        <p>@riskRevision.Name</p>
+                    }
+                }
+                else
+                {
+                    <p>No activity.</p>
+                }
+            </div>
+        </div>
+    </ContentTemplate>
+</TabItem>
+</TabItems>
+</SfTab>
+</Spinner>
+</div>
+</PageBody>
+</Page>
+
+<div id="mitigation-control-view" class="bg-white drawer drawer-end w-600px">
+    @if (selectedMitigationControl != null)
+    {
+        <RiskMitigationControl RiskMitigationControlModel="@selectedMitigationControl" @bind-RiskMitigationControlModels="@riskViewModel!.RiskMitigationControls"/>
+    }
+</div>
+<div id="mitigation-control-view-overlay" style="z-index: 109;" @onclick="@HideMitigationControl"></div>
+
+<div id="possible-optimization-view" class="bg-white drawer drawer-end">
+    @if (selectedPossibleOptimization != null)
+    {
+        <RiskPossibleOptimization RiskPossibleOptimizationModel="@selectedPossibleOptimization" @bind-RiskPossibleOptimizationModels="@riskViewModel!.RiskPossibleOptimizations"/>
+    }
+</div>
+<div id="possible-optimization-view-overlay" style="z-index: 109;" @onclick="@HidePossibleOptimization"></div>
+
+@code {
+
+    [Parameter]
+    public int RiskId { get; set; }
+
+    private EditForm editForm = null!;
+
+    private bool isSubmitting;
+
+    private RiskViewModel? riskViewModel;
+    private RiskViewModel? riskViewModelRiskScores;
+    private RiskUpdateModel? riskUpdateModel;
+
+    private RiskMitigationControlViewModel? selectedMitigationControl;
+    private RiskPossibleOptimizationViewModel? selectedPossibleOptimization;
+
+    private readonly string[] riskScoreTypes = Enum.GetNames<RiskScoreType>();
+
+    private IList<ProcessViewModel>? processes = new List<ProcessViewModel>();
+    private IList<CosoViewModel>? cosos = new List<CosoViewModel>();
+    private IList<FirmViewModel>? firms = new List<FirmViewModel>();
+    private IList<RiskScoreViewModel>? riskScores = new List<RiskScoreViewModel>();
+    private IList<RiskScoreViewModel> filteredRiskScores = new List<RiskScoreViewModel>();
+
+    private SfDatePicker<DateTime?> identificationDate = null!;
+    private SfDatePicker<DateTime?> reviewDate = null!;
+    private SfDatePicker<DateTime?> reminderDate = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        riskUpdateModel = null;
+        selectedMitigationControl = null;
+        selectedPossibleOptimization = null;
+
+        processes = await processRepository.GetAll();
+        cosos = await cosoRepository.GetAll();
+        firms = await firmRepository.GetAll();
+        riskScores = await riskScoreRepository.GetAll();
+
+        riskViewModel = await riskRepository.Get(RiskId);
+        riskViewModelRiskScores = riskViewModel;
+        riskUpdateModel = mapper.Map<RiskUpdateModel>(riskViewModel);
+
+        FilterRiskScoreTypes();
+    }
+
+    private void FilterRiskScoreTypes()
+    {
+        filteredRiskScores = riskScores!.Where(riskScore => riskScore.Type == riskUpdateModel!.RiskScoreType).ToList();
+    }
+
+    private async Task ShowFileCreateModal()
+    {
+        var modal = modalService.Show<FileCreateModal>("New file");
+        var result = await modal.Result;
+
+        if (!result.Cancelled && riskViewModel?.Files != null)
+        {
+            await riskRepository.CreateRiskFile(RiskId, ((FileViewModel)result.Data).Id);
+
+            riskViewModel.Files.Add((FileViewModel)result.Data);
+        }
+    }
+
+    private async Task ShowRiskMitigationControlCreateModal()
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("RiskId", riskViewModel!.Id);
+
+        var modal = modalService.Show<RiskMitigationControlCreateModal>("Add mitigation control", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            riskViewModel.RiskMitigationControls.Add((RiskMitigationControlViewModel)result.Data);
+        }
+    }
+
+    private async Task ShowRiskPossibleOptimizationCreateModal()
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("RiskId", riskViewModel!.Id);
+
+        var modal = modalService.Show<RiskPossibleOptimizationCreateModal>("Add possible optimization", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            riskViewModel.RiskPossibleOptimizations.Add((RiskPossibleOptimizationViewModel)result.Data);
+        }
+    }
+
+    private async Task ShowRiskDeleteModal()
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("RiskId", riskViewModel!.Id);
+
+        var modal = modalService.Show<RiskDeleteModal>("Delete risk", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            navigationManager.NavigateTo("/risk");
+        }
+    }
+
+    private async Task SaveRiskScoreType()
+    {
+        FilterRiskScoreTypes();
+
+        riskUpdateModel!.InherentFrequencyRiskScoreId = null;
+        riskUpdateModel!.InherentImpactRiskScoreId = null;
+        riskUpdateModel!.ResidualImpactRiskScoreId = null;
+        riskUpdateModel!.ResidualFrequencyRiskScoreId = null;
+
+        await Save(nameof(riskUpdateModel.RiskScoreType));
+    }
+
+    private async Task SaveRiskScore(string updatedFieldName)
+    {
+        await Save(updatedFieldName);
+
+        riskViewModelRiskScores = await riskRepository.Get(RiskId);
+    }
+
+    private async Task Save(string? updatedFieldName)
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        if (updatedFieldName != null)
+        {
+            var editContext = editForm.EditContext!;
+            var fieldIdentifier = editContext.Field(updatedFieldName);
+
+            editContext.NotifyFieldChanged(fieldIdentifier);
+
+            if (editContext.GetValidationMessages(fieldIdentifier).Any())
+            {
+                return;
+            }
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var updatedRiskViewModel = await riskRepository.Update(riskUpdateModel!);
+
+            if (updatedFieldName != null)
+            {
+                var updatedValue = updatedRiskViewModel.GetType().GetProperty(updatedFieldName)!.GetValue(updatedRiskViewModel);
+
+                riskViewModel!.GetType().GetProperty(updatedFieldName)!.SetValue(riskViewModel, updatedValue!);
+                riskUpdateModel!.GetType().GetProperty(updatedFieldName)!.SetValue(riskUpdateModel, updatedValue!);
+            }
+            else
+            {
+                riskViewModel = updatedRiskViewModel;
+                riskUpdateModel = mapper.Map<RiskUpdateModel>(riskViewModel);
+            }
+
+            toastService.ShowUpdated("Risk");
+        }
+        catch (HttpRequestException)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+    private async Task ShowMitigationControl(RiskMitigationControlViewModel riskMitigationControl)
+    {
+        await jsRuntime.InvokeVoidAsync("OffCanvasShow", "mitigation-control-view", true);
+
+        selectedMitigationControl = riskMitigationControl;
+    }
+
+    private async Task HideMitigationControl()
+    {
+        await jsRuntime.InvokeVoidAsync("OffCanvasHide", "mitigation-control-view", true);
+
+    // Wait for the transition in JS to finish.
+        await Task.Delay(500);
+
+        selectedMitigationControl = null;
+    }
+
+    private async Task ShowPossibleOptimization(RiskPossibleOptimizationViewModel riskPossibleOptimization)
+    {
+        await jsRuntime.InvokeVoidAsync("OffCanvasShow", "possible-optimization-view", true);
+
+        selectedPossibleOptimization = riskPossibleOptimization;
+    }
+
+    private async Task HidePossibleOptimization()
+    {
+        await jsRuntime.InvokeVoidAsync("OffCanvasHide", "possible-optimization-view", true);
+
+    // Wait for the transition in JS to finish.
+        await Task.Delay(500);
+
+        selectedMitigationControl = null;
+    }
+
+    private void OnSelecting(SelectingEventArgs args)
+    {
+        if (args.IsSwiped)
+        {
+            args.Cancel = true;
+        }
+    }
+
+}

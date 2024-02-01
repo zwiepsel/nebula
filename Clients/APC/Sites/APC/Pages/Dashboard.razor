@@ -1,0 +1,89 @@
+﻿@page "/dashboard"
+@attribute [Authorize(Policy = AdministratorRequirement.Name)]
+
+@inject IJSRuntime jsRuntime
+@inject CoreApi coreApi
+
+<Page ContainerSize="fluid">
+    <PageHeader>
+        <Header Title="Dashboard" Icon="analytics"></Header>
+    </PageHeader>
+    <PageSubHeader>
+        <SubHeader>
+            <Navigation>
+                <div class="menu menu-lg-rounded menu-column menu-lg-row menu-state-bg menu-title-gray-700 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-400 fw-bold my-5 my-lg-0 align-items-stretch">
+                    <div class="menu-item me-lg-1 @(activePage1 ? "here" : "")">
+                        <a class="menu-link py-3" href="#" @onclick="@(() => Embed("dashboard", "2dfa541d-be31-4af2-93e5-8dc6209e9b2c", true, 1))" @onclick:preventDefault="true" @onclick:stopPropagation="true">
+                            <span class="menu-title">Dashboard</span>
+                        </a>
+                    </div>
+                    <div class="menu-item me-lg-1 @(activePage2 ? "here" : "")">
+                        <a class="menu-link py-3" href="#" @onclick="@(() => Embed("report", "45c9d242-c320-4ed2-b77c-058c7df6d12b", true, 2))" @onclick:preventDefault="true" @onclick:stopPropagation="true">
+                            <span class="menu-title">HR insights</span>
+                        </a>
+                    </div>
+                    <div class="menu-item me-lg-1 @(activePage3 ? "here" : "")">
+                        <a class="menu-link py-3" href="#" @onclick="@(() => Embed("report", "0ba71a94-7370-4afa-9c23-43f5a316835f", true, 3))" @onclick:preventDefault="true" @onclick:stopPropagation="true">
+                            <span class="menu-title">Beheerskosten Budget vs Actuals</span>
+                        </a>
+                    </div>
+                </div>
+            </Navigation>
+        </SubHeader>
+    </PageSubHeader>
+    <PageBody>
+        <div @ref="@powerBiElement" id="power-bi-container" class="w-100 h-100"></div>
+    </PageBody>
+</Page>
+
+@code {
+
+    private ElementReference powerBiElement;
+
+    private bool activePage1 = true;
+    private bool activePage2;
+    private bool activePage3;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Embed("dashboard", "2dfa541d-be31-4af2-93e5-8dc6209e9b2c");
+    }
+
+    private async Task Embed(string type, string id, bool reset = false, int page = 0)
+    {
+        if (page is 0 or 1)
+        {
+            activePage1 = true;
+            activePage2 = false;
+            activePage3 = false;
+        }
+        if (page is 2)
+        {
+            activePage1 = false;
+            activePage2 = true;
+            activePage3 = false;
+        }
+        if (page is 3)
+        {
+            activePage1 = false;
+            activePage2 = false;
+            activePage3 = true;
+        }
+
+        var reportEmbedParameters = await coreApi.GetAsync<PowerBiEmbedViewModel>($"power-bi/embed/{type}/{id}");
+        var powerBiDataViewModel = reportEmbedParameters.Data.First();
+
+        if (reset)
+        {
+            await jsRuntime.InvokeVoidAsync("PowerBi.Reset", powerBiElement);
+        }
+
+        await jsRuntime.InvokeVoidAsync("PowerBi.Embed", DotNetObjectReference.Create(this),
+            powerBiElement,
+            type,
+            reportEmbedParameters.EmbedToken.Token,
+            powerBiDataViewModel.EmbedUri,
+            powerBiDataViewModel.Id);
+    }
+
+}

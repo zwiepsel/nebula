@@ -1,0 +1,58 @@
+﻿@inject ILocalizer<Translations> localizer
+
+<div class="modal fade show d-block" tabindex="-1" role="dialog">
+    <div class="modal-backdrop fade show" @onclick="@ModalInstance.CancelAsync"></div>
+    <div class="modal-dialog modal-dialog-centered @Width" style="z-index: 1050">
+        <div class="modal-content rounded">
+            <div class="modal-header pb-0 border-0 justify-content-end">
+                <div class="btn btn-sm btn-icon btn-active-light-primary" @onclick="@ModalInstance.CancelAsync">
+                    <span class="svg-icon svg-icon-2">
+                        <i class="fal fa-times"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
+                <div class="text-center mb-6">
+                    <h1 class="mb-3">@ModalInstance.Title</h1>
+                    @if (ModalSubTitle != null)
+                    {
+                        <div class="text-gray-400 fw-bold fs-5">@ModalSubTitle</div>
+                    }
+                </div>
+                @if (ModalBody != null)
+                {
+                    @ModalBody
+                }
+                @if (ModalFooter != null)
+                {
+                    <div class="text-center mt-15">
+                        <div @onclick="@ModalInstance.CancelAsync" class="btn btn-sm me-2">
+                            <i class="fal fa-fw fa-times me-2"></i>@localizer["cancel"]
+                        </div>
+                        @ModalFooter
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code
+{
+
+    [CascadingParameter]
+    public BlazoredModalInstance ModalInstance { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment? ModalSubTitle { get; set; }
+
+    [Parameter]
+    public RenderFragment? ModalBody { get; set; }
+
+    [Parameter]
+    public RenderFragment? ModalFooter { get; set; }
+
+    [Parameter]
+    public string Width { get; set; } = "mw-650px";
+    
+}

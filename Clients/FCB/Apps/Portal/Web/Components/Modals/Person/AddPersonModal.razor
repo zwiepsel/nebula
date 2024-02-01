@@ -1,0 +1,125 @@
+﻿
+@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject IMapper mapper
+@inject PersonRepository repository
+@inject ILocalizer<Translations> localizer
+
+<EditForm Model="@personCreateModel" OnValidSubmit="@Update" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal Width="mw-900px">
+        <ModalSubTitle>@localizer["new_person"]</ModalSubTitle>
+        <ModalBody>
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 mb-5">
+                    <InputLabel Value="@localizer["gender"]" Required="true"/>
+                    <SfDropDownList TValue="Gender" TItem="string" Placeholder="Select an option..." @bind-Value="@personCreateModel.Gender" DataSource="@genders"/>
+                    <ValidationMessage For="@(() => personCreateModel.Gender)"/>
+                </div>
+                <div class="col-xl-4 col-lg-6 mb-5">
+                    <InputLabel Value="@localizer["first_name"]" Required="true"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@personCreateModel.FirstName"/>
+                    <ValidationMessage For="@(() => personCreateModel.FirstName)"/>
+                </div>
+                <div class="col-xl-4 col-lg-6 mb-5">
+                    <InputLabel Value="@localizer["prefix"]" Required="false"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@personCreateModel.Prefix"/>
+                    <ValidationMessage For="@(() => personCreateModel.Prefix)"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["last_name"]" Required="true"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@personCreateModel.LastName"/>
+                    <ValidationMessage For="@(() => personCreateModel.LastName)"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="Email" Required="false"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@personCreateModel.EmailAddress"/>
+                    <ValidationMessage For="@(() => personCreateModel.EmailAddress)"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["phone_number"]" Required="false"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@personCreateModel.PhoneNumber"/>
+                    <ValidationMessage For="@(() => personCreateModel.PhoneNumber)"/>
+                </div>
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["nationality"]" Required="false"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@personCreateModel.Nationality"/>
+                    <ValidationMessage For="@(() => personCreateModel.Nationality)"/>
+                </div>
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["date_of_birth"]" Required="true"/>
+                    <SfDatePicker @bind-Value="@personCreateModel.DateOfBirth" Placeholder="Select a birthdate..." ShowTodayButton="false" Format="dd-MM-yyyy"/>
+                    <ValidationMessage For="@(() => personCreateModel.DateOfBirth)"/>
+                </div>
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["country_of_birth"]" Required="false"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@personCreateModel.CountryOfBirth"/>
+                    <ValidationMessage For="@(() => personCreateModel.CountryOfBirth)"/>
+                </div>
+                <div class="row">
+                    <div class="col-xl-4 col-lg-6 mb-5">
+                        <div class="form-check form-check-custom form-check-solid">
+                            <input class="form-check-input" type="checkbox" @bind="@personCreateModel.SchoolGoing">
+                            <label class="form-check-label flex-grow-1">@localizer["family_number_of_school_going"]</label>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 mb-5">
+                        <div class="form-check form-check-custom form-check-solid">
+                            <input class="form-check-input" type="checkbox" @bind="@personCreateModel.LeftHome">
+                            <label class="form-check-label flex-grow-1">@localizer["left_home"]</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Saving..." IdleText="Save" Icon="save" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+        private const string EntityName = "Persoon";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public int ClientId { get; set; }
+
+    private readonly PersonCreateModel personCreateModel = new();
+    private bool isSubmitting;
+    private readonly string[] genders = Enum.GetNames<Gender>();
+
+    private async Task Update()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            personCreateModel.ClientId = ClientId;
+            var model = await repository.Create(personCreateModel);
+            toastService.ShowUpdated(EntityName);
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

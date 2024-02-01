@@ -1,0 +1,306 @@
+﻿@layout PublicLayout
+
+@page "/overview"
+@attribute [Authorize(Policy = SiteRequirement.Name)]
+<SitePageTitle Title="Huurwoningen aanbod" />
+
+<header class="fixed-top">
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <a class="navbar-brand">
+                <img src="/dist/img/logos/mijn fcb/logo.svg" alt="" class="logo"/>
+            </a>
+            <div class="flex-shrink-0">
+                <ul class="table-action mt-5">
+                    <li class="btn btn-sm btn-light-primary">
+                        <i class="fas fa-lg fa-user-circle"></i><span> My account</span>
+                        <ul class="dropdownmenu">
+                            <li class="p-4">Change password</li>
+                            <li class="p-4">Logout</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section>
+<div class="container">
+    <div class="row mb-4">
+        <h1>Huurwoning aanbod</h1>
+    </div>
+    <div class="row mb-4">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Parent</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Child</li>
+          </ol>
+        </nav>
+    </div>
+    <div class="row">
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="house-container text-center">
+                <img src="https://i.imgur.com/FWfKWZ0.jpeg" alt="Rinconweg 56B" class="img img-responsive card-img-top" />
+                <div class="profile-content">
+                    <div class="profile-name">
+                        Kaya Pierd'i Mula #32
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg fa-bed mb-3"></i>
+                                <h6 class="text-muted">3 kamers</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg fa-map-marked mb-3"></i>
+                                <h6 class="text-muted">Tera Kora</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg	fa-ruler-combined mb-3"></i>
+                                <h6 class="text-muted">75m2</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pricing">
+                    <div class="price-box">
+                        <div class="price">$399<span>/maand</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="house-container text-center">
+                <img src="https://i.imgur.com/FWfKWZ0.jpeg" alt="Rinconweg 56B" class="img img-responsive card-img-top" />
+                <div class="profile-content">
+                    <div class="profile-name">
+                        Rinconweg 56C
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg fa-bed mb-3"></i>
+                                <h6 class="text-muted">2 kamers</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg fa-map-marked mb-3"></i>
+                                <h6 class="text-muted">Rincon</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg	fa-ruler-combined mb-3"></i>
+                                <h6 class="text-muted">75m2</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pricing">
+                    <div class="price-box">
+                        <div class="price">$399<span>/maand</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="house-container text-center">
+                <img src="https://i.imgur.com/FWfKWZ0.jpeg" alt="Rinconweg 56B" class="img img-responsive card-img-top" />
+                <div class="profile-content">
+                    <div class="profile-name">
+                        Rinconweg 56D
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg fa-bed mb-3"></i>
+                                <h6 class="text-muted">2 kamers</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg fa-map-marked mb-3"></i>
+                                <h6 class="text-muted">Nikiboko</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg	fa-ruler-combined mb-3"></i>
+                                <h6 class="text-muted">95m2</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pricing">
+                    <div class="price-box">
+                        <div class="price">$399<span>/maand</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="house-container text-center">
+                <img src="https://i.imgur.com/FWfKWZ0.jpeg" alt="Rinconweg 56B" class="img img-responsive card-img-top" />
+                <div class="profile-content">
+                    <div class="profile-name">
+                        Rinconweg 56B
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg fa-bed mb-3"></i>
+                                <h6 class="text-muted">3 kamers</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg fa-map-marked mb-3"></i>
+                                <h6 class="text-muted">Tera Kora</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg	fa-ruler-combined mb-3"></i>
+                                <h6 class="text-muted">75m2</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pricing">
+                    <div class="price-box">
+                        <div class="price">$399<span>/maand</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="house-container text-center">
+                <img src="https://i.imgur.com/FWfKWZ0.jpeg" alt="Rinconweg 56B" class="img img-responsive card-img-top" />
+                <div class="profile-content">
+                    <div class="profile-name">
+                        Rinconweg 56B
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg fa-bed mb-3"></i>
+                                <h6 class="text-muted">2 kamers</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg fa-map-marked mb-3"></i>
+                                <h6 class="text-muted">Rincon</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg	fa-ruler-combined mb-3"></i>
+                                <h6 class="text-muted">75m2</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pricing">
+                    <div class="price-box">
+                        <div class="price">$399<span>/maand</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="house-container text-center">
+                <img src="https://i.imgur.com/FWfKWZ0.jpeg" alt="Rinconweg 56B" class="img img-responsive card-img-top" />
+                <div class="profile-content">
+                    <div class="profile-name">
+                        Rinconweg 56B
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg fa-bed mb-3"></i>
+                                <h6 class="text-muted">2 kamers</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg fa-map-marked mb-3"></i>
+                                <h6 class="text-muted">Nikiboko</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="profile-overview">
+                                <i class="fas fa-lg	fa-ruler-combined mb-3"></i>
+                                <h6 class="text-muted">95m2</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pricing">
+                    <div class="price-box">
+                        <div class="price">$399<span>/maand</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="row mb-4">
+            <div class="d-flex justify-content-between">
+                <ul class="pagination">
+                    <li class="paginate_button page-item previous disabled">
+                        <a href="#" class="page-link">
+                            <i class="previous"></i>
+                        </a>
+                    </li>
+                    <li class="paginate_button page-item active">
+                        <a href="#" class="page-link">1</a>
+                    </li>
+                    <li class="paginate_button page-item ">
+                        <a href="#" class="page-link">2</a>
+                    </li>
+                    <li class="paginate_button page-item ">
+                        <a href="#" class="page-link">3</a>
+                    </li>
+                    <li class="paginate_button page-item next">
+                        <a href="#" class="page-link">
+                            <i class="next"></i>
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <div class="align-self-center pe-3">Show: </div>
+                    <select name="" class="form-select form-select-sm form-select-solid bg-white">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="footer">
+    <div class="row w-100">
+        <div class="col-12 p-6 text-center">
+            <span class="text-muted font-weight-bold mr-2">2021 © Fundashon Cas Bonairiano</span>
+        </div>
+    </div>
+</section>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+}

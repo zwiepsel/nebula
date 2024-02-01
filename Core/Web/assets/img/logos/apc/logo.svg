@@ -1,0 +1,239 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 289.84 472.74">
+    <defs>
+        <clipPath id="clip-path" transform="translate(-144.91 -179.55)">
+            <path d="M241,228.53a49,49,0,1,0,49-49,49,49,0,0,0-49,49" style="fill:none"/>
+        </clipPath>
+        <linearGradient id="linear-gradient" x1="-4.65" y1="854.86" x2="1.6" y2="854.86"
+                        gradientTransform="matrix(-10.08, -12.02, -12.02, 10.08, 10548.55, -8410.63)"
+                        gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#8a181b"/>
+            <stop offset="0.18" stop-color="#a41b1e"/>
+            <stop offset="0.56" stop-color="#e52126"/>
+            <stop offset="0.6" stop-color="#ec2227"/>
+            <stop offset="1" stop-color="#ec2227"/>
+        </linearGradient>
+        <clipPath id="clip-path-2" transform="translate(-144.91 -179.55)">
+            <rect x="144.91" y="179.55" width="860.7" height="566.45" style="fill:none"/>
+        </clipPath>
+        <clipPath id="clip-path-3" transform="translate(-144.91 -179.55)">
+            <path d="M421.68,497.45h0l0,0a.21.21,0,0,1,.06-.08l-.08.05" style="fill:none"/>
+        </clipPath>
+        <radialGradient id="radial-gradient" cx="1.84" cy="825.62" r="6.24"
+                        gradientTransform="translate(-3636.41 15267.42) rotate(-164.95) scale(18.67)"
+                        gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ef4237"/>
+            <stop offset="0.05" stop-color="#ef4237"/>
+            <stop offset="0.26" stop-color="#d53830"/>
+            <stop offset="0.75" stop-color="#9e2120"/>
+            <stop offset="0.99" stop-color="#88181a"/>
+            <stop offset="1" stop-color="#88181a"/>
+        </radialGradient>
+        <clipPath id="clip-path-4" transform="translate(-144.91 -179.55)">
+            <path d="M421.65,497.46h0" style="fill:none"/>
+        </clipPath>
+        <linearGradient id="linear-gradient-2" x1="421.63" y1="497.45" x2="421.66" y2="497.45"
+                        gradientTransform="translate(421.18 95.46) rotate(-116.46) scale(0.01)"
+                        gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#d2d3d4"/>
+            <stop offset="0.29" stop-color="#d2d3d4"/>
+            <stop offset="0.45" stop-color="#c49fa2"/>
+            <stop offset="0.64" stop-color="#b6686d"/>
+            <stop offset="0.8" stop-color="#ac4046"/>
+            <stop offset="0.92" stop-color="#a5272f"/>
+            <stop offset="1" stop-color="#a31e26"/>
+        </linearGradient>
+        <clipPath id="clip-path-5" transform="translate(-144.91 -179.55)">
+            <path d="M421.66,497.46h0" style="fill:none"/>
+        </clipPath>
+        <radialGradient id="radial-gradient-2" cx="421.65" cy="497.45" r="0.01"
+                        gradientTransform="translate(424.75 94.55) rotate(-164.98) scale(0)"
+                        xlink:href="#radial-gradient"/>
+        <clipPath id="clip-path-6" transform="translate(-144.91 -179.55)">
+            <path d="M421.65,497.45h0Z" style="fill:none"/>
+        </clipPath>
+        <linearGradient id="linear-gradient-3" x1="421.65" y1="497.45" x2="421.66" y2="497.45"
+                        gradientTransform="translate(423.2 94.45) rotate(-116.48) scale(0)"
+                        xlink:href="#linear-gradient-2"/>
+        <linearGradient id="linear-gradient-4" x1="421.66" y1="497.45" x2="421.68" y2="497.45"
+                        gradientTransform="translate(425.03 96.36) rotate(180) scale(0)" xlink:href="#linear-gradient"/>
+        <radialGradient id="radial-gradient-3" cx="421.67" cy="497.45" r="0.01"
+                        gradientTransform="translate(424.7 94.74) rotate(-164.9) scale(0)"
+                        xlink:href="#radial-gradient"/>
+        <clipPath id="clip-path-8" transform="translate(-144.91 -179.55)">
+            <path d="M340.61,358.67c2,35.48,7.72,94.19,81,138.76h0C368.52,430,383.69,373,394.26,339.06c.08-.28.13-.56.22-.84a143.8,143.8,0,0,0-97.09-44.45c25,13.15,41.73,38.31,43.22,64.9"
+                  style="fill:none"/>
+        </clipPath>
+        <linearGradient id="linear-gradient-5" x1="0.78" y1="853.17" x2="7.02" y2="853.17"
+                        gradientTransform="matrix(27.31, 8.35, -8.35, 27.31, 7377.09, -22938.75)"
+                        gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ec2227"/>
+            <stop offset="0.34" stop-color="#ec2227"/>
+            <stop offset="0.57" stop-color="#cd2025"/>
+            <stop offset="0.99" stop-color="#8a1b21"/>
+            <stop offset="1" stop-color="#8a1b21"/>
+        </linearGradient>
+        <clipPath id="clip-path-9" transform="translate(-144.91 -179.55)">
+            <path d="M421.61,497.43l0,0h0Z" style="fill:none"/>
+        </clipPath>
+        <linearGradient id="linear-gradient-6" x1="421.61" y1="497.44" x2="421.65" y2="497.44"
+                        gradientTransform="translate(425.03 97.49) rotate(180) scale(0)" xlink:href="#linear-gradient"/>
+        <clipPath id="clip-path-10" transform="translate(-144.91 -179.55)">
+            <path d="M421.63,497.45h0l0,0,0,0" style="fill:none"/>
+        </clipPath>
+        <linearGradient id="linear-gradient-7" x1="421.61" y1="497.44" x2="421.65" y2="497.44"
+                        xlink:href="#linear-gradient-2"/>
+        <clipPath id="clip-path-11" transform="translate(-144.91 -179.55)">
+            <path d="M394.26,339.06C383.69,373,368.53,430,421.61,497.43l0,0h0a144.29,144.29,0,0,0-27.2-159.23c-.09.28-.14.56-.22.84"
+                  style="fill:none"/>
+        </clipPath>
+        <linearGradient id="linear-gradient-8" x1="8.52" y1="838.48" x2="14.76" y2="838.48"
+                        gradientTransform="matrix(-17.34, 34.83, -34.83, -17.34, 29792.5, 14606.18)"
+                        gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ec2227"/>
+            <stop offset="0.25" stop-color="#ec2227"/>
+            <stop offset="0.99" stop-color="#88181a"/>
+            <stop offset="1" stop-color="#88181a"/>
+        </linearGradient>
+        <clipPath id="clip-path-12" transform="translate(-144.91 -179.55)">
+            <path d="M158.58,497.38l0,0a.33.33,0,0,0-.1-.06l.07.08" style="fill:none"/>
+        </clipPath>
+        <radialGradient id="radial-gradient-4" cx="-10.01" cy="828.62" r="6.24"
+                        gradientTransform="matrix(17.91, -4.82, -4.82, -17.91, 4415.91, 15160.66)"
+                        xlink:href="#radial-gradient"/>
+        <clipPath id="clip-path-13" transform="translate(-144.91 -179.55)">
+            <path d="M158.7,497.28l0,.05.12-.08s-.05,0-.08,0" style="fill:none"/>
+        </clipPath>
+        <radialGradient id="radial-gradient-5" cx="-9.64" cy="829.24" r="6.24"
+                        gradientTransform="matrix(18.42, -4.95, -4.95, -18.42, 4531.74, 15594.99)"
+                        xlink:href="#radial-gradient"/>
+        <clipPath id="clip-path-14" transform="translate(-144.91 -179.55)">
+            <path d="M158.61,497.36h0s0,0,0,0l0,0" style="fill:none"/>
+        </clipPath>
+        <linearGradient id="linear-gradient-9" x1="-7.94" y1="842.45" x2="-1.7" y2="842.45"
+                        gradientTransform="matrix(20.68, -41.54, -41.54, -20.68, 35321, 17591.11)"
+                        xlink:href="#linear-gradient-2"/>
+        <clipPath id="clip-path-15" transform="translate(-144.91 -179.55)">
+            <path d="M239.67,358.57c-2,35.47-7.71,94.12-80.89,138.68,33.33-9.73,64.37-27.46,85.73-55.32a159.51,159.51,0,0,0,19.15-32.8c4.91-11.15,7.77-23.29,13.21-34.16-7.67-7.46-14.84-13.32-29.4-19.24a71.46,71.46,0,0,0-7.28-2.45c-.23,1.76-.42,3.51-.52,5.29"
+                  style="fill:none"/>
+        </clipPath>
+        <radialGradient id="radial-gradient-6" cx="-22.42" cy="814.83" r="6.24"
+                        gradientTransform="matrix(10.18, -2.73, -2.73, -10.18, 2669.39, 8661.35)"
+                        gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ec2227"/>
+            <stop offset="0.25" stop-color="#cc2025"/>
+            <stop offset="0.57" stop-color="#a81d23"/>
+            <stop offset="0.83" stop-color="#921c21"/>
+            <stop offset="0.99" stop-color="#8a1b21"/>
+            <stop offset="1" stop-color="#8a1b21"/>
+        </radialGradient>
+        <clipPath id="clip-path-16" transform="translate(-144.91 -179.55)">
+            <path d="M197.61,352.57a67.45,67.45,0,0,0-7,2.31c8.92,34.51,13.57,84.62-31.91,142.4,0,0,.05,0,.08,0C232,452.69,237.69,394,239.67,358.57c.1-1.78.29-3.53.52-5.29a84.31,84.31,0,0,0-23-3.16,77.45,77.45,0,0,0-19.62,2.45"
+                  style="fill:none"/>
+        </clipPath>
+        <linearGradient id="linear-gradient-10" x1="-15.29" y1="827.09" x2="-9.04" y2="827.09"
+                        gradientTransform="matrix(17.95, -4.83, -4.83, -17.95, 4409.39, 15209.23)"
+                        gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ec2227"/>
+            <stop offset="0.36" stop-color="#ea2227"/>
+            <stop offset="0.54" stop-color="#e22126"/>
+            <stop offset="0.67" stop-color="#d52026"/>
+            <stop offset="0.79" stop-color="#c31f24"/>
+            <stop offset="0.89" stop-color="#ab1d23"/>
+            <stop offset="0.98" stop-color="#8d1b21"/>
+            <stop offset="0.99" stop-color="#8a1b21"/>
+            <stop offset="1" stop-color="#8a1b21"/>
+        </linearGradient>
+        <clipPath id="clip-path-17" transform="translate(-144.91 -179.55)">
+            <path d="M159.93,375.72a143.39,143.39,0,0,0-3.74,115.93c.77,1.91,1.56,3.8,2.4,5.66a.45.45,0,0,0,.11,0c45.48-57.78,40.83-107.89,31.91-142.4-11.64,4.48-21.86,12-30.68,20.84"
+                  style="fill:none"/>
+        </clipPath>
+        <linearGradient id="linear-gradient-11" x1="13.67" y1="862.85" x2="19.91" y2="862.85"
+                        gradientTransform="matrix(-16.5, 0, 0, 16.5, 421.96, -13810.3)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ec2227"/>
+            <stop offset="0.18" stop-color="#e02126"/>
+            <stop offset="0.51" stop-color="#c21f24"/>
+            <stop offset="0.95" stop-color="#901b21"/>
+            <stop offset="0.99" stop-color="#8a1b21"/>
+            <stop offset="1" stop-color="#8a1b21"/>
+        </linearGradient>
+        <clipPath id="clip-path-18" transform="translate(-144.91 -179.55)">
+            <path d="M282.56,293.83a143.86,143.86,0,0,0-96.72,44.45,145.69,145.69,0,0,0-18.73,24.17A112.52,112.52,0,0,1,187.55,344c13.15-9,27.39-13.31,44.47-13a80.13,80.13,0,0,1,14.18,1.51c28.67,5.53,52.54,25.92,61.13,52,11.13,33.76,31.92,88.95,114.3,113l0,0c-73.28-44.57-79-103.28-81-138.76-1.49-26.59-18.25-51.75-43.22-64.9-2.39-.12-4.79-.19-7.22-.19s-5.09.12-7.61.25"
+                  style="fill:none"/>
+        </clipPath>
+        <linearGradient id="linear-gradient-12" x1="-3.33" y1="834.19" x2="2.92" y2="834.19"
+                        gradientTransform="matrix(40.76, 0, 0, -40.76, 302.75, 34393.09)"
+                        xlink:href="#linear-gradient-5"/>
+    </defs>
+    <g style="clip-path:url(#clip-path)">
+        <path d="M241,228.53a49,49,0,1,0,49-49,49,49,0,0,0-49,49" transform="translate(-144.91 -179.55)"
+              style="fill:url(#linear-gradient)"/>
+    </g>
+    <path d="M195.33,569.17,212.15,610H178.67m9-62.26L144.91,650.54h17.51l10-24.65h46l9.86,24.65h18.06L203.53,547.73Z"
+          transform="translate(-144.91 -179.55)" style="fill:#88181a"/>
+    <g style="clip-path:url(#clip-path-2)">
+        <path d="M296.57,617.73h-19.3v32.81H260.19V548.46h38.33c22.63,0,36.94,13.42,36.94,34.27,0,23-17.5,35-38.89,35m.56-52.94H277.27v36.75h19.86c12.91,0,21-7.43,21-18.37,0-12.11-8.19-18.38-21-18.38"
+              transform="translate(-144.91 -179.55)" style="fill:#88181a"/>
+        <path d="M395.3,652.28c-28.33,0-49.44-23.18-49.44-52.64,0-29.16,20.69-52.93,50.13-52.93,17.92,0,28.77,6.56,38.06,15.89l-11,13.27c-7.77-7.58-16.12-12.68-27.22-12.68-18.61,0-32.09,16-32.09,36.16s13.48,36.45,32.09,36.45c11.94,0,19.58-5.1,27.92-13.26l11,11.67c-10.14,11.07-21.25,18.07-39.45,18.07"
+              transform="translate(-144.91 -179.55)" style="fill:#88181a"/>
+    </g>
+    <g style="clip-path:url(#clip-path-3)">
+        <path d="M421.68,497.44v0h0l0,0a.35.35,0,0,1,.06-.09l-.08.05" transform="translate(-144.91 -179.55)"
+              style="fill:url(#radial-gradient)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-4)">
+        <path d="M421.65,497.46h0s0,0,0,0" transform="translate(-144.91 -179.55)" style="fill:url(#linear-gradient-2)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-5)">
+        <path d="M421.66,497.46h0" transform="translate(-144.91 -179.55)" style="fill:url(#radial-gradient-2)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-6)">
+        <path d="M421.65,497.45h0" transform="translate(-144.91 -179.55)" style="fill:url(#linear-gradient-3)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-5)">
+        <path d="M421.66,497.46h0v0l0,0" transform="translate(-144.91 -179.55)" style="fill:url(#linear-gradient-4)"/>
+        <path d="M421.66,497.46h0v0l0,0" transform="translate(-144.91 -179.55)" style="fill:url(#radial-gradient-3)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-8)">
+        <path d="M340.61,358.67c2,35.48,7.72,94.19,81,138.76h0C368.52,430,383.69,373,394.26,339.06c.08-.28.13-.56.22-.84a143.8,143.8,0,0,0-97.09-44.45c25,13.15,41.73,38.31,43.22,64.9"
+              transform="translate(-144.91 -179.55)" style="fill:url(#linear-gradient-5)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-9)">
+        <path d="M421.61,497.43h0l0,0" transform="translate(-144.91 -179.55)" style="fill:url(#linear-gradient-6)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-10)">
+        <path d="M421.63,497.44h0l0,0h0" transform="translate(-144.91 -179.55)" style="fill:url(#linear-gradient-7)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-11)">
+        <path d="M394.26,339.06C383.69,373,368.53,430,421.61,497.43l0,0h0l0,0a144.28,144.28,0,0,0-27.2-159.22c-.09.28-.14.56-.22.84"
+              transform="translate(-144.91 -179.55)" style="fill:url(#linear-gradient-8)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-12)">
+        <path d="M158.58,497.38l0,0-.1-.06.06.08" transform="translate(-144.91 -179.55)"
+              style="fill:url(#radial-gradient-4)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-13)">
+        <path d="M158.7,497.28l0,.05.12-.08s-.05,0-.08,0" transform="translate(-144.91 -179.55)"
+              style="fill:url(#radial-gradient-5)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-14)">
+        <path d="M158.62,497.36h0s0,0,0,0l0,0" transform="translate(-144.91 -179.55)"
+              style="fill:url(#linear-gradient-9)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-15)">
+        <path d="M239.67,358.57c-2,35.47-7.71,94.12-80.89,138.68,33.33-9.73,64.38-27.46,85.73-55.32a159.51,159.51,0,0,0,19.15-32.8c4.91-11.15,7.77-23.29,13.21-34.16-7.67-7.46-14.84-13.32-29.4-19.24a71.46,71.46,0,0,0-7.28-2.45c-.23,1.76-.42,3.51-.52,5.29"
+              transform="translate(-144.91 -179.55)" style="fill:url(#radial-gradient-6)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-16)">
+        <path d="M197.61,352.57a67.45,67.45,0,0,0-7,2.31c8.92,34.51,13.57,84.62-31.91,142.4,0,0,.05,0,.08,0C232,452.69,237.69,394,239.67,358.57c.1-1.78.29-3.53.52-5.29a84.31,84.31,0,0,0-23-3.16,77.45,77.45,0,0,0-19.62,2.45"
+              transform="translate(-144.91 -179.55)" style="fill:url(#linear-gradient-10)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-17)">
+        <path d="M159.93,375.72a143.39,143.39,0,0,0-3.74,115.93c.77,1.91,1.56,3.8,2.4,5.66a.45.45,0,0,0,.11,0c45.48-57.78,40.83-107.89,31.91-142.4-11.64,4.48-21.86,12-30.68,20.84"
+              transform="translate(-144.91 -179.55)" style="fill:url(#linear-gradient-11)"/>
+    </g>
+    <g style="clip-path:url(#clip-path-18)">
+        <path d="M282.56,293.83a143.86,143.86,0,0,0-96.72,44.45,145.69,145.69,0,0,0-18.73,24.17A112.52,112.52,0,0,1,187.55,344c13.15-9,27.39-13.31,44.47-13a80.13,80.13,0,0,1,14.18,1.51c28.67,5.53,52.54,25.92,61.13,52,11.13,33.76,31.92,88.95,114.3,113h0c-73.28-44.57-79-103.28-81-138.76-1.49-26.59-18.25-51.75-43.22-64.9-2.39-.12-4.79-.19-7.22-.19s-5.09.12-7.61.25"
+              transform="translate(-144.91 -179.55)" style="fill:url(#linear-gradient-12)"/>
+    </g>
+</svg>

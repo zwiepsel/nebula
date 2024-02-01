@@ -1,0 +1,46 @@
+﻿@inject IToastService toastService
+@inject FileRepository fileRepository
+
+<Modal>
+    <ModalSubTitle>Are you sure you want to continue? This process cannot be undone.</ModalSubTitle>
+    <ModalFooter>
+        <SpinnerButton Method="@Delete" Loading="@isSubmitting" LoadingText="Deleting..." IdleText="Delete" Icon="trash" Size="md" Color="light-danger" Margins="false"/>
+    </ModalFooter>
+</Modal>
+
+@code
+{
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public int FileId { get; set; }
+
+    private bool isSubmitting;
+
+    private async Task Delete()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            await fileRepository.Delete(FileId);
+            toastService.ShowRemoved("File");
+            await Modal.CloseAsync(ModalResult.Ok(FileId));
+        }
+        catch (Exception)
+        {
+            await Modal.CancelAsync();
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

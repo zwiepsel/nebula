@@ -1,0 +1,17 @@
+﻿@page "/settings"
+@attribute [Authorize(Policy = SiteAdministratorRequirement.Name)]
+
+@inject AppState appState
+
+<SettingPage>
+    <PageSubHeader>
+        <SubHeader Title="Dashboard" Icon="analytics"/>
+    </PageSubHeader>
+    <PageBody>
+        <div class="card">
+            <div class="card-body">
+                <p class="mb-0">@appState.Site.Name settings.</p>
+            </div>
+        </div>
+    </PageBody>
+</SettingPage>

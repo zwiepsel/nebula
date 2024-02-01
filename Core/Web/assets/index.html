@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="/"/>
+    <meta charset="utf-8"/>
+    <title>Nebula</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+    <link href="<%= htmlWebpackPlugin.files['css'][1] %>" id="main-theme" rel="stylesheet"/>
+    <link as="style" href="<%= htmlWebpackPlugin.files['css'][1] %>" id="default-theme" rel="preload"/>
+    <link as="style" href="<%= htmlWebpackPlugin.files['css'][0] %>" id="dark-theme" rel="preload"/>
+    <link as="style" href="<%= htmlWebpackPlugin.files['css'][2] %>" id="base" rel="stylesheet"/>
+</head>
+<body class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed toolbar-tablet-and-mobile-fixed aside-enabled aside-fixed" data-kt-aside-minimize="on" id="body" style="--kt-toolbar-height:55px;--kt-toolbar-height-tablet-and-mobile:55px">
+<div class="d-flex flex-column flex-root" id="app">
+    <div class="h-100">
+        <div class="container h-100">
+            <div class="d-flex align-items-center justify-content-center h-100">
+                <div class="d-flex flex-column">
+                    <div class="text-center">
+                        <i class="logo text-primary fal fa-5x fa-solar-system mb-5"></i>
+                        <h1 class="text-center">Nebula</h1>
+                    </div>
+                    <div class="mt-2 mb-3" id="progress-bar-wrapper" style="display: none">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped active" id="progress-bar" role="progressbar" style="width: 0"></div>
+                        </div>
+                    </div>
+                    <p class="clearfix"><i class="fal fa-spin fa-spinner-third me-2"></i>Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="blazor-error-ui">
+    <div class="offcanvas-overlay">
+        <div class="modal fade show d-block" role="dialog" tabindex="-1">
+            <div class="modal-backdrop fade show"></div>
+            <div class="modal-dialog modal-dialog-centered mw-650px" style="z-index: 1050">
+                <div class="modal-content rounded">
+                    <div class="modal-header pb-0 border-0 justify-content-end">
+                        <div class="btn btn-sm btn-icon btn-active-light-primary" onclick="window.CloseBlazorErrorUi();">
+                            <span class="svg-icon svg-icon-2">
+                                <i class="fal fa-times"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-13">
+                            <i class="fal fa-5x fa-times-circle text-danger mb-5"></i>
+                            <h1 class="mb-3">Unexpected error</h1>
+                            <div class="text-gray-400 fw-bold fs-5 mb-1">
+                                An unexpected error has occurred. Try reloading the page.
+                            </div>
+                            <div class="text-gray-400 fw-bold fs-5">
+                                If the problem persists please contact your system administrator.
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button class="btn btn-sm me-2" onclick="window.CloseBlazorErrorUi();">
+                                <i class="fal fa-fw fa-times me-2"></i>Close
+                            </button>
+                            <a class="btn btn-light-primary" onclick="window.ReloadPage();">
+                                <i class="fal fa-sync me-2"></i>Reload page
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="<%= htmlWebpackPlugin.files['js'][0] %>"></script>
+<script>
+    window.SetTheme(window.GetCurrentTheme());
+</script>
+<script src="_content/Blazored.Modal/blazored.modal.js"></script>
+<script autostart="false" src="_framework/blazor.webassembly.js"></script>
+<script>
+    let i = 0;
+    const resourcesBeingLoaded = [];
+
+    document.addEventListener("DOMContentLoaded", function () {
+        Blazor.start({
+            loadBootResource: function (type, name, defaultUri, integrity) {
+                if (type === "dotnetjs") {
+                    return defaultUri;
+                }
+
+                const fetchResource = fetch(defaultUri, {
+                    cache: 'no-cache',
+                    integrity: integrity
+                });
+
+                resourcesBeingLoaded.push(fetchResource);
+                fetchResource.then(() => {
+                    i++;
+
+                    document.getElementById('progress-bar-wrapper').style.display = "inline";
+                    document.getElementById('progress-bar').style.width = (i * 100.0) / resourcesBeingLoaded.length + '%';
+                });
+
+                return fetchResource;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

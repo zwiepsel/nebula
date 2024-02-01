@@ -1,0 +1,84 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject FileRepository fileRepository
+@inject FileTypeRepository fileTypeRepository
+
+<EditForm Model="@createModel" OnValidSubmit="@Create" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal>
+        <ModalSubTitle>Create a new file</ModalSubTitle>
+        <ModalBody>
+            <div class="mb-5">
+                <InputLabel Value="Name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Name"/>
+                <ValidationMessage For="@(() => createModel.Name)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="File type" Required="true"/>
+                <SfDropDownList @bind-Value="@createModel.FileTypeId" TValue="int" TItem="FileTypeViewModel" Placeholder="Select an option..." AllowFiltering="true" DataSource="@fileTypes">
+                    <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                </SfDropDownList>
+                <ValidationMessage For="@(() => createModel.FileTypeId)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="File" Required="true"/>
+                <InputFile OnChange="@LoadFile" class="form-control form-control-lg form-control-solid"/>
+                <ValidationMessage For="@(() => createModel.BrowserFile)"/>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Creating..." IdleText="Create" Icon="plus" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    private bool isSubmitting;
+    private readonly FileCreateModel createModel = new();
+    private IList<FileTypeViewModel> fileTypes = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        fileTypes = await fileTypeRepository.GetAll();
+    }
+
+    private void LoadFile(InputFileChangeEventArgs args)
+    {
+        createModel.BrowserFile = args.File;
+    }
+
+    private async Task Create()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        if (createModel.BrowserFile == null)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await fileRepository.Create(createModel.BrowserFile, createModel);
+            toastService.ShowCreated("File");
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            await Modal.CancelAsync();
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

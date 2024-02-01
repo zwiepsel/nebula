@@ -1,0 +1,15 @@
+﻿@inject IModalService modalService
+
+<li class="splide__slide">
+    <img src="@ImgSrc" alt="@AltText" />
+</li>
+
+@code {
+
+    [Parameter]
+    public string ImgSrc { get; set; } = null!;
+
+    [Parameter]
+    public string? AltText { get; set; }
+    
+}

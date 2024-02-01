@@ -1,0 +1,31 @@
+﻿@inject IAuthorizationChecker authorizationChecker
+
+@if (isAuthorized)
+{
+    @Authorized
+}
+else
+{
+    @NotAuthorized
+}
+
+@code {
+
+    [Parameter]
+    [EditorRequired]
+    public string PermissionSystemName { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment? Authorized { get; set; }
+
+    [Parameter]
+    public RenderFragment? NotAuthorized { get; set; }
+
+    private bool isAuthorized;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isAuthorized = await authorizationChecker.HasPermission(PermissionSystemName);
+    }
+
+}

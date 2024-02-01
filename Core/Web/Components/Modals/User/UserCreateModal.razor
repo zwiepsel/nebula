@@ -1,0 +1,81 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject UserRepository repository
+@inject RoleRepository roleRepository
+
+<EditForm Model="@createModel" OnValidSubmit="@Create" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal>
+        <ModalSubTitle>Create a new @EntityName.ToLower()</ModalSubTitle>
+        <ModalBody>
+            <div class="mb-5">
+                <InputLabel Value="Email address" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" autocomplete="off" @bind-Value="@createModel.EmailAddress"/>
+                <ValidationMessage For="@(() => createModel.EmailAddress)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Password" Required="true"/>
+                <InputTextField type="password" class="form-control form-control-lg form-control-solid" autocomplete="new-password" @bind-Value="@createModel.Password"/>
+                <ValidationMessage For="@(() => createModel.Password)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Confirmation password" Required="true"/>
+                <InputTextField type="password" class="form-control form-control-lg form-control-solid" autocomplete="new-password" @bind-Value="@createModel.ConfirmationPassword"/>
+                <ValidationMessage For="@(() => createModel.ConfirmationPassword)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Role" Required="true"/>
+                <SfDropDownList @bind-Value="@createModel.RoleId" TValue="int" TItem="RoleViewModel" Placeholder="Select a role..." AllowFiltering="true" DataSource="@roles">
+                    <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                </SfDropDownList>
+                <ValidationMessage For="@(() => createModel.RoleId)"/>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Creating..." IdleText="Create" Icon="plus" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+
+        private const string EntityName = "User";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    private bool isSubmitting;
+    private readonly UserCreateModel createModel = new();
+
+    private IList<RoleViewModel> roles = new List<RoleViewModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        roles = await roleRepository.GetCoreRoles();
+    }
+
+    private async Task Create()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await repository.Create(createModel);
+            toastService.ShowCreated(EntityName);
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

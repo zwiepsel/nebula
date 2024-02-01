@@ -1,0 +1,12 @@
+﻿@inject AppState appState
+
+<Nebula.Shared.Clients.Layout.SettingsSidebar Title="@appState.Site.Name" ReturnUri="/" SeparatorText="Settings">
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/settings" Name="Dashboard" Icon="analytics"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/settings/department" Name="Departments" Icon="layer-group"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/settings/file-type" Name="File types" Icon="file-alt"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/settings/mitigation-control" Name="Mitigation controls" Icon="shield-check"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/settings/process" Name="Processes" Icon="project-diagram"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/settings/risk-score" Name="Risk scores" Icon="tachometer-alt"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/settings/coso" Name="COSOs" Icon="tags"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/settings/firm" Name="FIRMs" Icon="tags"/>
+</Nebula.Shared.Clients.Layout.SettingsSidebar>

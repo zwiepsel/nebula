@@ -1,0 +1,50 @@
+﻿<SfDropDownList @bind-Value="@RiskScore" TValue="int?" TItem="RiskScoreViewModel" Placeholder="Select a risk score..." AllowFiltering="true" DataSource="@RiskScores">
+    <DropDownListEvents TValue="int?" TItem="RiskScoreViewModel" ValueChange="@OnRiskScoreChanged"></DropDownListEvents>
+    <DropDownListFieldSettings Text="Frequency" Value="Id"></DropDownListFieldSettings>
+    <DropDownListTemplates TItem="RiskScoreViewModel">
+        <ItemTemplate Context="itemContext">
+            @Template(itemContext)
+        </ItemTemplate>
+        <ValueTemplate Context="itemContext">
+            @Template(itemContext)
+        </ValueTemplate>
+    </DropDownListTemplates>
+</SfDropDownList>
+
+@code {
+
+    private int? riskScore;
+
+    [Parameter]
+    public int? RiskScore
+    {
+        get => riskScore;
+        set
+        {
+            if (value == riskScore)
+            {
+                return;
+            }
+
+            riskScore = value;
+
+            if (RiskScoreChanged.HasDelegate)
+            {
+                RiskScoreChanged.InvokeAsync(riskScore);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<int?> RiskScoreChanged { get; set; }
+
+    [Parameter]
+    public IList<RiskScoreViewModel> RiskScores { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment<RiskScoreViewModel> Template { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<ChangeEventArgs<int?, RiskScoreViewModel>> OnRiskScoreChanged { get; set; }
+
+}

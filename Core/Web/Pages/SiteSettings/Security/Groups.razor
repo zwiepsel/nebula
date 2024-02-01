@@ -1,0 +1,109 @@
+﻿@page "/settings/security/group"
+@attribute [Authorize(Policy = SiteAdministratorRequirement.Name)]
+
+@inject IModalService modalService
+@inject AppState appState
+@inject SiteSettingsGroupRepository repository
+
+<SettingPage>
+    <PageSubHeader>
+        <SubHeader>
+            <Navigation>
+                <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x fs-6 mt-3">
+                    <li class="nav-item">
+                        <a style="height: 43px;" class="fw-bold text-dark nav-link" href="/settings/security/access-control-list">Access control list</a>
+                    </li>
+                    <li class="nav-item">
+                        <a style="height: 43px;" class="fw-bold text-dark nav-link active" href="/settings/security/group">Groups</a>
+                    </li>
+                    <li class="nav-item">
+                        <a style="height: 43px;" class="fw-bold text-dark nav-link" href="/settings/security/permission">Permissions</a>
+                    </li>
+                </ul>
+            </Navigation>
+            <Toolbar>
+                <SpinnerButton Loading="false" IdleText="@CreateButtonIdleText" LoadingText="Creating..." Size="sm" Icon="plus" Color="light-primary" Margins="false" Method="@ShowCreateModal"/>
+            </Toolbar>
+        </SubHeader>
+    </PageSubHeader>
+    <PageBody>
+        <div class="card">
+            <Spinner Loading="@(models == null)" Mode="@SpinnerMode.Overlay">
+                <div class="card-header border-0 pt-6">
+                    <div class="card-title">
+                        <div class="d-flex align-items-center position-relative my-1">
+                            <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                <i class="fal fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="Search" @bind-value="@searchText" @bind-value:event="oninput" @onkeyup="@SearchGrid">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <SfGrid @ref="@grid" DataSource="@models" AllowSorting="true" AllowPaging="true">
+                        <GridEvents RowSelected="@ShowUpdateModal" TValue="GroupViewModel"/>
+                        <GridColumns>
+                            <GridColumn Field="@nameof(GroupViewModel.Id)" HeaderText="Id"/>
+                            <GridColumn Field="@nameof(GroupViewModel.Name)" HeaderText="Name"/>
+                            <GridColumn Field="@nameof(GroupViewModel.SystemName)" HeaderText="System name"/>
+                        </GridColumns>
+                    </SfGrid>
+                </div>
+            </Spinner>
+        </div>
+    </PageBody>
+</SettingPage>
+
+@code {
+
+        private const string EntityName = "group";
+        private const string CreateButtonIdleText = $"New {EntityName}";
+
+    private SfGrid<GroupViewModel> grid = null!;
+    private IList<GroupViewModel>? models;
+    private string? searchText;
+
+    protected override async Task OnInitializedAsync()
+    {
+        models = await repository.GetGroupsBySite(appState.Site.Id);
+    }
+
+    private void SearchGrid()
+    {
+        grid.Search(searchText);
+    }
+
+    private async Task ShowCreateModal()
+    {
+        var modal = modalService.Show<GroupCreateModal>($"New {EntityName}");
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            models!.Add((GroupViewModel)result.Data);
+            grid.Refresh();
+        }
+    }
+
+    private async Task ShowUpdateModal(RowSelectEventArgs<GroupViewModel> args)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("Model", args.Data);
+
+        var modal = modalService.Show<GroupUpdateModal>($"Edit {EntityName}", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            var model = (GroupViewModel)result.Data;
+            var index = models!.FindIndex(m => m.Id == model.Id);
+
+            if (index >= 0)
+            {
+                models![index] = model;
+                grid.Refresh();
+            }
+        }
+    }
+
+}

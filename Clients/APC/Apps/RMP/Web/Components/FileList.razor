@@ -1,0 +1,70 @@
+﻿@inject IJSRuntime jsRuntime
+@inject IModalService modalService
+@inject FileRepository fileRepository
+
+<table class="table align-middle table-row-dashed fs-6 gy-5 no-footer">
+    <thead>
+    <tr class="text-muted fw-bolder fs-7 text-uppercase gs-0">
+        <th>Name</th>
+        <th>Type</th>
+        <th>Created at</th>
+        <th class="text-end">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var file in Files)
+    {
+        <tr>
+            <td>@file.Name</td>
+            <td>@file.FileType.Name</td>
+            <td>@file.CreatedAt.FormatDateTime()</td>
+            <td class="text-end">
+                <div class="btn btn-light-primary btn-sm me-2" @onclick="@(() => ShowFile(file.Id))">
+                    <i class="fal fa-fw fa-download"></i>
+                </div>
+                <div class="btn btn-light-danger btn-sm" @onclick="@(() => ShowDeleteModal(file.Id))">
+                    <i class="fal fa-fw fa-trash"></i>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code
+{
+
+    [Parameter]
+    public IList<FileViewModel> Files { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<IList<FileViewModel>> FilesChanged { get; set; }
+
+    private async Task ShowFile(int fileId)
+    {
+        var file = await fileRepository.Get(fileId);
+        var fileContents = await fileRepository.GetFileContents(fileId);
+
+        await jsRuntime.InvokeVoidAsync("DownloadFile", file.OriginalName, Convert.ToBase64String(fileContents));
+    }
+
+    private async Task ShowDeleteModal(int fileId)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add("FileId", fileId);
+
+        var modal = modalService.Show<FileDeleteModal>("Delete file", parameters);
+        var result = await modal.Result;
+
+        if (result.Data is int itemId)
+        {
+            Files = Files.Where(file => file.Id != itemId).ToList();
+
+            if (FilesChanged.HasDelegate)
+            {
+                await FilesChanged.InvokeAsync(Files);
+            }
+        }
+    }
+
+}

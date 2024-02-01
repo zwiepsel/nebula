@@ -1,0 +1,82 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject IMapper mapper
+@inject RiskScoreRepository repository
+
+<EditForm Model="@updateModel" OnValidSubmit="@Update" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal>
+        <ModalSubTitle>Edit an existing @EntityName.ToLower()</ModalSubTitle>
+        <ModalBody>
+            <div class="mb-5">
+                <InputLabel Value="Frequency" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.Frequency"/>
+                <ValidationMessage For="@(() => updateModel.Frequency)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Impact" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.Impact"/>
+                <ValidationMessage For="@(() => updateModel.Impact)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Type" Required="true"/>
+                <SfDropDownList TValue="RiskScoreType" TItem="string" Placeholder="Select an option..." @bind-Value="@updateModel.Type" DataSource="@riskScoreTypes"/>
+                <ValidationMessage For="@(() => updateModel.Type)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Score" Required="true"/>
+                <InputNumber class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.Score"/>
+                <ValidationMessage For="@(() => updateModel.Score)"/>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Saving..." IdleText="Save" Icon="save" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+
+        private const string EntityName = "Risk score";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public RiskScoreViewModel Model { get; set; } = null!;
+
+    private RiskScoreUpdateModel updateModel = null!;
+    private bool isSubmitting;
+
+    private readonly string[] riskScoreTypes = Enum.GetNames<RiskScoreType>();
+
+    protected override void OnInitialized()
+    {
+        updateModel = mapper.Map<RiskScoreUpdateModel>(Model);
+    }
+
+    private async Task Update()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await repository.Update(updateModel);
+            toastService.ShowUpdated(EntityName);
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

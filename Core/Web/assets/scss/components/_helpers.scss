@@ -1,0 +1,73 @@
+.scrollable-y-100 {
+  height: calc(100vh - 100px);
+  overflow: scroll;
+}
+
+.scrollable-y-300 {
+  height: calc(100vh - 300px);
+  overflow: scroll;
+}
+
+.scrollable-y-375 {
+  height: calc(100vh - 375px);
+  overflow: scroll;
+}
+
+.text-indent-3rem {
+  label {
+    text-indent: 3rem;
+  }
+}
+
+.font-size-14px {
+  font-size: $default-body-font-size !important;
+}
+
+.min-height-200 {
+  .e-editable-value-container {
+    min-height: 200px;
+  }
+}
+
+.min-height-100 {
+  .e-editable-value-container {
+    min-height: 100px;
+  }
+}
+
+.min-height-190 {
+  .e-editable-value-container {
+    min-height:190px;
+  }
+}
+
+.min-height-160 {
+  .e-editable-value-container {
+    min-height:160px;
+  }
+}
+
+.font-weight-500 {
+  font-weight: 500;
+}
+
+.max-height-66 {
+  max-height: 66px;
+}
+
+.row-flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.no-shadow {
+  box-shadow: none;
+}
+
+.border-right-dashed {
+  border-right: 1px dashed #E0E0E0;
+}
+
+.border-left-dashed {
+  border-left: 1px dashed #E0E0E0;
+}

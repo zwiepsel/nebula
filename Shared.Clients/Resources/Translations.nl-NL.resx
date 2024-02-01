@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root"
+                xmlns="">
+        <xsd:element name="root" msdata:IsDataSet="true">
+
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="filters" xml:space="preserve">
+        <value>Filters</value>
+    </data>
+    <data name="export" xml:space="preserve">
+        <value>Exporteren</value>
+    </data>
+    <data name="exporting" xml:space="preserve">
+        <value>Exporteren...</value>
+    </data>
+    <data name="columns" xml:space="preserve">
+        <value>Kolommen</value>
+    </data>
+    <data name="search" xml:space="preserve">
+        <value>Zoeken</value>
+    </data>
+    <data name="settings" xml:space="preserve">
+        <value>Instellingen</value>
+    </data>
+    <data name="my_account" xml:space="preserve">
+        <value>Mijn account</value>
+    </data>
+    <data name="sites" xml:space="preserve">
+        <value>Sites</value>
+    </data>
+    <data name="dark_mode" xml:space="preserve">
+        <value>Donkere modus</value>
+    </data>
+    <data name="administration" xml:space="preserve">
+        <value>Administratie</value>
+    </data>
+    <data name="my_profile" xml:space="preserve">
+        <value>Mijn profiel</value>
+    </data>
+    <data name="change_password" xml:space="preserve">
+        <value>Wachtwoord wijzigen</value>
+    </data>
+    <data name="clear_cache" xml:space="preserve">
+        <value>Cache legen</value>
+    </data>
+    <data name="sign_out" xml:space="preserve">
+        <value>Uitloggen</value>
+    </data>
+    <data name="back_to_application" xml:space="preserve">
+        <value>Terug naar applicatie</value>
+    </data>
+    <data name="no_results" xml:space="preserve">
+        <value>Geen resultaten</value>
+    </data>
+    <data name="back" xml:space="preserve">
+        <value>Terug</value>
+    </data>
+    <data name="redirecting" xml:space="preserve">
+        <value>Doorsturen...</value>
+    </data>
+    <data name="loading" xml:space="preserve">
+        <value>Laden...</value>
+    </data>
+    <data name="cancel" xml:space="preserve">
+        <value>Annuleren</value>
+    </data>
+    <data name="clear_cache_confirmation" xml:space="preserve">
+        <value>Weet je zeker dat je de cache wilt legen?</value>
+    </data>
+    <data name="clearing_cache" xml:space="preserve">
+        <value>Cache legen...</value>
+    </data>
+    <data name="sign_in" xml:space="preserve">
+        <value>Inloggen</value>
+    </data>
+    <data name="email_address" xml:space="preserve">
+        <value>E-mailadres</value>
+    </data>
+    <data name="password" xml:space="preserve">
+        <value>Wachtwoord</value>
+    </data>
+    <data name="signing_in" xml:space="preserve">
+        <value>Inloggen...</value>
+    </data>
+    <data name="sign_in_attempt_failed" xml:space="preserve">
+        <value>Inlogpoging mislukt</value>
+    </data>
+    <data name="details" xml:space="preserve">
+        <value>Details</value>
+    </data>
+    <data name="edit" xml:space="preserve">
+        <value>Bewerken</value>
+    </data>
+    <data name="delete" xml:space="preserve">
+        <value>Verwijderen</value>
+    </data>
+    <data name="clear_filters" xml:space="preserve">
+        <value>Filters wissen</value>
+    </data>
+    <data name="language_nl" xml:space="preserve">
+        <value>Nederlands</value>
+    </data>
+    <data name="language_en" xml:space="preserve">
+        <value>Engels</value>
+    </data>
+    <data name="language" xml:space="preserve">
+        <value>Taal</value>
+    </data>
+    <data name="change_language" xml:space="preserve">
+        <value>Taal veranderen</value>
+    </data>
+    <data name="change_language_description" xml:space="preserve">
+        <value>Verander je taal</value>
+    </data>
+    <data name="select_a" xml:space="preserve">
+        <value>Selecteer een {0}...</value>
+    </data>
+    <data name="select_an" xml:space="preserve">
+        <value>Selecteer een {0}...</value>
+    </data>
+    <data name="no_results_description" xml:space="preserve">
+        <value>Er zijn geen resultaten gevonden op basis van je filter criteria</value>
+    </data>
+    <data name="no_data" xml:space="preserve">
+        <value>Geen data</value>
+    </data>
+    <data name="no_data_description" xml:space="preserve">
+        <value>Er is nog geen data toegevoegd</value>
+    </data>
+    <data name="no" xml:space="preserve">
+        <value>Nee</value>
+    </data>
+    <data name="yes" xml:space="preserve">
+        <value>Ja</value>
+    </data>
+    <data name="new_password" xml:space="preserve">
+        <value>Nieuw wachtwoord</value>
+    </data>
+    <data name="current_password" xml:space="preserve">
+        <value>Huidig wachtwoord</value>
+    </data>
+    <data name="confirmation_password" xml:space="preserve">
+        <value>Bevestigingswachtwoord</value>
+    </data>
+    <data name="changing_password" xml:space="preserve">
+        <value>Wachtwoord wijzigen...</value>
+    </data>
+    <data name="back_to_home" xml:space="preserve">
+        <value>Terug naar startpagina</value>
+    </data>
+    <data name="register" xml:space="preserve">
+        <value>Registreren</value>
+    </data>
+</root>

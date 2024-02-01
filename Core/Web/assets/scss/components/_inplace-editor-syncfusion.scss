@@ -1,0 +1,61 @@
+﻿body {
+
+  label + .e-inplaceeditor {
+    @include border-radius(4px);
+
+  }
+
+  .e-inplaceeditor {
+
+    .e-editable-value-container {
+      padding: 10px 15px;
+      @include border-radius(5px);
+
+      .e-editable-value {
+        border-bottom: none;
+        font-family: $font-family-sans-serif;
+      }
+
+    }
+
+
+    .e-editable-value-container {
+      width: 100% !important;
+
+      &:hover {
+        cursor: pointer;
+        background: $input-active-hover-bg;
+      }
+    }
+
+    textarea.e-input, .e-input-group textarea, .e-input-group textarea.e-input, .e-input-group.e-input-focus textarea, .e-input-group.e-input-focus textarea.e-input, .e-input-group.e-control-wrapper textarea, .e-input-group.e-control-wrapper.e-input-focus textarea, .e-input-group.e-control-wrapper textarea.e-input, .e-input-group.e-control-wrapper.e-input-focus textarea.e-input, .e-float-input textarea, .e-float-input.e-control-wrapper textarea {
+      //padding:0px;
+    }
+  }
+
+  .e-editable-form {
+    .e-multi-line-input {
+      textarea {
+        padding: 5px 7px !important;
+      }
+    }
+  }
+
+  .e-inplaceeditor {
+    width: 100%;
+    @include border-radius(4px);
+
+    .e-editable-value-container {
+      width: 100% !important;
+      background: $input-bg;
+
+      &:hover {
+        background: $input-active-hover-bg !important;
+      }
+    }
+  }
+
+  .e-datepicker {
+    cursor: pointer;
+  }
+}

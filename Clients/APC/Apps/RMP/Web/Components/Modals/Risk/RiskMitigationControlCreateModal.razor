@@ -1,0 +1,83 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject MitigationControlRepository mitigationControlRepository
+@inject RiskRepository riskRepository
+
+<EditForm Model="@createModel" OnValidSubmit="@Create" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal>
+        <ModalSubTitle>Add a new mitigation control</ModalSubTitle>
+        <ModalBody>
+            <div class="mb-5">
+                <InputLabel Value="Mitigation control" Required="true"/>
+                <SfDropDownList @bind-Value="@createModel.MitigationControl" TValue="MitigationControlViewModel?" TItem="MitigationControlViewModel?" Placeholder="Select an option..." AllowFiltering="true" DataSource="@selectableMitigationControls">
+                    <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                </SfDropDownList>
+                <ValidationMessage For="@(() => createModel.MitigationControl)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Score" Required="true"/>
+                <SfDropDownList @bind-Value="@createModel.Score" TValue="RiskMitigationControlScore?" TItem="string" Placeholder="Select an option..." AllowFiltering="true" DataSource="@riskMitigationControlScores"/>
+                <ValidationMessage For="@(() => createModel.Score)"/>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Adding..." IdleText="Add" Icon="plus" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public int RiskId { get; set; }
+
+    private bool isSubmitting;
+    private readonly MitigationControlLinkModel createModel = new();
+
+    private List<MitigationControlViewModel> mitigationControls = new();
+    private List<RiskMitigationControlViewModel> riskMitigationControls = new();
+    private List<MitigationControlViewModel> selectableMitigationControls = new();
+
+    private readonly string[] riskMitigationControlScores = Enum.GetNames<RiskMitigationControlScore>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var risk = await riskRepository.Get(RiskId);
+        mitigationControls = (await mitigationControlRepository.GetAll()).ToList();
+        riskMitigationControls = risk.RiskMitigationControls.ToList();
+
+        var mitigationControlIds = riskMitigationControls.Select(rmc => rmc.MitigationControl.Id);
+        selectableMitigationControls = mitigationControls.Where(mc => !mitigationControlIds.Contains(mc.Id)).ToList();
+    }
+
+    private async Task Create()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var riskMitigationControl = await riskRepository.CreateRiskMitigationControl(RiskId, createModel.MitigationControl.Id, createModel);
+            toastService.ShowLinked("Mitigation control");
+            await Modal.CloseAsync(ModalResult.Ok(riskMitigationControl));
+        }
+        catch (Exception)
+        {
+            await Modal.CancelAsync();
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+}
+
+}

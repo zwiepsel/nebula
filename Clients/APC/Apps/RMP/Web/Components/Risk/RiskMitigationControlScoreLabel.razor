@@ -1,0 +1,28 @@
+﻿@switch (Score)
+{
+    case RiskMitigationControlScore.NotEffective:
+        <span>Not effective</span>
+        break;
+    case RiskMitigationControlScore.Questionable:
+        <span>Questionable</span>
+        break;
+    case RiskMitigationControlScore.Sufficient:
+        <span>Sufficient</span>
+        break;
+    case RiskMitigationControlScore.Effective:
+        <span>Effective</span>
+        break;
+    case RiskMitigationControlScore.VeryEffective:
+        <span>Very effective</span>
+        break;
+    default:
+        <span>-</span>
+        break;
+}
+
+@code {
+
+    [Parameter]
+    public RiskMitigationControlScore Score { get; set; }
+
+}

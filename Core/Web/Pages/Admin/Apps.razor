@@ -1,0 +1,102 @@
+﻿@page "/admin/app"
+@attribute [Authorize(Policy = AdministratorRequirement.Name)]
+
+@inject IModalService modalService
+@inject AppRepository repository
+
+<AdminPage>
+    <PageSubHeader>
+        <SubHeader Title="@Title" Icon="@Icon">
+            <Toolbar>
+                <SpinnerButton Loading="false" IdleText="@CreateText" LoadingText="Creating..." Size="sm" Icon="plus" Color="light-primary" Margins="false" Method="@ShowCreateModal"/>
+            </Toolbar>
+        </SubHeader>
+    </PageSubHeader>
+    <PageBody>
+        <div class="card">
+            <Spinner Loading="@(models == null)" Mode="@SpinnerMode.Overlay">
+                <div class="card-header border-0 pt-6">
+                    <div class="card-title">
+                        <div class="d-flex align-items-center position-relative my-1">
+                            <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                <i class="fal fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="Search" @bind-value="@searchText" @bind-value:event="oninput" @onkeyup="@SearchGrid">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <SfGrid @ref="@grid" DataSource="@models" AllowSorting="true" AllowPaging="true">
+                        <GridEvents RowSelected="@ShowUpdateModal" TValue="AppViewModel"/>
+                        <GridColumns>
+                            <GridColumn Field="@nameof(AppViewModel.Id)" HeaderText="Id"/>
+                            <GridColumn Field="@nameof(AppViewModel.Name)" HeaderText="Name"/>
+                            <GridColumn Field="@nameof(AppViewModel.SystemName)" HeaderText="System name"/>
+                            <GridColumn Field="@nameof(AppViewModel.DisplayName)" HeaderText="Display name"/>
+                            <GridColumn Field="@nameof(AppViewModel.Path)" HeaderText="Path"/>
+                            <GridColumn Field="@nameof(AppViewModel.Icon)" HeaderText="Icon"/>
+                            <GridColumn Field="Site.Name" HeaderText="Site"/>
+                        </GridColumns>
+                    </SfGrid>
+                </div>
+            </Spinner>
+        </div>
+    </PageBody>
+</AdminPage>
+
+@code {
+
+        private const string Title = "Apps";
+        private const string Icon = "browser";
+        private const string EntityName = "app";
+        private const string CreateText = $"New {EntityName}";
+        private const string EditText = $"Edit {EntityName}";
+
+    private SfGrid<AppViewModel> grid = null!;
+    private IList<AppViewModel>? models;
+    private string? searchText;
+
+    protected override async Task OnInitializedAsync()
+    {
+        models = await repository.GetAll();
+    }
+
+    private void SearchGrid()
+    {
+        grid.Search(searchText);
+    }
+
+    private async Task ShowCreateModal()
+    {
+        var modal = modalService.Show<AppCreateModal>(CreateText);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            models!.Add((AppViewModel)result.Data);
+            grid.Refresh();
+        }
+    }
+
+    private async Task ShowUpdateModal(RowSelectEventArgs<AppViewModel> args)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("Model", args.Data);
+
+        var modal = modalService.Show<AppUpdateModal>(EditText, modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            var model = (AppViewModel)result.Data;
+            var index = models!.FindIndex(m => m.Id == model.Id);
+
+            if (index >= 0)
+            {
+                models![index] = model;
+                grid.Refresh();
+            }
+        }
+    }
+
+}

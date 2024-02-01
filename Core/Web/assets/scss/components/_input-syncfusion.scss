@@ -1,0 +1,119 @@
+﻿body {
+  .e-input-group:active:hover:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled), .e-input-group.e-control-wrapper:active:hover:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled), .e-float-input:active:hover:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled), .e-float-input.e-control-wrapper:active:hover:not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled), .e-float-input:active:hover:not(.e-input-group):not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled) input:not([disabled]), .e-float-input.e-control-wrapper:active:hover:not(.e-input-group):not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled) input:not([disabled]), .e-float-input:active:hover:not(.e-input-group):not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled) textarea:not([disabled]), .e-float-input.e-control-wrapper:active:hover:not(.e-input-group):not(.e-success):not(.e-warning):not(.e-error):not(.e-disabled) textarea:not([disabled]) {
+    border-color: transparent;
+  }
+
+  .e-multi-select-wrapper input[type=text] {
+    /*    font-weight: 400;*/
+    cursor: pointer;
+  }
+}
+
+.e-richtexteditor .e-rte-toolbar .e-toolbar-items .e-toolbar-item .e-formats-tbar-btn > :first-child, .e-richtexteditor .e-rte-toolbar .e-toolbar-extended .e-toolbar-item .e-formats-tbar-btn > :first-child, .e-richtexteditor .e-rte-toolbar.e-toolbar.e-extended-toolbar .e-toolbar-items .e-toolbar-item .e-formats-tbar-btn > :first-child, .e-richtexteditor .e-rte-toolbar.e-toolbar.e-extended-toolbar .e-toolbar-extended .e-toolbar-item .e-formats-tbar-btn > :first-child {
+  min-width: 80px !important;
+}
+
+.transparent-border-edit-panel .e-input-group.e-error,
+.transparent-border-edit-panel .e-input-group.e-control-wrapper.e-error,
+.transparent-border-edit-panel .e-input-group.e-error:not(.e-float-icon-left),
+.transparent-border-edit-panel .e-input-group.e-control-wrapper.e-error:not(.e-float-icon-left),
+.transparent-border-edit-panel .e-input-group.e-success,
+.transparent-border-edit-panel .e-input-group.e-control-wrapper.e-success,
+.transparent-border-edit-panel .e-input-group.e-success:not(.e-float-icon-left),
+.transparent-border-edit-panel .e-input-group.e-control-wrapper.e-success:not(.e-float-icon-left) {
+  background: $input-bg;
+
+  &:hover {
+    background: $input-active-hover-bg;
+  }
+
+  &:active {
+    background: $input-active-hover-bg;
+  }
+}
+
+html {
+  .e-control-wrapper,
+  .e-input,
+  .form-control.form-control-solid,
+  .form-control.form-control-solid {
+    //background:$input-bg!important;
+    &:hover {
+      background: $input-active-hover-bg !important;
+    }
+
+    &:active {
+      background: $input-active-hover-bg !important;
+    }
+  }
+
+  .e-control-wrapper:hover {
+    .e-input {
+      background: $input-active-hover-bg !important;
+    }
+  }
+
+  .e-input-group:not(.e-disabled) .e-input-group-icon:active, .e-input-group.e-control-wrapper:not(.e-disabled) .e-input-group-icon:active,
+  .e-input-group:not(.e-disabled) .e-input-group-icon:hover, .e-input-group.e-control-wrapper:not(.e-disabled) .e-input-group-icon:hover {
+    background: transparent !important;
+    color: unset !important;
+    box-shadow: unset !important;
+  }
+
+
+  .e-inplaceeditor .e-editable-value-container .e-editable-value {
+    color: $input-placeholder-color;
+  }
+
+  .e-inplaceeditor .e-editable-value-container .e-editable-value p {
+    color: $input-color;
+  }
+
+  input.e-multiselect {
+    &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+      color: $input-placeholder-color !important;
+    }
+
+    &::-moz-placeholder { /* Firefox 19+ */
+      color: $input-placeholder-color !important;
+    }
+
+    &:-ms-input-placeholder { /* IE 10+ */
+      color: $input-placeholder-color !important;
+    }
+
+    &:-moz-placeholder { /* Firefox 18- */
+      color: $input-placeholder-color !important;
+    }
+  }
+
+  .e-chips-collection {
+    .e-chips {
+      &:first-child {
+        margin-left: 5px;
+      }
+    }
+  }
+
+  .e-tab .e-tab-header .e-toolbar-item .e-tab-text {
+    text-transform: initial;
+  }
+}
+
+.e-pagerexternalmsg {
+  display: none !important;
+}
+
+.inline-h1-title {
+  .e-inplaceeditor {
+    width: 100%;
+  }
+
+  .e-editable-inline input[type="text"],
+  .e-inplaceeditor .e-editable-value-container .e-editable-value {
+    color: #181C32 !important;
+    font-weight: 600 !important;
+    font-size: 1.5rem !important;
+    padding-left: 0px;
+  }
+}

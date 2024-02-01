@@ -1,0 +1,132 @@
+﻿@page "/admin/site"
+@attribute [Authorize(Policy = AdministratorRequirement.Name)]
+
+@inject IModalService modalService
+@inject SiteRepository repository
+
+<AdminPage ContainerSize="fluid">
+    <PageSubHeader>
+        <SubHeader Title="@Title" Icon="@Icon">
+            <Toolbar>
+                <SpinnerButton Loading="false" IdleText="@CreateButtonIdleText" LoadingText="Creating..." Size="sm" Icon="plus" Color="light-primary" Margins="false" Method="@ShowCreateModal"/>
+            </Toolbar>
+        </SubHeader>
+    </PageSubHeader>
+    <PageBody>
+        <div class="card">
+            <Spinner Loading="@(models == null)" Mode="@SpinnerMode.Overlay">
+                <div class="card-header border-0 pt-6">
+                    <div class="card-title">
+                        <div class="d-flex align-items-center position-relative my-1">
+                            <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                <i class="fal fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="Search" @bind-value="@searchText" @bind-value:event="oninput" @onkeyup="@SearchGrid">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <SfGrid @ref="@grid" DataSource="@models" AllowSorting="true" AllowPaging="true">
+                        <GridEvents RowSelected="@ShowUpdateModal" TValue="SiteViewModel"/>
+                        <GridColumns>
+                            <GridColumn Field="@nameof(SiteViewModel.Id)" HeaderText="Id"/>
+                            <GridColumn Field="@nameof(SiteViewModel.Name)" HeaderText="Name"/>
+                            <GridColumn Field="@nameof(SiteViewModel.SystemName)" HeaderText="System name"/>
+                            <GridColumn Field="@nameof(SiteViewModel.Host)" HeaderText="Host"/>
+                            <GridColumn Field="@nameof(SiteViewModel.Port)" HeaderText="Port"/>
+                            <GridColumn Field="Client.Name" HeaderText="Client"/>
+                            <GridColumn Field="@nameof(SiteViewModel.AllowPublicRegistration)" HeaderText="Public registrations">
+                                <Template Context="model">
+                                    @if (((SiteViewModel)model).AllowPublicRegistration)
+                                    {
+                                        <div class="icon">
+                                            <i class="fal fa-2x fa-check text-success"></i>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="icon">
+                                            <i class="fal fa-2x fa-times text-danger"></i>
+                                        </div>
+                                    }
+                                </Template>
+                            </GridColumn>
+                            <GridColumn Field="@nameof(SiteViewModel.Core)" HeaderText="Core">
+                                <Template Context="model">
+                                    @if (((SiteViewModel)model).Core)
+                                    {
+                                        <div class="icon">
+                                            <i class="fal fa-2x fa-check text-success"></i>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="icon">
+                                            <i class="fal fa-2x fa-times text-danger"></i>
+                                        </div>
+                                    }
+                                </Template>
+                            </GridColumn>
+                        </GridColumns>
+                    </SfGrid>
+                </div>
+            </Spinner>
+        </div>
+    </PageBody>
+</AdminPage>
+
+@code {
+
+        private const string Title = "Sites";
+        private const string Icon = "layer-group";
+        private const string EntityName = "site";
+        private const string CreateButtonIdleText = $"New {EntityName}";
+
+    private SfGrid<SiteViewModel> grid = null!;
+    private IList<SiteViewModel>? models;
+    private string? searchText;
+
+    protected override async Task OnInitializedAsync()
+    {
+        models = await repository.GetAll();
+    }
+
+    private void SearchGrid()
+    {
+        grid.Search(searchText);
+    }
+
+    private async Task ShowCreateModal()
+    {
+        var modal = modalService.Show<SiteCreateModal>($"New {EntityName}");
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            models!.Add((SiteViewModel)result.Data);
+            grid.Refresh();
+        }
+    }
+
+    private async Task ShowUpdateModal(RowSelectEventArgs<SiteViewModel> args)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("Model", args.Data);
+
+        var modal = modalService.Show<SiteUpdateModal>($"Edit {EntityName}", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            var model = (SiteViewModel)result.Data;
+            var index = models!.FindIndex(m => m.Id == model.Id);
+
+            if (index >= 0)
+            {
+                models![index] = model;
+                grid.Refresh();
+            }
+        }
+    }
+
+}

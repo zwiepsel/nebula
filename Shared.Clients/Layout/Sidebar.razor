@@ -1,0 +1,79 @@
+﻿@inject ILocalizer<Translations> localizer
+@inject IJSRuntime jsRuntime
+@inject AppState appState
+
+<div class="aside aside-dark">
+    <div class="aside-logo flex-column-auto">
+        <a class="logo d-flex justify-content-center" href="/">
+            <i class="logo me-3 mh-30px fal fa-2x fa-solar-system"></i>
+            <h3 class="text-white logo mt-1">@Title</h3>
+        </a>
+        <div id="aside-toggle" class="btn btn-icon w-auto px-0 btn-active-color-primary aside-toggle active" @onclick="@ToggleAside">
+            <span class="svg-icon svg-icon-1 rotate-180" id="toggle-icon">
+                <i class="fal fa-bars fa-2x"></i>
+                <i class="fal fa-times fa-2x"></i>
+            </span>
+        </div>
+    </div>
+    <div class="aside-menu flex-column-fluid">
+        <div class="my-5 my-lg-5">
+            <div class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500">
+                @if (ReturnUri != null)
+                {
+                    <div class="menu-item">
+                        <a class="menu-link m-0" href="@ReturnUri">
+                            <span class="menu-icon">
+                                <i class="fal fa-lg fa-fw fa-arrow-left"></i>
+                            </span>
+                            <div class="tool-tip right">
+                                <span class="tooltiptext">@GetReturnText()</span>
+                            </div>
+                            <span class="menu-title">@GetReturnText()</span>
+                        </a>
+                    </div>
+                }
+                @if (SiteSettingsContent != null)
+                {
+                    @SiteSettingsContent
+                }
+                @if (SeparatorText != null)
+                {
+                    <SidebarItemSeparator Text="@SeparatorText"/>
+                }
+                @ChildContent
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; } = null!;
+
+    [Parameter]
+    public string? ReturnUri { get; set; }
+
+    [Parameter]
+    public string? ReturnText { get; set; }
+
+    [Parameter]
+    public string? SeparatorText { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? SiteSettingsContent { get; set; }
+
+    private async Task ToggleAside()
+    {
+        await jsRuntime.InvokeVoidAsync("ToggleAside");
+    }
+
+    private string GetReturnText()
+    {
+        return ReturnText ?? localizer["back_to_application"];
+    }
+
+}

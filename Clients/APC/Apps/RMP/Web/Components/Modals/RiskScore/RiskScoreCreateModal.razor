@@ -1,0 +1,71 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject RiskScoreRepository riskScoreRepository
+
+<EditForm Model="@createModel" OnValidSubmit="@Create" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal>
+        <ModalSubTitle>Create a new risk score</ModalSubTitle>
+        <ModalBody>
+            <div class="mb-5">
+                <InputLabel Value="Frequency" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Frequency"/>
+                <ValidationMessage For="@(() => createModel.Frequency)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Impact" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Impact"/>
+                <ValidationMessage For="@(() => createModel.Impact)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Type" Required="true"/>
+                <SfDropDownList TValue="RiskScoreType?" TItem="string" Placeholder="Select an option..." @bind-Value="@createModel.Type" DataSource="@riskScoreTypes"/>
+                <ValidationMessage For="@(() => createModel.Type)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Score" Required="true"/>
+                <InputNumber class="form-control form-control-lg form-control-solid" @bind-Value="@createModel.Score"/>
+                <ValidationMessage For="@(() => createModel.Score)"/>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Creating..." IdleText="Create" Icon="plus" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    private bool isSubmitting;
+    private readonly RiskScoreCreateModel createModel = new();
+
+    private readonly string[] riskScoreTypes = Enum.GetNames<RiskScoreType>();
+
+    private async Task Create()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await riskScoreRepository.Create(createModel);
+            toastService.ShowCreated("Risk score");
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

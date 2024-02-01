@@ -1,0 +1,46 @@
+﻿@inject IToastService toastService
+@inject IncomeRepository incomeRepository
+
+<Modal>
+    <ModalSubTitle>Weet je zeker dat je dit wilt? Dit kan niet meer ongedaan worden..</ModalSubTitle>
+    <ModalFooter>
+        <SpinnerButton Method="@Delete" Loading="@isSubmitting" LoadingText="Deleting..." IdleText="Delete" Icon="trash" Size="md" Color="light-danger" Margins="false"/>
+    </ModalFooter>
+</Modal>
+
+@code
+{
+
+    [CascadingParameter]  
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public int IncomeId { get; set; }
+
+    private bool isSubmitting;
+
+    private async Task Delete()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            await incomeRepository.Delete(IncomeId);
+            toastService.ShowRemoved("Inkomen");
+            await Modal.CloseAsync(ModalResult.Ok(IncomeId));
+        }
+        catch (Exception)
+        {
+            await Modal.CancelAsync();
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

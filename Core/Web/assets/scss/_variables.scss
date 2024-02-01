@@ -1,0 +1,113 @@
+﻿//Business one variables
+$white: #ffffff;
+$black: #000000;
+$font-family-sans-serif: 'Poppins', Helvetica, sans-serif;
+$input-color: if(isDarkMode(), #92929f, #495057 !important);
+$input-bg: if(isDarkMode(), #1b1b29, #f5f8fa);
+$input-active-hover-bg: if(isDarkMode(), #171723, #eef3f7);
+$input-active-border-color: #c800ff;
+$default-body-font-size: 14px;
+$input-placeholder-color: if(isDarkMode(), #565674, #bdb7b7); //Metronic variable
+$input-font-weight: 400; //Metronic variable
+$page-bg: if(isDarkMode(), #151521, $white);
+$content-bg-color: if(isDarkMode(), #151521, #F5F5F5);
+$toast-heading-color: if(isDarkMode(), $white, $white);
+
+//Aside metronic
+$aside-config: (
+        z-index: 101, // Aside's z-index property
+        transition-speed: 0.3s, // transition speed
+        padding-x: 25px,
+        menu-indention: 0.75rem,
+        bg-color: #323348,
+        width: 240px, // Aside width for desktop mode
+        minimized-width: 64px, // Aside minimized width for desktop mode
+        box-shadow: 0 0 10px 0 rgba(82, 63, 105, .1), // Aside box shadow
+        minimized-hover-box-shadow: 5px 0px 10px rgba(70, 78, 95, 0.1) // Minimized hover box shadow
+);
+
+//Syncfusion variables
+$input-placeholder: $input-placeholder-color;
+$ddl-input-font-size: $default-body-font-size;
+$ddl-list-font-size: $default-body-font-size;
+$input-font-size: $default-body-font-size;
+$grid-content-font-size: $default-body-font-size;
+$grid-header-font-size: $default-body-font-size;
+$ddl-chip-font-size: $default-body-font-size;
+$editor-nrml-value-text-font-size: $default-body-font-size;
+$rte-content-font-size: $default-body-font-size;
+$tab-nrml-font-size: $default-body-font-size;
+$tab-nrml-height: auto;
+$tab-nrml-active-it-text-container-height: auto;
+$input-font-family: $font-family-sans-serif;
+$slider-scale-font-family: $font-family-sans-serif;
+$input-font-family: $font-family-sans-serif;
+$slider-scale-font-family: $font-family-sans-serif;
+$switch-font-family: $font-family-sans-serif;
+$listview-font-family: $font-family-sans-serif;
+$mask-font-family: $font-family-sans-serif;
+$upload-root-font-family: $font-family-sans-serif;
+$tab-font-family: $font-family-sans-serif;
+$treeview-font-family: $font-family-sans-serif;
+$listview-font-family: $font-family-sans-serif;
+$splitpane-font-family: $font-family-sans-serif;
+$grid-font-family: $font-family-sans-serif;
+$rte-font-family: $font-family-sans-serif;
+$field-list-font-family: $font-family-sans-serif;
+$pivot-calculated-formula-font-family: $font-family-sans-serif;
+$field-list-font-family: $font-family-sans-serif;
+$acrdn-font-family: $font-family-sans-serif;
+$acrdn-item-header-content-font-face: $font-family-sans-serif;
+$spin-label-font-family: $font-family-sans-serif;
+$panel-header-font-family: $font-family-sans-serif;
+$tbar-btn-family: $font-family-sans-serif;
+$de-op-header-font-family: $font-family-sans-serif;
+$pager-font-family: $font-family-sans-serif;
+$pivotgrid-tooltip-fontfamily: $font-family-sans-serif;
+
+
+// Bootstrap base colors
+$gray-100: if(isDarkMode(), #1b1b29, #F5F5F5);
+$gray-200: if(isDarkMode(), #2B2B40, #EBEBEB);
+$gray-300: if(isDarkMode(), #323248, #E0E0E0);
+$gray-400: if(isDarkMode(), #474761, #B3B3B3);
+$gray-500: if(isDarkMode(), #565674, #949494);
+$gray-600: if(isDarkMode(), #6D6D80, #8A8A8A);
+$gray-700: if(isDarkMode(), #92929F, #424242);
+$gray-800: if(isDarkMode(), #CDCDDE, #333333);
+$gray-900: if(isDarkMode(), #FFFFFF, #1F1F1F);
+$text-muted: $gray-500;
+
+// Bootstrap variables
+// Primary
+$primary: if(isDarkMode(), #3699FF, #6264A7) !default;
+$primary-active: if(isDarkMode(), #187DE4, #494B83);
+$primary-light: if(isDarkMode(), #212E48, #ECEDFF);
+$primary-inverse: #FFFFFF;
+
+// Success
+$success: if(isDarkMode(), #0BB783, #50CD89);
+$success-active: if(isDarkMode(), #04AA77, #47BE7D);
+$success-light: if(isDarkMode(), #1C3238, #E8FFF3);
+$success-inverse: #FFFFFF;
+
+// Info
+$info: if(isDarkMode(), #8950FC, #7239EA);
+$info-active: if(isDarkMode(), #7337EE, #5014D0);
+$info-light: if(isDarkMode(), #2F264F, #F8F5FF);
+$info-inverse: #FFFFFF;
+
+// Danger
+$danger: if(isDarkMode(), #F64E60, #F1416C);
+$danger-active: if(isDarkMode(), #EE2D41, #D9214E);
+$danger-light: if(isDarkMode(), #3A2434, #FFF5F8);
+$danger-inverse: #FFFFFF;
+
+// Warning
+$warning: if(isDarkMode(), #FFA800, #FFC700);
+$warning-active: if(isDarkMode(), #EE9D01, #F1BC00);
+$warning-light: if(isDarkMode(), #392F28, #FFF8DD);
+$warning-inverse: #FFFFFF;
+
+// Card Box Shadow
+$card-box-shadow: 0px 0px 10px 0px rgba(76, 87, 125, 0.1);

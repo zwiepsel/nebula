@@ -1,0 +1,95 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject IMapper mapper
+@inject AppRepository repository
+@inject SiteRepository siteRepository
+
+<EditForm Model="@updateModel" OnValidSubmit="@Update" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal>
+        <ModalSubTitle>Edit an existing @EntityName.ToLower()</ModalSubTitle>
+        <ModalBody>
+            <div class="mb-5">
+                <InputLabel Value="Name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.Name"/>
+                <ValidationMessage For="@(() => updateModel.Name)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="System name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.SystemName"/>
+                <ValidationMessage For="@(() => updateModel.SystemName)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Display name" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.DisplayName"/>
+                <ValidationMessage For="@(() => updateModel.DisplayName)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Path" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.Path"/>
+                <ValidationMessage For="@(() => updateModel.Path)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Icon" Required="true"/>
+                <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.Icon"/>
+                <ValidationMessage For="@(() => updateModel.Icon)"/>
+            </div>
+            <div class="mb-5">
+                <InputLabel Value="Site" Required="true"/>
+                <SfDropDownList @bind-Value="@updateModel.SiteId" TValue="int" TItem="SiteViewModel" Placeholder="Select a site..." AllowFiltering="true" DataSource="@sites">
+                    <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                </SfDropDownList>
+                <ValidationMessage For="@(() => updateModel.SiteId)"/>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Saving..." IdleText="Save" Icon="save" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+
+        private const string EntityName = "App";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public AppViewModel Model { get; set; } = null!;
+
+    private AppUpdateModel updateModel = null!;
+    private IList<SiteViewModel>? sites;
+    private bool isSubmitting;
+
+    protected override async Task OnInitializedAsync()
+    {
+        updateModel = mapper.Map<AppUpdateModel>(Model);
+        sites = await siteRepository.GetAll();
+    }
+
+    private async Task Update()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await repository.Update(updateModel);
+            toastService.ShowUpdated(EntityName);
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

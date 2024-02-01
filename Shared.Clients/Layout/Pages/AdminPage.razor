@@ -1,0 +1,26 @@
+﻿@inject ILocalizer<Translations> localizer
+
+<Page ContainerSize="@ContainerSize">
+    <PageHeader>
+        <Header Title="@localizer["administration"]" Icon="cogs"></Header>
+    </PageHeader>
+    <PageSubHeader>
+        @PageSubHeader
+    </PageSubHeader>
+    <PageBody>
+        @PageBody
+    </PageBody>
+</Page>
+
+@code {
+
+    [Parameter]
+    public string? ContainerSize { get; set; }
+
+    [Parameter]
+    public RenderFragment? PageSubHeader { get; set; }
+
+    [Parameter]
+    public RenderFragment? PageBody { get; set; }
+
+}

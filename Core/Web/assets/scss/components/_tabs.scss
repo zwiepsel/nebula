@@ -1,0 +1,81 @@
+﻿body {
+
+  .e-tab-header {
+    background: $white !important;
+    border-top-left-radius: .475rem !important;
+    border-top-right-radius: .475rem !important;
+
+    &:before {
+      display: none !important;
+    }
+  }
+
+  .e-toolbar:not(.e-extended-toolbar) {
+    border-bottom: 1px solid #eff2f5 !important;
+
+    .e-toolbar-items {
+      @include border-radius(0px);
+      border-top-left-radius: .475rem !important;
+      padding-left: 21px;
+    }
+
+    .e-toolbar-item {
+      margin: 0 12px !important;
+      padding: 1.3rem 0 !important;
+      border: none !important;
+      border-bottom: 2px solid transparent !important;
+
+      &:hover {
+        border-bottom: 2px solid #6264A7 !important;
+
+        .e-tab-text {
+          color: $primary;
+        }
+      }
+
+      .e-tab-wrap {
+        @include border-radius(0px);
+        border: none !important;
+        padding: 0 !important;
+
+        &:hover {
+          border: none !important;
+        }
+      }
+
+      .e-tab-text {
+        color: #949494;
+      }
+
+      &.e-active {
+        border-bottom: 2px solid #6264A7 !important;
+
+        .e-tab-text {
+          font-weight: 500 !important;
+          color: #1F1F1F !important;
+        }
+      }
+
+    }
+  }
+
+  .e-tab-wrap {
+    &:hover {
+      .e-tab-text {
+        color: $primary !important;
+      }
+    }
+  }
+  
+  .modal {
+    .e-toolbar:not(.e-extended-toolbar) .e-toolbar-items {
+      padding-left:0px;
+    }
+    .e-toolbar {
+      margin-bottom: 20px;
+    }
+    .e-toolbar:not(.e-extended-toolbar) .e-toolbar-items > .e-toolbar-item {
+      margin:0px 24px 0px 0px !important;
+    }
+  }
+}

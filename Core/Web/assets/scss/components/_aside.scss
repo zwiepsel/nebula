@@ -1,0 +1,123 @@
+body {
+  &.aside-fixed {
+    &[data-kt-aside-minimize="on"] {
+      .aside {
+        overflow: visible !important;
+      }
+    }
+  }
+
+  //inactive//
+  .aside-dark .menu .menu-item .menu-link {
+    transition: color 0.2s ease, background-color 0.2s ease;
+    color: #9899ac;
+    margin: 1px 4px;
+  }
+
+  //hover//
+  .aside-dark .menu .menu-item.hover > .menu-link:not(.disabled):not(.active), .aside-dark .menu .menu-item .menu-link:hover:not(.disabled):not(.active) {
+    background-color: #3D3E66;
+    color: $white;
+    @include border-radius(4px);
+  }
+
+  //active//
+  .aside-dark .menu .menu-item .menu-link {
+    border-left: transparent;
+    border-left-style: solid;
+    border-left-width: 2px;
+  }
+
+  .aside-dark .menu .menu-item .menu-link.active {
+    background-color: #464775;
+    color: #B2B5FF;
+    border-left: #B2B5FF;
+    border-left-style: solid;
+    border-left-width: 2px;
+    /*    @include border-radius(4px);*/
+    /*    margin: 1px 4px;
+        padding-left: 16px !important;*/
+  }
+
+  .menu-link.active .menu-icon {
+    color: #B2B5FF !important;
+  }
+
+  .aside-menu .menu .menu-item .menu-link, .aside-menu .menu .menu-item .menu-content {
+    padding-left: 18px;
+    padding-right: 25px;
+    min-height: 56px;
+  }
+
+  //
+
+
+  .aside-menu {
+    .tool-tip {
+      display: none;
+    }
+  }
+
+  &[data-kt-aside-minimize="on"] {
+    .aside-menu {
+      //width:64px;
+
+      .tool-tip {
+        display: block !important;
+      }
+
+      .menu-title {
+        display: none;
+      }
+
+      .menu-link {
+        &:hover {
+          .tooltiptext {
+            visibility: visible;
+            left: 0px;
+
+            .menu-title {
+              display: block;
+            }
+          }
+        }
+      }
+
+    }
+  }
+}
+
+body {
+  .aside .aside-logo {
+    padding: 0 18px;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .aside .aside-menu {
+    width: auto;
+  }
+}
+
+#toggle-icon {
+  svg.fa-times {
+    display: block;
+  }
+
+  svg.fa-bars {
+    display: none;
+  }
+}
+
+body[data-kt-aside-minimize="on"] {
+  #toggle-icon {
+    svg.fa-times {
+      display: none;
+    }
+
+    svg.fa-bars {
+      display: block;
+    }
+  }
+
+}

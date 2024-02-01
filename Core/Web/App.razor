@@ -1,0 +1,93 @@
+@inject NavigationManager navigationManager
+@inject AppState appState
+@inject SiteRepository siteRepository
+
+<Spinner Loading="@(!appState.Initialized)" Mode="@SpinnerMode.Overlay">
+    <PageHead/>
+    <CascadingAuthenticationState>
+        <CascadingBlazoredModal UseCustomLayout="true">
+            <Router AppAssembly="@typeof(Shared).Assembly" AdditionalAssemblies="@additionalAssemblies" PreferExactMatches="@true">
+                <Found Context="routeData">
+                    <CascadingValue Value="@routeData">
+                        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                            <NotAuthorized>
+                                <Redirect Uri="/security/sign-in"/>
+                            </NotAuthorized>
+                            <Authorizing>
+                                <div class="h-100">
+                                    <div class="container h-100">
+                                        <div class="d-flex align-items-center justify-content-center h-100">
+                                            <div class="d-flex flex-column">
+                                                <div class="text-center">
+                                                    <i class="logo text-primary fal fa-5x fa-solar-system mb-5"></i>
+                                                    <h1 class="text-center">Nebula</h1>
+                                                </div>
+                                                <p class="clearfix"><i class="fal fa-spin fa-spinner-third me-2"></i>Authorizing...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Authorizing>
+                        </AuthorizeRouteView>
+                    </CascadingValue>
+                </Found>
+                <NotFound>
+                    <LayoutView Layout="@typeof(PublicLayout)">
+                        <div class="d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed">
+                            <div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
+                                <a href="/" class="text-center mb-12">
+                                    <i class="logo text-primary fal fa-5x fa-solar-system mb-5"></i>
+                                    <h1 class="text-center text-dark">Nebula</h1>
+                                </a>
+                                <div class="w-lg-500px bg-white rounded shadow-sm p-10 p-lg-15 mx-auto">
+                                    <div class="text-center mb-10">
+                                        <h1 class="text-dark mb-3">Page not found</h1>
+                                    </div>
+                                    <div class="text-center">
+                                        <a href="/">Return to home page</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </LayoutView>
+                </NotFound>
+            </Router>
+        </CascadingBlazoredModal>
+    </CascadingAuthenticationState>
+</Spinner>
+
+@code {
+
+    private readonly List<Assembly> additionalAssemblies = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var currentHost = new Uri(navigationManager.Uri).Host;
+
+        appState.SetCore(await siteRepository.GetCore());
+        appState.SetSite(await siteRepository.FindByHost(currentHost));
+
+        // Only serve sites on their configured host name.
+        if (appState.Site.Core && currentHost != appState.Site.Host)
+        {
+            navigationManager.NavigateTo(appState.Site.Uri.AbsoluteUri, true);
+
+            return;
+        }
+
+        additionalAssemblies.Add(typeof(Program).Assembly);
+
+        if (!appState.Site.Core)
+        {
+            additionalAssemblies.Add(appState.Site.GetSiteAssembly());
+
+            foreach (var app in appState.Site.Apps)
+            {
+                additionalAssemblies.Add(app.GetAppType().Assembly);
+            }
+        }
+
+        appState.Initialized = true;
+    }
+
+}

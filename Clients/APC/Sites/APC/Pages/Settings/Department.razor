@@ -1,0 +1,97 @@
+﻿@page "/settings/department"
+@attribute [Authorize(Policy = SiteAdministratorRequirement.Name)]
+
+@inject IModalService modalService
+@inject AppState appState
+@inject DepartmentRepository repository
+
+<SettingPage>
+    <PageSubHeader>
+        <SubHeader Title="@Title" Icon="@Icon">
+            <Toolbar>
+                <SpinnerButton Loading="false" IdleText="@CreateButtonIdleText" LoadingText="Creating..." Size="sm" Icon="plus" Color="light-primary" Margins="false" Method="@ShowCreateModal"/>
+            </Toolbar>
+        </SubHeader>
+    </PageSubHeader>
+    <PageBody>
+        <div class="card">
+            <Spinner Loading="@(models == null)" Mode="@SpinnerMode.Overlay">
+                <div class="card-header border-0 pt-6">
+                    <div class="card-title">
+                        <div class="d-flex align-items-center position-relative my-1">
+                            <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                <i class="fal fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="Search" @bind-value="@searchText" @bind-value:event="oninput" @onkeyup="@SearchGrid">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <SfGrid @ref="@grid" DataSource="@models" AllowSorting="true" AllowPaging="true">
+                        <GridEvents RowSelected="@ShowUpdateModal" TValue="DepartmentViewModel"/>
+                        <GridColumns>
+                            <GridColumn Field="@nameof(DepartmentViewModel.Id)" HeaderText="Id"/>
+                            <GridColumn Field="@nameof(DepartmentViewModel.Name)" HeaderText="Name"/>
+                        </GridColumns>
+                    </SfGrid>
+                </div>
+            </Spinner>
+        </div>
+    </PageBody>
+</SettingPage>
+
+@code {
+
+        private const string Title = "Departments";
+        private const string Icon = "layer-group";
+        private const string EntityName = "department";
+        private const string CreateButtonIdleText = $"New {EntityName}";
+
+    private SfGrid<DepartmentViewModel> grid = null!;
+    private IList<DepartmentViewModel>? models;
+    private string? searchText;
+
+    protected override async Task OnInitializedAsync()
+    {
+        models = await repository.GetAll();
+    }
+
+    private void SearchGrid()
+    {
+        grid.Search(searchText);
+    }
+
+    private async Task ShowCreateModal()
+    {
+        var modal = modalService.Show<DepartmentCreateModal>($"New {EntityName}");
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            models!.Add((DepartmentViewModel)result.Data);
+            grid.Refresh();
+        }
+    }
+
+    private async Task ShowUpdateModal(RowSelectEventArgs<DepartmentViewModel> args)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("Model", args.Data);
+
+        var modal = modalService.Show<DepartmentUpdateModal>($"Edit {EntityName}", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            var model = (DepartmentViewModel)result.Data;
+            var index = models!.FindIndex(m => m.Id == model.Id);
+
+            if (index >= 0)
+            {
+                models![index] = model;
+                grid.Refresh();
+            }
+        }
+    }
+
+}

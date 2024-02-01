@@ -1,0 +1,59 @@
+.menu-link {
+  &:hover {
+    .tool-tip {
+      .tooltiptext {
+        opacity: 1;
+      }
+    }
+  }
+
+  &.active {
+    .menu-text, .menu-arrow {
+      color: #ffffff !important;
+    }
+
+    .menu-icon {
+      color: $primary !important;
+    }
+
+    .menu-bullet {
+      span {
+        background-color: $primary !important;
+      }
+    }
+  }
+}
+
+.menu-arrow::before {
+  display: inline-block;
+  font-family: "Font Awesome 5 Pro", serif !important;
+  content: "\f054" !important;
+}
+
+#user-menu {
+  z-index: 167;
+  position: absolute;
+  right: 32px;
+  top: 65px;
+}
+
+
+body {
+  .nav-line-tabs {
+    border: none;
+
+    li {
+      a {
+        &.nav-link {
+          font-weight: 400 !important;
+          color: #949494 !important;
+
+          &.active {
+            font-weight: 500 !important;
+            color: #1F1F1F !important;
+          }
+        }
+      }
+    }
+  }
+}

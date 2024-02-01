@@ -1,0 +1,84 @@
+﻿@inject IModalService modalService
+@inject IToastService toastService
+@inject MitigationControlRepository mitigationControlRepository
+@inject RiskRepository riskRepository
+
+<table class="table align-middle table-row-dashed fs-6 gy-5 no-footer">
+    <thead>
+    <tr class="text-muted fw-bolder fs-7 text-uppercase gs-0">
+        <th>Short Name</th>
+        <th>Name</th>
+        <th>Control type</th>
+        <th>Trigger</th>
+        <th>Score</th>
+        <th class="text-end">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var riskPossibleOptimization in RiskPossibleOptimizationModels)
+    {
+        <tr>
+            <td>@riskPossibleOptimization.MitigationControl.ShortName</td>
+            <td>@riskPossibleOptimization.MitigationControl.Name</td>
+            <td>@riskPossibleOptimization.MitigationControl.ControlType</td>
+            <td>@riskPossibleOptimization.MitigationControl.Trigger</td>
+            <td>
+                <RiskMitigationControlScoreLabel Score="@riskPossibleOptimization.Score"/>
+            </td>
+            <td class="text-end w-150px">
+                <div class="btn btn-sm btn-light-primary me-2" @onclick="@(() => OnRiskPossibleOptimizationSelected.InvokeAsync(riskPossibleOptimization))">
+                    <i class="fal fa-arrow-right"></i>
+                </div>
+                <SpinnerButton Method="@(() => ShowRiskPossibleOptimizationDeleteModal(riskPossibleOptimization))" Loading="@isDeleting" Size="sm" Icon="trash" Color="light-danger" Margins="false"/>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+
+    [Parameter]
+    public RiskViewModel Risk { get; set; } = null!;
+
+    [Parameter]
+    public IList<RiskPossibleOptimizationViewModel> RiskPossibleOptimizationModels { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<IList<RiskPossibleOptimizationViewModel>> RiskPossibleOptimizationModelsChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<RiskPossibleOptimizationViewModel> OnRiskPossibleOptimizationSelected { get; set; }
+
+    private bool isDeleting;
+
+    private List<MitigationControlViewModel> mitigationControls = new();
+    private List<MitigationControlViewModel> selectableMitigationControls = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        mitigationControls = (await mitigationControlRepository.GetAll()).ToList();
+
+        var riskPossibleOptimizationIds = RiskPossibleOptimizationModels.Select(mitigationControl => mitigationControl.MitigationControl.Id);
+        selectableMitigationControls = mitigationControls.Where(mc => !riskPossibleOptimizationIds.Contains(mc.Id)).ToList();
+    }
+
+    private async Task ShowRiskPossibleOptimizationDeleteModal(RiskPossibleOptimizationViewModel riskPossibleOptimization)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("RiskId", riskPossibleOptimization.RiskId);
+        modalParameters.Add("RiskPossibleOptimizationId", riskPossibleOptimization.MitigationControl.Id);
+
+        var modal = modalService.Show<RiskPossibleOptimizationDeleteModal>("Delete possible optimization", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled && RiskPossibleOptimizationModelsChanged.HasDelegate)
+        {
+            RiskPossibleOptimizationModels = RiskPossibleOptimizationModels.Where(rpo => rpo.Id != riskPossibleOptimization.Id).ToList();
+
+            await RiskPossibleOptimizationModelsChanged.InvokeAsync(RiskPossibleOptimizationModels);
+        }
+    }
+
+
+}

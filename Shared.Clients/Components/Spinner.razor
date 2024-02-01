@@ -1,0 +1,58 @@
+﻿@inject ILocalizer<Translations> localizer
+
+@if (Loading)
+{
+    switch (Mode)
+    {
+        case SpinnerMode.AbsoluteCentered:
+            <div style="z-index: 109;" class="d-flex align-items-center w-100">
+                <div class="h-100 w-100">
+                    <div class="container h-100">
+                        <div class="d-flex align-items-center justify-content-center h-100">
+                            <div class="d-flex flex-column">
+                                <i class="fal fa-3x fa-spin fa-spinner-third"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            break;
+        case SpinnerMode.Inline:
+            <p class="m-0">
+                <i class="fal fa-spin fa-spinner-third me-2"></i>@localizer["loading"]
+            </p>
+            break;
+        case SpinnerMode.Overlay:
+            <div style="z-index: 109;" class="drawer-overlay d-flex align-items-center">
+                <div class="h-100 w-100">
+                    <div class="container h-100">
+                        <div class="d-flex align-items-center justify-content-center h-100">
+                            <div class="d-flex flex-column">
+                                <i class="fal fa-3x fa-spin fa-spinner-third"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            break;
+        default:
+            throw new ArgumentOutOfRangeException();
+    }
+}
+else
+{
+    @ChildContent
+}
+
+@code
+{
+
+    [Parameter]
+    public SpinnerMode Mode { get; set; }
+
+    [Parameter]
+    public bool Loading { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+}

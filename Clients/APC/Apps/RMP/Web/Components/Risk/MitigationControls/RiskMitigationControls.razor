@@ -1,0 +1,83 @@
+﻿@inject IModalService modalService
+@inject IToastService toastService
+@inject MitigationControlRepository mitigationControlRepository
+@inject RiskRepository riskRepository
+
+<table class="table align-middle table-row-dashed fs-6 gy-5 no-footer">
+    <thead>
+    <tr class="text-muted fw-bolder fs-7 text-uppercase gs-0">
+        <th>Short Name</th>
+        <th>Name</th>
+        <th>Control type</th>
+        <th>Trigger</th>
+        <th>Score</th>
+        <th class="text-end">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var riskMitigationControl in RiskMitigationControlModels)
+    {
+        <tr>
+            <td>@riskMitigationControl.MitigationControl.ShortName</td>
+            <td>@riskMitigationControl.MitigationControl.Name</td>
+            <td>@riskMitigationControl.MitigationControl.ControlType</td>
+            <td>@riskMitigationControl.MitigationControl.Trigger</td>
+            <td>
+                <RiskMitigationControlScoreLabel Score="@riskMitigationControl.Score"/>
+            </td>
+            <td class="text-end w-150px">
+                <div class="btn btn-sm btn-light-primary me-2" @onclick="@(() => OnRiskMitigationControlSelected.InvokeAsync(riskMitigationControl))">
+                    <i class="fal fa-arrow-right"></i>
+                </div>
+                <SpinnerButton Method="@(() => ShowRiskMitigationControlDeleteModal(riskMitigationControl))" Loading="@isDeleting" Size="sm" Icon="trash" Color="light-danger" Margins="false"/>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+
+    [Parameter]
+    public RiskViewModel Risk { get; set; } = null!;
+
+    [Parameter]
+    public IList<RiskMitigationControlViewModel> RiskMitigationControlModels { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<IList<RiskMitigationControlViewModel>> RiskMitigationControlModelsChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<RiskMitigationControlViewModel> OnRiskMitigationControlSelected { get; set; }
+
+    private bool isDeleting;
+
+    private List<MitigationControlViewModel> mitigationControls = new();
+    private List<MitigationControlViewModel> selectableMitigationControls = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        mitigationControls = (await mitigationControlRepository.GetAll()).ToList();
+
+        var riskMitigationControlIds = RiskMitigationControlModels.Select(mitigationControl => mitigationControl.MitigationControl.Id);
+        selectableMitigationControls = mitigationControls.Where(mc => !riskMitigationControlIds.Contains(mc.Id)).ToList();
+    }
+
+    private async Task ShowRiskMitigationControlDeleteModal(RiskMitigationControlViewModel riskMitigationControl)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("RiskId", riskMitigationControl.RiskId);
+        modalParameters.Add("RiskMitigationControlId", riskMitigationControl.MitigationControl.Id);
+
+        var modal = modalService.Show<RiskMitigationControlDeleteModal>("Delete mitigation control", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled && RiskMitigationControlModelsChanged.HasDelegate)
+        {
+            RiskMitigationControlModels = RiskMitigationControlModels.Where(rmc => rmc.Id != riskMitigationControl.Id).ToList();
+
+            await RiskMitigationControlModelsChanged.InvokeAsync(RiskMitigationControlModels);
+        }
+    }
+
+}

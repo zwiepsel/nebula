@@ -1,0 +1,108 @@
+﻿
+@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject IMapper mapper
+@inject IncomeRepository repository
+@inject ILocalizer<Translations> localizer
+
+<EditForm Model="@incomeUpdateModel" OnValidSubmit="@Update" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal Width="mw-900px">
+        <ModalSubTitle>@localizer["new_income"]</ModalSubTitle>
+        <ModalBody>
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["name"]" Required="true"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@incomeUpdateModel.Name"/>
+                    <ValidationMessage For="@(() => incomeUpdateModel.Name)"/>
+                </div>
+            </div> 
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["description"]" Required="true"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@incomeUpdateModel.Description"/>
+                    <ValidationMessage For="@(() => incomeUpdateModel.Description)"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 mb-5">
+                    <InputLabel Value="@localizer["income_type"]" Required="true"/>
+                    <SfDropDownList TValue="IncomeType" TItem="string" Placeholder="Select an option..." @bind-Value="@incomeUpdateModel.Type" DataSource="@types"/>
+                    <ValidationMessage For="@(() => incomeUpdateModel.Type)"/>
+                </div>
+                <div class="col-xl-4 col-lg-6 mb-5">
+                    <InputLabel Value="@localizer["period"]" Required="true"/>
+                    <SfDropDownList TValue="IncomePayPeriod" TItem="string" Placeholder="Select an option..." @bind-Value="@incomeUpdateModel.Period" DataSource="@periods"/>
+                    <ValidationMessage For="@(() => incomeUpdateModel.Period)"/>
+                </div>
+            </div>
+            <div class="row">
+
+            </div>
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["amount"]" Required="true"/>
+                        <SfNumericTextBox  class="form-control form-control-lg form-control-solid" Format="$ ###.##" @bind-Value="@incomeUpdateModel.Amount" />
+                        <ValidationMessage For="@(() => incomeUpdateModel.Amount)"/>
+                    </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 mb-5">
+                    <InputLabel Value="@localizer["start_date"]" Required="true"/>
+                    <SfDatePicker @bind-Value="@incomeUpdateModel.StartDate" Placeholder="Select a startdate..." ShowTodayButton="false" Format="dd-MM-yyyy"/>
+                    <ValidationMessage For="@(() => incomeUpdateModel.StartDate)"/>
+                </div>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Saving..." IdleText="Save" Icon="save" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+        private const string EntityName = "Inkomen";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public IncomeViewModel Income { get; set; } = null!;
+    private readonly string[] types = Enum.GetNames<IncomeType>();
+    private readonly string[] periods = Enum.GetNames<IncomePayPeriod>();
+
+    private IncomeUpdateModel incomeUpdateModel = null!;
+    private bool isSubmitting;
+    
+
+    protected override void OnInitialized()
+    {
+        incomeUpdateModel = mapper.Map<IncomeUpdateModel>(Income);
+    }
+
+    private async Task Update()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await repository.Update(incomeUpdateModel);
+            toastService.ShowUpdated(EntityName);
+
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

@@ -1,0 +1,9 @@
+﻿
+@inject AppState appState
+@inject IStringLocalizer<Translations> stringLocalizer
+
+<Nebula.Shared.Clients.Layout.Sidebar Title="@appState.Site.Name">
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/" Name="@stringLocalizer["dashboard"]" Icon="analytics"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/house" Name="@stringLocalizer["houses"]" Icon="home" Match="@NavLinkMatch.Prefix"/>
+    <Nebula.Shared.Clients.Layout.SidebarItem Uri="/relation" Name="@stringLocalizer["relations"]" Icon="address-card" Match="@NavLinkMatch.Prefix"/>
+</Nebula.Shared.Clients.Layout.Sidebar>

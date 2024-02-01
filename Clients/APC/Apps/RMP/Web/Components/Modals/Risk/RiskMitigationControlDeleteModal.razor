@@ -1,0 +1,49 @@
+﻿@inject IToastService toastService
+@inject RiskRepository riskRepository
+
+<Modal>
+    <ModalSubTitle>Are you sure you want to continue?</ModalSubTitle>
+    <ModalFooter>
+        <SpinnerButton Method="@Delete" Loading="@isSubmitting" LoadingText="Deleting..." IdleText="Delete" Icon="trash" Size="md" Color="light-danger" Margins="false"/>
+    </ModalFooter>
+</Modal>
+
+@code
+{
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public int RiskId { get; set; }
+
+    [Parameter]
+    public int RiskMitigationControlId { get; set; }
+
+    private bool isSubmitting;
+
+    private async Task Delete()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            await riskRepository.DeleteRiskMitigationControl(RiskId, RiskMitigationControlId);
+            toastService.ShowUnlinked("Mitigation control");
+            await Modal.CloseAsync(ModalResult.Ok(RiskId));
+        }
+        catch (Exception)
+        {
+            await Modal.CancelAsync();
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

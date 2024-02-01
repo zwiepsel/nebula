@@ -1,0 +1,24 @@
+﻿@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject IStringLocalizer<Translations> stringLocalizer
+
+<Modal>
+    <ModalSubTitle></ModalSubTitle>
+    <ModalBody>
+        <p>U heeft gereageerd op de woning @HouseName. We nemen u mee in het selectie proces. FCB zal u op de hoogte houden per mail of neemt telefonisch contact met u op.</p>
+        <img src="/dist/img/mijn-fcb/complete-register.png" alt="@HouseName" class="img-fluid" />
+    </ModalBody>
+    <ModalFooter></ModalFooter>
+</Modal>
+
+@code
+{
+    [Parameter]
+    public string HouseName { get; set; } = null!;
+}
+
+<style>
+    .modal-body img + div {
+     display: none;
+    }
+</style>

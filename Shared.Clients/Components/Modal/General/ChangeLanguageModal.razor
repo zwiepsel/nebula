@@ -1,0 +1,44 @@
+﻿@inject ILocalizer<Translations> localizer
+@inject NavigationManager navigationManager
+@inject AppState appState
+
+<Modal>
+    <ModalSubTitle>@localizer["change_language_description"]</ModalSubTitle>
+    <ModalBody>
+        <Spinner Loading="@(currentCulture == null)">
+            @foreach (var culture in appState.SupportedCultures.Where(language => language.TwoLetterISOLanguageName != currentCulture!.TwoLetterISOLanguageName))
+            {
+                <div class="btn d-flex align-items-center bg-light-primary rounded p-5 mb-7" @onclick="@(() => ChangeLanguage(culture))">
+                    <span class="svg-icon">
+                        <i class="fal fa-3x fa-globe"></i>
+                    </span>
+                    <span class="fw-bolder text-gray-800 fs-6">@localizer[$"language_{culture.TwoLetterISOLanguageName}"]</span>
+                </div>
+            }
+        </Spinner>
+    </ModalBody>
+</Modal>
+
+@code
+{
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private CultureInfo? currentCulture;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentCulture = await appState.GetCurrentCulture();
+    }
+
+    private async Task ChangeLanguage(CultureInfo cultureInfo)
+    {
+        await appState.SetCurrentCulture(cultureInfo);
+        navigationManager.NavigateTo(navigationManager.Uri, true);
+    }
+
+}

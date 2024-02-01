@@ -1,0 +1,93 @@
+﻿@inject ILocalizer<Translations> localizer
+@inject IJSRuntime jsRuntime
+@inject IModalService modalService
+@inject AppState appState
+
+<div id="user-menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold py-4 fs-6 w-275px">
+    <div class="menu-item px-5">
+        <div class="menu-content d-flex align-items-center px-5">
+            <div class="d-flex flex-column">
+                <div class="fw-bolder d-flex align-items-center fs-5">
+                    @appState.User!.GetSiteUser(appState.Site.Id).FullName
+                </div>
+                <span class="fw-bold text-muted text-hover-primary fs-7">
+                    @appState.User!.EmailAddress
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="separator my-2"></div>
+    <AuthorizeView Policy="@AdministratorRequirement.Name">
+        <div class="menu-item px-5" id="theme-switcher">
+            <div class="menu-link ps-2 pe-0 pt-0 pb-0">
+                <label class="w-100 form-check form-switch form-check-custom form-check-solid" for="theme-toggle">
+                    <input class="form-check-input w-30px h-20px" type="checkbox" @bind="@isDarkTheme" id="theme-toggle" @onclick="@ChangeTheme"/>
+                    <span class="form-check-label text-gray-600">@localizer["dark_mode"]</span>
+                </label>
+            </div>
+        </div>
+    </AuthorizeView>
+    <div class="menu-item px-5" id="language-switcher" @onclick="@ChangeLanguage">
+        <a class="menu-link px-5">
+            <span class="menu-title position-relative">
+                @localizer["language"]
+                <span class="fs-8 rounded bg-light px-3 py-2 position-absolute translate-middle-y top-50 end-0">@localizer[$"language_{currentCulture?.TwoLetterISOLanguageName}"]</span>
+            </span>
+        </a>
+    </div>
+    <div class="separator my-2"></div>
+    <AuthorizeView Policy="@AdministratorRequirement.Name">
+        <div class="menu-item px-5">
+            <a href="@(appState.Core.Uri)admin" class="menu-link px-5" @onclick="@ExpandSidebar">@localizer["administration"]</a>
+        </div>
+    </AuthorizeView>
+    <div class="menu-item px-5">
+        <a href="/security/change-password" class="menu-link px-5">
+            <span class="menu-text">@localizer["change_password"]</span>
+        </a>
+    </div>
+    <div class="menu-item px-5">
+        <a href="#" class="menu-link px-5" @onclick="@ClearCache" @onclick:preventDefault="true" @onclick:stopPropagation="true">@localizer["clear_cache"]</a>
+    </div>
+    <div class="separator my-2"></div>
+    <div class="menu-item px-5">
+        <a href="/security/sign-out" class="menu-link px-5">
+            <i class="fal fa-sign-out me-2"></i>@localizer["sign_out"]
+        </a>
+    </div>
+</div>
+
+@code
+{
+
+    private bool isDarkTheme;
+    private CultureInfo? currentCulture;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        currentCulture = await appState.GetCurrentCulture();
+        isDarkTheme = await jsRuntime.InvokeAsync<bool>("IsDarkTheme");
+    }
+
+    private void ClearCache()
+    {
+        modalService.Show<ClearCacheModal>(localizer["clear_cache"]);
+    }
+
+    private void ChangeLanguage()
+    {
+        modalService.Show<ChangeLanguageModal>(localizer["change_language"]);
+    }
+
+    private async Task ExpandSidebar()
+    {
+        await jsRuntime.InvokeVoidAsync("ExpandSidebar");
+    }
+
+    private async Task ChangeTheme()
+    {
+        await jsRuntime.InvokeVoidAsync("ChangeTheme");
+        isDarkTheme = await jsRuntime.InvokeAsync<bool>("IsDarkTheme");
+    }
+
+}

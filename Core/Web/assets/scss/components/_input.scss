@@ -1,0 +1,26 @@
+﻿::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+.dropdown.show > .form-control.form-control-solid, .form-control.form-control-solid:active, .form-control.form-control-solid.active, .form-control.form-control-solid:focus, .form-control.form-control-solid.focus {
+  background: $input-active-hover-bg;
+}
+
+html {
+
+  .form-control.form-control-solid {
+    border: none;
+    background-color: $input-bg;
+    border-color: $input-bg;
+
+    &:hover {
+      background-color: $input-active-hover-bg;
+      border-color: $input-active-hover-bg;
+    }
+  }
+
+}
+
+.description-box {
+  height: 150px;
+}

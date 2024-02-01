@@ -1,0 +1,42 @@
+﻿body {
+  .e-accordion {
+    background:none;
+    border:none;
+    
+    .e-acrdn-item {
+      background: #f8f9fa;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border:1px solid rgba(0, 0, 0, 0.13);
+      
+      &:last-child {
+        margin-bottom:0px;
+      }
+      
+      .e-acrdn-header{
+        padding:8px 16px;
+        .e-toggle-icon {
+          height:56px;
+        }
+      }
+      
+      .e-acrdn-content {
+        padding:0px!important;
+      }
+      
+      &.e-selected.e-select {
+        border-top:1px solid rgba(0, 0, 0, 0.13);
+        &:last-child {
+          border-bottom: 1px solid rgba(0, 0, 0, 0.13) !important;
+        }
+      }
+      
+      &.e-select {
+        &:last-child {
+          border-bottom: 1px solid rgba(0, 0, 0, 0.13);
+          border-radius: 4px;
+        }
+      }
+    }
+  }
+}

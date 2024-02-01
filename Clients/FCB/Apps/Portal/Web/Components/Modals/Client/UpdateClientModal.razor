@@ -1,0 +1,109 @@
+﻿
+@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject IMapper mapper
+@inject ClientRepository repository
+@inject ILocalizer<Translations> localizer
+
+<EditForm Model="@updateModel" OnValidSubmit="@Update" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal Width="mw-900px">
+        <ModalSubTitle>@localizer["update_client"]</ModalSubTitle>
+        <ModalBody>
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["debtor_code"]" Required="false"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.DebtorCode"/>
+                    <ValidationMessage For="@(() => updateModel.DebtorCode)"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["name"]" Required="true"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.Name"/>
+                    <ValidationMessage For="@(() => updateModel.Name)"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["phone_number"]" Required="false"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.PhoneNumber"/>
+                    <ValidationMessage For="@(() => updateModel.PhoneNumber)"/>
+                </div>
+            </div>
+            @if (updateModel.ClientTypeId == 1)
+            {
+                <div class="row">
+                    <div class="col-12 mb-5">
+                        <InputLabel Value="@localizer["address"]" Required="false"/>
+                        <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@updateModel.Address"/>
+                        <ValidationMessage For="@(() => updateModel.Address)"/>
+                    </div>
+                </div>
+            }
+            @if (updateModel.ClientTypeId != 1)
+            {
+                
+                <div class="row">
+                    <div class="col-xl-4 col-lg-6 mb-5">
+                        <div class="form-check form-check-custom form-check-solid">
+                            <input class="form-check-input" type="checkbox" @bind="@updateModel.LookingForHouse">
+                            <label class="form-check-label flex-grow-1">@localizer["applicant"]</label>
+                        </div>
+                    </div>
+                </div>
+            }
+
+
+
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Saving..." IdleText="Save" Icon="save" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+        private const string EntityName = "Relatie";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public ClientViewModel ClientViewModel { get; set; } = null!;
+
+    private ClientUpdateModel updateModel = null!;
+
+    private bool isSubmitting;
+
+
+    protected override void OnInitialized()
+    {
+        updateModel = mapper.Map<ClientUpdateModel>(ClientViewModel);
+    }
+
+    private async Task Update()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await repository.Update(updateModel);
+            toastService.ShowUpdated(EntityName);
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

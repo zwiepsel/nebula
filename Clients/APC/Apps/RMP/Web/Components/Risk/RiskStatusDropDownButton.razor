@@ -1,0 +1,72 @@
+﻿<div class="dropdown @(open ? "show" : "")" @onmouseout="@MouseOut">
+    @switch (Value)
+    {
+        case RiskStatus.NotStarted:
+            <button class="btn btn-sm btn-secondary fw-bolder dropdown-toggle" type="button" @onclick="@(() => open = !open)">
+                TO DO
+            </button>
+            break;
+        case RiskStatus.InProgress:
+            <button class="btn btn-sm btn-info fw-bolder dropdown-toggle" type="button" @onclick="@(() => open = !open)">
+                IN PROGRESS
+            </button>
+            break;
+        case RiskStatus.Done:
+            <button class="btn btn-sm btn-success fw-bolder dropdown-toggle" type="button" @onclick="@(() => open = !open)">
+                DONE
+            </button>
+            break;
+    }
+    <div class="dropdown-menu @(open ? "show" : "")" @onmouseover="@MouseIn" @onmouseout="@MouseOut">
+        <a class="btn p-3 rounded-0 dropdown-item" @onclick="@(() => { open = false; SetStatus(RiskStatus.NotStarted); })">
+            <span class="badge badge-light fw-bolder py-3">TO DO</span>
+        </a>
+        <a class="btn p-3 rounded-0 dropdown-item" @onclick="@(() => { open = false; SetStatus(RiskStatus.InProgress); })">
+            <span class="badge badge-light-info fw-bolder py-3">IN PROGRESS</span>
+        </a>
+        <a class="btn p-3 rounded-0 dropdown-item" @onclick="@(() => { open = false; SetStatus(RiskStatus.Done); })">
+            <span class="badge badge-light-success fw-bolder py-3">DONE</span>
+        </a>
+    </div>
+</div>
+
+@code
+{
+
+    [Parameter]
+    public RiskStatus Value { get; set; }
+
+    [Parameter]
+    public EventCallback<RiskStatus> ValueChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<RiskStatus> OnStatusChanged { get; set; }
+
+    private bool open;
+
+    private void SetStatus(RiskStatus riskStatus)
+    {
+        Value = riskStatus;
+
+        if (ValueChanged.HasDelegate)
+        {
+            ValueChanged.InvokeAsync(riskStatus);
+        }
+
+        if (OnStatusChanged.HasDelegate)
+        {
+            OnStatusChanged.InvokeAsync(riskStatus);
+        }
+    }
+
+    void MouseIn()
+    {
+        open = true;
+    }
+
+    void MouseOut()
+    {
+        open = false;
+    }
+
+}

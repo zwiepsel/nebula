@@ -1,0 +1,17 @@
+﻿@using System.Diagnostics.CodeAnalysis
+@inherits Microsoft.AspNetCore.Components.Forms.InputBase<string>
+
+<input @bind="CurrentValue" @bind:event="oninput" @attributes="@AdditionalAttributes" class="@CssClass"/>
+
+@code {
+
+#pragma warning disable 8765
+    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
+#pragma warning restore 8765
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+
+}

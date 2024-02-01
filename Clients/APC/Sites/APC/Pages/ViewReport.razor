@@ -1,0 +1,40 @@
+﻿@page "/report/{reportId}"
+
+@inject IJSRuntime jsRuntime
+@inject CoreApi coreApi
+
+<Page ContainerSize="fluid">
+    <PageHeader>
+        <Header Title="Dashboard" Icon="analytics"></Header>
+    </PageHeader>
+    <PageSubHeader>
+        <SubHeader Title="@powerBiDataViewModel?.Name" ReturnUri="/"/>
+    </PageSubHeader>
+    <PageBody>
+        <div @ref="@powerBiElement" id="power-bi-container" class="w-100 h-100"></div>
+    </PageBody>
+</Page>
+
+@code {
+
+    [Parameter]
+    public string ReportId { get; set; } = null!;
+
+    private ElementReference powerBiElement;
+    private PowerBiDataViewModel? powerBiDataViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var reportEmbedParameters = await coreApi.GetAsync<PowerBiEmbedViewModel>($"power-bi/embed/report/{ReportId}");
+
+        powerBiDataViewModel = reportEmbedParameters.Data.First();
+
+        await jsRuntime.InvokeVoidAsync("PowerBi.Embed", DotNetObjectReference.Create(this),
+            powerBiElement,
+            reportEmbedParameters.Type,
+            reportEmbedParameters.EmbedToken.Token,
+            powerBiDataViewModel.EmbedUri,
+            powerBiDataViewModel.Id);
+    }
+
+}

@@ -1,0 +1,107 @@
+﻿@layout PublicLayout
+
+@page "/security/sign-in"
+
+@inject ILocalizer<Translations> localizer
+@inject NavigationManager navigationManager
+@inject SecurityManager securityManager
+@inject IToastService toastService
+@inject AppState appState
+
+<div class="sign-in-bg-gradient d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed">
+    <div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
+        <div class="w-lg-500px bg-white rounded shadow-sm p-10 p-lg-15 mx-auto">
+            <div class="text-center mb-3">
+                @if (appState.Site.Core)
+                {
+                    <i class="logo text-primary fal fa-5x fa-solar-system mb-5"></i>
+                    <h1 class="text-center text-dark">@appState.Site.Name</h1>
+                }
+                else
+                {
+                    <img src="/dist/img/logos/@appState.Site.Name.ToLower()/logo.svg" class="w-50px mb-5" alt="@appState.Site.Name"/>
+                }
+            </div>
+            <EditForm Model="@signInModel" OnValidSubmit="@HandleSignIn" class="form w-100">
+                <FluentValidationValidator/>
+                <div class="text-center mb-10">
+                    <h3 class="text-dark mb-3">@localizer["sign_in"]</h3>
+                </div>
+                <div class="mb-10">
+                    <div class="form-group">
+                        <InputLabel Value="@localizer["email_address"]" Required="true"/>
+                        <InputTextField class="form-control form-control-lg form-control-solid" autocomplete="username" @bind-Value="@signInModel.EmailAddress"/>
+                        <ValidationMessage For="@(() => signInModel.EmailAddress)"/>
+                    </div>
+                </div>
+                <div class="mb-10">
+                    <div class="form-group">
+                        <InputLabel Value="@localizer["password"]" Required="true"/>
+                        <InputTextField type="password" class="form-control form-control-lg form-control-solid" autocomplete="current-password" @bind-Value="@signInModel.Password"/>
+                        <ValidationMessage For="@(() => signInModel.Password)"/>
+                    </div>
+                </div>
+                <div class="text-center mb-5 fw-bold">
+                    <ValidationMessage For="@(() => signInModel.SiteId)"/>
+                </div>
+                <div class="text-center">
+                    <SpinnerSubmitButton Loading="@isSigningIn" LoadingText="@localizer["signing_in"]" IdleText="@localizer["sign_in"]" Icon="sign-in" Size="lg" Color="light-primary" Class="w-100"/>
+                </div>
+                    @if (appState.Site.AllowPublicRegistration)
+                     {
+                         <div class="text-center mt-3">
+                             <a href="/register" class="w-100 btn btn-lg btn-primary">
+                                 <span class="indicator-label">@localizer["register"]</span>
+                             </a>
+                         </div>
+                     }
+            </EditForm>
+        </div>
+    </div>
+
+</div>
+
+
+@code {
+
+    private readonly SignInModel signInModel = new();
+    private bool isSigningIn;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (await securityManager.IsSignedIn())
+        {
+            navigationManager.NavigateTo("/");
+        }
+
+        signInModel.SiteId = appState.Site.Id;
+    }
+
+    private async Task HandleSignIn()
+    {
+        if (isSigningIn)
+        {
+            return;
+        }
+
+        isSigningIn = true;
+
+        try
+        {
+            await securityManager.SignInAsync(signInModel);
+            navigationManager.NavigateTo("/");
+        }
+        catch (ForbiddenHttpException)
+        {
+            toastService.ShowError(localizer["sign_in_attempt_failed"]);
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        signInModel.Password = "";
+        isSigningIn = false;
+    }
+
+}

@@ -1,0 +1,204 @@
+body .e-grid {
+  font-family: $font-family-sans-serif;
+  border-color: transparent;
+
+  .e-groupcaption {
+    padding: 1.1em;
+  }
+  
+  .e-gridheader {
+    .e-headercontent {
+      border-right: none;
+      color: #00000060;
+    }
+  }
+
+  .e-gridcontent {
+    table.e-table {
+      font-family: $font-family-sans-serif;
+    }
+  }
+
+  .e-pager {
+    border-color: transparent;
+    padding: 20px 0;
+
+    .e-pagercontainer {
+      border: none;
+      margin: 0 0 -2px;
+    }
+
+    .e-numericitem {
+      border-right-color: transparent;
+    }
+  }
+
+  .e-pager .e-spacing.e-numericitem:not(.e-active):not(.e-np):not(.e-pp):hover {
+    background-color: $primary;
+    color: $white;
+  }
+
+  .e-gridheader {
+    border-top-color: transparent;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #00000010;
+  }
+
+  .e-headercell {
+    height: 63px;
+  }
+
+  .e-rowcell {
+    border-style: solid;
+    padding: 12px;
+    border-color: #00000010;
+  }
+}
+
+body .e-control {
+  font-family: $font-family-sans-serif !important;
+}
+
+body .e-pager .e-np {
+  padding: 11px;
+
+  &:hover {
+    padding: 11px;
+  }
+}
+
+
+body .e-pager .e-currentitem {
+  @include border-radius(5px);
+  //max-width: 36px;
+  //min-width: 36px;
+}
+
+body {
+  .e-grid td.e-active {
+    background: transparent;
+  }
+
+  .e-pager.sf-pager .e-link, .e-pager.sf-pager .e-next.e-icons.e-icon-next.e-nextpage.e-pager-default {
+    margin-left: 5px;
+  }
+
+  .e-pager .e-pagercontainer .e-icon-first:not(.e-disable),
+  .e-pager .e-pagercontainer .e-icon-prev:not(.e-disable),
+  .e-pager .e-pagercontainer .e-nextpage:not(.e-disable),
+  .e-pager .e-pagercontainer .e-lastpage:not(.e-disable) {
+    &:hover {
+      background-color: $primary;
+      color: $white;
+    }
+  }
+
+  .e-pagercontainer {
+    .e-icons {
+      max-width: 36px !important;
+      min-width: 36px !important;
+      text-align: center;
+    }
+  }
+
+  .e-numericcontainer {
+    .e-link {
+      //max-width:36px!important;
+      //min-width: 36px !important;
+    }
+  }
+
+  .e-grid .e-focused:not(.e-menu-item) {
+    box-shadow:none!important;
+  }
+
+  .e-pager .e-spacing, .e-pager .e-numericitem:hover, .e-pager .e-currentitem {
+    @include border-radius(5px);
+  }
+
+  .e-pager .e-pagercontainer .e-firstpage, .e-pager .e-pagercontainer .e-prevpage, .e-pager .e-pagercontainer .e-firstpagedisabled, .e-pager .e-pagercontainer .e-prevpagedisabled, .e-pager .e-pagercontainer .e-nextpage, .e-pager .e-pagercontainer .e-lastpage, .e-pager .e-pagercontainer .e-nextpagedisabled, .e-pager .e-pagercontainer .e-lastpagedisabled {
+    border: none;
+    padding: 13px 10px;
+  }
+
+  .e-pagerdropdown .e-input-group {
+    padding: unset !important;
+  }
+
+  .e-pagerconstant {
+    margin: 6px 0 6px 8px;
+
+    .e-constant {
+      font-weight: 500;
+    }
+  }
+
+  .e-pager {
+    div.e-parentmsgbar {
+      padding-top: 11px;
+    }
+  }
+
+  .e-pager .e-pager-default,
+  .e-pager .e-pager-default:hover,
+  .e-pager.sf-pager .e-next.e-icons.e-icon-next.e-nextpage.e-pager-default {
+    @include border-radius(5px);
+  }
+
+  .e-grid .e-gridheader .e-sortfilter .e-headercelldiv, .e-grid .e-gridheader .e-stackedheadercelldiv, .e-grid .e-gridheader .e-headercell .e-headercelldiv.e-headerchkcelldiv {
+    padding: 0 10px 0 5px;
+  }
+
+  .e-grid .e-headercelldiv {
+    display: inline-block;
+    float: left;
+    font-weight: 500;
+    color: #1F1F1F;
+  }
+
+  .e-grid .e-sortfilterdiv {
+    float: left;
+    height: 16px;
+    display: inline;
+    position: relative;
+    left: 11px;
+    top: 12px;
+  }
+
+  .e-grid.e-gridhover tr[role=row]:not(.e-editedrow):hover .e-rowcell:not(.e-cellselectionbackground):not(.e-active):not(.e-updatedtd):not(.e-indentcell), .e-grid.e-gridhover tr[role=row]:hover .e-detailrowcollapse:not(.e-cellselectionbackground):not(.e-active):not(.e-updatedtd):not(.e-indentcell), .e-grid.e-gridhover tr[role=row]:hover .e-rowdragdrop:not(.e-cellselectionbackground):not(.e-active):not(.e-updatedtd):not(.e-indentcell), .e-grid.e-rtl .e-gridhover tr[role=row]:hover .e-rowdragdrop:not(.e-cellselectionbackground):not(.e-active):not(.e-updatedtd):not(.e-indentcell), .e-grid.e-gridhover tr[role=row]:hover .e-detailrowexpand:not(.e-cellselectionbackground):not(.e-active):not(.e-updatedtd):not(.e-indentcell) {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+
+  .e-gridcontent table tr {
+    &:hover {
+      cursor: pointer;
+
+      td.e-active {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+    }
+  }
+
+  .e-gridheader {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+  }
+
+  .e-virtualtable {
+    position: relative !important;
+    transform: unset !important;
+  }
+
+  .e-virtualtrack {
+    height: unset !important;
+  }
+
+  .e-headercell {
+    &.e-rightalign {
+      div {
+        float: right;
+      }
+    }
+  }
+}

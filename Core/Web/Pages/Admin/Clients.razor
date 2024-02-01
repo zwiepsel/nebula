@@ -1,0 +1,97 @@
+﻿@page "/admin/client"
+@attribute [Authorize(Policy = AdministratorRequirement.Name)]
+
+@inject IModalService modalService
+@inject ClientRepository repository
+
+<AdminPage>
+    <PageSubHeader>
+        <SubHeader Title="@Title" Icon="@Icon">
+            <Toolbar>
+                <SpinnerButton Loading="false" IdleText="@CreateButtonIdleText" LoadingText="Creating..." Size="sm" Icon="plus" Color="light-primary" Margins="false" Method="@ShowCreateModal"/>
+            </Toolbar>
+        </SubHeader>
+    </PageSubHeader>
+    <PageBody>
+        <div class="card">
+            <Spinner Loading="@(models == null)" Mode="@SpinnerMode.Overlay">
+                <div class="card-header border-0 pt-6">
+                    <div class="card-title">
+                        <div class="d-flex align-items-center position-relative my-1">
+                            <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                <i class="fal fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="Search" @bind-value="@searchText" @bind-value:event="oninput" @onkeyup="@SearchGrid">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <SfGrid @ref="@grid" DataSource="@models" AllowSorting="true" AllowPaging="true">
+                        <GridEvents RowSelected="@ShowUpdateModal" TValue="ClientViewModel"/>
+                        <GridColumns>
+                            <GridColumn Field="@nameof(ClientViewModel.Id)" HeaderText="Id"/>
+                            <GridColumn Field="@nameof(ClientViewModel.Name)" HeaderText="Name"/>
+                            <GridColumn Field="@nameof(ClientViewModel.SystemName)" HeaderText="System name"/>
+                        </GridColumns>
+                    </SfGrid>
+                </div>
+            </Spinner>
+        </div>
+    </PageBody>
+</AdminPage>
+
+@code {
+
+        private const string Title = "Clients";
+        private const string Icon = "address-card";
+        private const string EntityName = "client";
+        private const string CreateButtonIdleText = $"New {EntityName}";
+
+    private SfGrid<ClientViewModel> grid = null!;
+    private IList<ClientViewModel>? models;
+    private string? searchText;
+
+    protected override async Task OnInitializedAsync()
+    {
+        models = await repository.GetAll();
+    }
+
+    private void SearchGrid()
+    {
+        grid.Search(searchText);
+    }
+
+    private async Task ShowCreateModal()
+    {
+        var modal = modalService.Show<ClientCreateModal>($"New {EntityName}");
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            models!.Add((ClientViewModel)result.Data);
+            grid.Refresh();
+        }
+    }
+
+    private async Task ShowUpdateModal(RowSelectEventArgs<ClientViewModel> args)
+    {
+        var modalParameters = new ModalParameters();
+        modalParameters.Add("Model", args.Data);
+
+        var modal = modalService.Show<ClientUpdateModal>($"Edit {EntityName}", modalParameters);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            var model = (ClientViewModel)result.Data;
+            var index = models!.FindIndex(m => m.Id == model.Id);
+
+            if (index >= 0)
+            {
+                models![index] = model;
+                grid.Refresh();
+            }
+        }
+    }
+
+}

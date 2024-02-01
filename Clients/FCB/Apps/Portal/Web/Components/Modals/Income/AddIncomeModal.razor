@@ -1,0 +1,122 @@
+﻿
+@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject IMapper mapper
+@inject IncomeRepository repository
+@inject PersonRepository personRepository
+@inject ILocalizer<Translations> localizer
+
+<EditForm Model="@incomeCreateModel" OnValidSubmit="@Update" class="form w-100">
+    <FluentValidationValidator/>
+    <Modal Width="mw-900px">
+        <ModalSubTitle>@localizer["new_income"]</ModalSubTitle>
+        <ModalBody>
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["person"]" Required="true"/>
+                    <SfDropDownList TValue="int?" TItem="PersonViewModel?" Placeholder="Select an option..." AllowFiltering="true" @bind-Value="@incomeCreateModel.PersonId" DataSource="@Persons">
+                        <DropDownListFieldSettings Text="FullName" Value="Id"></DropDownListFieldSettings>
+                    </SfDropDownList>
+                    
+                    <ValidationMessage For="@(() => incomeCreateModel.PersonId)"/>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["employer"]" Required="true"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@incomeCreateModel.Name"/>
+                    <ValidationMessage For="@(() => incomeCreateModel.Name)"/>
+                </div>
+            </div> 
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["function"]" Required="true"/>
+                    <InputTextField class="form-control form-control-lg form-control-solid" @bind-Value="@incomeCreateModel.Description"/>
+                    <ValidationMessage For="@(() => incomeCreateModel.Description)"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 mb-5">
+                    <InputLabel Value="@localizer["income_type"]" Required="true"/>
+                    <SfDropDownList TValue="IncomeType" TItem="string" Placeholder="Select an option..." @bind-Value="@incomeCreateModel.Type" DataSource="@types"/>
+                    <ValidationMessage For="@(() => incomeCreateModel.Type)"/>
+                </div>
+                <div class="col-xl-4 col-lg-6 mb-5">
+                    <InputLabel Value="@localizer["period"]" Required="true"/>
+                    <SfDropDownList TValue="IncomePayPeriod" TItem="string" Placeholder="Select an option..." @bind-Value="@incomeCreateModel.Period" DataSource="@periods"/>
+                    <ValidationMessage For="@(() => incomeCreateModel.Period)"/>
+                </div>
+            </div>
+            <div class="row">
+
+            </div>
+            <div class="row">
+                <div class="col-12 mb-5">
+                    <InputLabel Value="@localizer["amount"]" Required="true"/>
+                        <SfNumericTextBox  class="form-control form-control-lg form-control-solid" Format="$ ###.##" @bind-Value="@incomeCreateModel.Amount" />
+                        <ValidationMessage For="@(() => incomeCreateModel.Amount)"/>
+                    </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 mb-5">
+                    <InputLabel Value="@localizer["start_date"]" Required="true"/>
+                    <SfDatePicker @bind-Value="@incomeCreateModel.StartDate" Placeholder="Select a startdate..." ShowTodayButton="false" Format="dd-MM-yyyy"/>
+                    <ValidationMessage For="@(() => incomeCreateModel.StartDate)"/>
+                </div>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <SpinnerSubmitButton Loading="@isSubmitting" LoadingText="Saving..." IdleText="Save" Icon="save" Size="md" Color="light-primary" Margins="false"/>
+        </ModalFooter>
+    </Modal>
+</EditForm>
+
+@code
+{
+        private const string EntityName = "Inkomen";
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    [Parameter]
+    public IList<PersonViewModel> Persons { get; set; } = new List<PersonViewModel>();
+    private readonly string[] types = Enum.GetNames<IncomeType>();
+    private readonly string[] periods = Enum.GetNames<IncomePayPeriod>();
+    
+    private IncomeCreateModel incomeCreateModel = null!;
+    private bool isSubmitting;
+    
+
+    protected override void OnInitialized()
+    {
+        DateTime date = DateTime.Now;
+        incomeCreateModel = new IncomeCreateModel();
+        incomeCreateModel.EndDate = DateTime.MaxValue;
+        incomeCreateModel.StartDate = new DateTime(date.Year, date.Month, 1);
+    }
+
+    private async Task Update()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+
+        try
+        {
+            var model = await repository.Create(incomeCreateModel);
+            toastService.ShowUpdated(EntityName);
+            await Modal.CloseAsync(ModalResult.Ok(model));
+        }
+        catch (Exception)
+        {
+            toastService.ShowUnexpectedError();
+        }
+
+        isSubmitting = false;
+    }
+
+}

@@ -1,0 +1,313 @@
+﻿@page "/relation/applicant"
+
+@inject ILocalizer<Translations> localizer
+@inject NavigationManager navigationManager
+@inject PersonRepository personRepository
+@inject NeighborhoodRepository neighborhoodRepository
+@inject ClientRepository clientRepository
+
+<DefaultCulture Culture="@(new CultureInfo("nl-NL"))"/>
+
+<Page ContainerSize="fluid">
+    <PageHeader>
+        <Header Title="@localizer["relations"]" Icon="address-card"></Header>
+    </PageHeader>
+    <PageSubHeader>
+        <SubHeader>
+            <Navigation>
+                <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x fs-6" style="margin-top: 10px;">
+                    <li class="nav-item">
+                        <a style="height: 44px;" class="fw-bold text-dark nav-link active" href="/relation/applicant">@localizer["applicants"]</a>
+                    </li>
+                    <li class="nav-item">
+                        <a style="height: 44px;" class="fw-bold text-dark nav-link" href="/relation/tenant">@localizer["tenants"]</a>
+                    </li>
+                </ul>
+            </Navigation>
+        </SubHeader>
+    </PageSubHeader>
+    <PageBody>
+        <Spinner Loading="@(personModels == null)" Mode="@SpinnerMode.Overlay">
+            <div class="d-flex flex-column flex-lg-row">
+                <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-8 mb-lg-0 me-lg-8 me-4 sticky-filter-panel">
+                    <div class="card filter-container">
+                        <div class="card-header align-items-center border-0 mt-1">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="fw-bold font-size-14px">@localizer["filters"]</span>
+                            </h3>
+                            <div class="card-toolbar">
+                                @if (HasFilters())
+                                {
+                                    <button class="btn btn-sm btn-light w-100" @onclick="@ClearFilters">@localizer["clear_filters"]</button>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-body card-scroll">
+                            <div class="p-4">
+                                @* <label class="my-4 form-label text-muted fw-bolder text-uppercase">@localizer["home_seeker_urgency"]</label> *@
+                                @* <div class="form-check form-check-custom form-check-solid"> *@
+                                @*     <input class="form-check-input" type="checkbox" id="filter-home-seeker" @bind="@FilterByUrgency"> *@
+                                @*     <label class="form-check-label flex-grow-1" for="filter-home-seeker">@localizer["home_seeker_urgency"]</label> *@
+                                @*     <span class="text-gray-400 fw-bolder">@personModels!.Count(item => item.Urgency)</span> *@
+                                @* </div> *@
+                                <label class="my-4 form-label text-muted fw-bolder text-uppercase">@localizer["home_seeker_number_of_bedrooms"]</label>
+                                <div class="form-check form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" id="filter-home-seeker-number-of-bedrooms-1" @bind="@FilterByApplicantNumberOfBedrooms1">
+                                    <label class="form-check-label flex-grow-1" for="filter-home-seeker-number-of-bedrooms-1">1 @localizer["bedroom"].ToLower()</label>
+                                    <span class="text-gray-400 fw-bolder">@personModels!.Count(item => item.Bedrooms == 1)</span>
+                                </div>
+                                <div class="form-check form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" id="filter-home-seeker-number-of-bedrooms-2" @bind="@FilterByApplicantNumberOfBedrooms2">
+                                    <label class="form-check-label flex-grow-1" for="filter-home-seeker-number-of-bedrooms-2">2 @localizer["bedrooms"].ToLower()</label>
+                                    <span class="text-gray-400 fw-bolder">@personModels!.Count(item => item.Bedrooms == 2)</span>
+                                </div>
+                                <div class="form-check form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" id="filter-home-seeker-number-of-bedrooms-3" @bind="@FilterByApplicantNumberOfBedrooms3">
+                                    <label class="form-check-label flex-grow-1" for="filter-home-seeker-number-of-bedrooms-3">3 @localizer["bedrooms"].ToLower()</label>
+                                    <span class="text-gray-400 fw-bolder">@personModels!.Count(item => item.Bedrooms == 3)</span>
+                                </div>
+                                @* @if (neighborhoodModels != null) *@
+                                @* { *@
+                                @*     <label class="my-4 form-label text-muted fw-bolder text-uppercase">@localizer["home_seeker_preferred_neighborhood"]</label> *@
+                                @*     <SfDropDownList @bind-Value="@filterByApplicantPreferredNeighborhood" TValue="NeighborhoodViewModel?" TItem="NeighborhoodViewModel" Placeholder="@localizer["select_a", localizer["home_seeker_preferred_neighborhood"].ToLower()]" AllowFiltering="true" DataSource="@neighborhoodModels"> *@
+                                @*         <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings> *@
+                                @*         <DropDownListEvents TValue="NeighborhoodViewModel?" TItem="NeighborhoodViewModel" ValueChange="@FilterNeighborhoods"></DropDownListEvents> *@
+                                @*     </SfDropDownList> *@
+                                @* } *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-lg-row-fluid">
+                    <div class="card">
+                        <div class="card-header border-0 pt-6">
+                            <div class="card-title">
+                                <div class="d-flex align-items-center position-relative my-1">
+                                    <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                        <i class="fal fa-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="@localizer["search"]" @bind-value="@searchText" @bind-value:event="oninput" @onkeyup="@(() => grid!.Search(searchText))">
+                                </div>
+                            </div>
+                            <div class="card-toolbar">
+                                <div class="btn btn-light-primary me-3" @onclick="@(() => grid!.OpenColumnChooser())">
+                                    <i class="fal fa-cog me-2"></i>@localizer["columns"]
+                                </div>
+                                <SpinnerButton Loading="@exporting" LoadingText="@localizer["exporting"]" IdleText="@localizer["export"]" Icon="file-export" Color="light-primary" Method="@Export"/>
+                            </div>
+                        </div>
+                        <div class="card-body px-10 py-0">
+                            <SfGrid @ref="@grid" DataSource="@personModels" AllowFiltering="true" AllowSorting="true"   AllowPaging="true" AllowExcelExport="true" ShowColumnChooser="true">
+                                <GridEvents RowSelected="@ShowPerson" TValue="ClientIndexViewModel"></GridEvents>
+                                <GridTemplates>
+                                    <EmptyRecordTemplate>
+                                        @if (personModels!.Any())
+                                        {
+                                            <div class="card-px text-center py-6 my-10">
+                                                <h2 class="fs-2x fw-bolder mb-10">@localizer["no_results"]</h2>
+                                                <p class="text-gray-400 fs-4 fw-bold mb-7">
+                                                    @localizer["no_results_description"]
+                                                </p>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="card-px text-center py-6 my-10">
+                                                <h2 class="fs-2x fw-bolder mb-10">@localizer["no_data"]</h2>
+                                                <p class="text-gray-400 fs-4 fw-bold mb-7">
+                                                    @localizer["no_data_description"]
+                                                </p>
+                                            </div>
+                                        }
+                                    </EmptyRecordTemplate>
+                                </GridTemplates>
+                                <GridSortSettings>
+                                    <GridSortColumns>
+                                        <GridSortColumn Field="@nameof(ClientIndexViewModel.Name)" Direction="SortDirection.Ascending"/>
+                                    </GridSortColumns>
+                                </GridSortSettings>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.Name)" HeaderText="@localizer["full_name"]" Width="220" AutoFit="false" />
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.Address)" HeaderText="@localizer["address"]" Visible="false" Width="220" AutoFit="true" />
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.PhoneNumber)" HeaderText="@localizer["phone_number"]" AutoFit="true"/>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.ApplicationDate)" Format="dd-MM-yyyy" HeaderText="@localizer["home_seeker_since"]" AutoFit="true">
+                                        <Template>
+                                            @(((ClientIndexViewModel)context).ApplicationDate!.Value.ToShortDateString())
+                                        </Template>
+                                    </GridColumn>
+                                    <GridColumn Visible="false" Field="@nameof(ClientIndexViewModel.Urgency)" HeaderText="@localizer["home_seeker_urgency"]">
+                                        <Template>
+                                            @(((ClientIndexViewModel)context).Urgency ? localizer["yes"] : localizer["no"])
+                                        </Template>
+                                    </GridColumn>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.Bedrooms)" HeaderText="@localizer["home_seeker_number_of_bedrooms"]" Width="110"/>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.AdultQty)" HeaderText="@localizer["family_number_of_adults"]" Width="110"/>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.ChildrenQty)" HeaderText="@localizer["family_number_of_children"]" Width="110"/>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.MinorQty)" HeaderText="@localizer["family_number_of_school_going"]" Visible="false"/>
+                                    <GridColumn Field="ApplicantPreferredNeighborhood1.Name" HeaderText="@localizer["home_seeker_preferred_neighborhood_1"]" />
+                                    <GridColumn Field="ApplicantPreferredNeighborhood2.Name" HeaderText="@localizer["home_seeker_preferred_neighborhood_2"]" Visible="false"/>
+                                    <GridColumn Field="ApplicantPreferredNeighborhood3.Name" HeaderText="@localizer["home_seeker_preferred_neighborhood_3"]" Visible="false"/>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.YearlyIncome)"  HeaderText="@localizer["yearly_income"]">
+                                        <Template>
+                                            @(((ClientIndexViewModel)context).YearlyIncome.FormatMoney())
+                                        </Template>
+                                    </GridColumn>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.YearlyIncomeClass)" AutoFit="true" HeaderText="@localizer["yearly_income_class"]"/>
+                                    <GridColumn Field="@nameof(ClientIndexViewModel.ApplicantPreferredNeighborhoodFilter)" Visible="false" ShowColumnMenu="false"/> 
+                                </GridColumns>
+                            </SfGrid>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Spinner>
+    </PageBody>
+</Page>
+
+@code {
+
+    private SfGrid<ClientIndexViewModel>? grid;
+    private IList<ClientIndexViewModel>? personModels;
+    //private IList<NeighborhoodViewModel>? neighborhoodModels;
+    private string? searchText;
+    private bool exporting;
+
+    private bool filterByUrgency;
+    private bool filterByApplicantNumberOfBedrooms1;
+    private bool filterByApplicantNumberOfBedrooms2;
+    private bool filterByApplicantNumberOfBedrooms3;
+    private NeighborhoodViewModel? filterByApplicantPreferredNeighborhood;
+
+//     private bool FilterByUrgency
+//     {
+//         get => filterByUrgency;
+//         set
+//         {
+//             filterByUrgency = value;
+// #pragma warning disable 4014
+//             FilterUrgency();
+// #pragma warning restore 4014
+//         }
+//     }
+
+    private bool FilterByApplicantNumberOfBedrooms1
+    {
+        get => filterByApplicantNumberOfBedrooms1;
+        set
+        {
+            filterByApplicantNumberOfBedrooms1 = value;
+#pragma warning disable 4014
+            FilterApplicantNumberOfBedrooms();
+#pragma warning restore 4014
+        }
+    }
+
+    private bool FilterByApplicantNumberOfBedrooms2
+    {
+        get => filterByApplicantNumberOfBedrooms2;
+        set
+        {
+            filterByApplicantNumberOfBedrooms2 = value;
+#pragma warning disable 4014
+            FilterApplicantNumberOfBedrooms();
+#pragma warning restore 4014
+        }
+    }
+
+    private bool FilterByApplicantNumberOfBedrooms3
+    {
+        get => filterByApplicantNumberOfBedrooms3;
+        set
+        {
+            filterByApplicantNumberOfBedrooms3 = value;
+#pragma warning disable 4014
+            FilterApplicantNumberOfBedrooms();
+#pragma warning restore 4014
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+       // neighborhoodModels = await neighborhoodRepository.GetAll();
+        personModels = await clientRepository.GetAllApplicants();
+    }
+
+    private void ShowPerson(RowSelectEventArgs<ClientIndexViewModel> args)
+    {
+        navigationManager.NavigateTo($"/relation/{args.Data.Id}/edit?returnUri=/relation/applicant");
+    }
+
+    private async Task Export()
+    {
+        exporting = true;
+        ExcelExportProperties exportProperties = new ExcelExportProperties();
+        exportProperties.IncludeTemplateColumn = true; 
+
+        await grid!.ExcelExport(exportProperties);
+
+        exporting = false;
+    }
+
+    // private async Task FilterUrgency()
+    // {
+    //     if (filterByUrgency)
+    //     {
+    //         await grid!.FilterByColumn(nameof(ClientIndexViewModel.Urgency), "equal", filterByUrgency);
+    //     }
+    //     else
+    //     {
+    //         await grid!.ClearFiltering(nameof(ClientIndexViewModel.Urgency));
+    //     }
+    // }
+    
+
+    private async Task FilterApplicantNumberOfBedrooms()
+    {
+        var filterNumberOfBedrooms = new List<int>();
+
+        if (filterByApplicantNumberOfBedrooms1)
+        {
+            filterNumberOfBedrooms.Add(1);
+        }
+        if (filterByApplicantNumberOfBedrooms2)
+        {
+            filterNumberOfBedrooms.Add(2);
+        }
+        if (filterByApplicantNumberOfBedrooms3)
+        {
+            filterNumberOfBedrooms.Add(3);
+        }
+
+        await grid!.ClearFiltering(nameof(ClientIndexViewModel.Bedrooms));
+        await grid!.FilterByColumn(nameof(ClientIndexViewModel.Bedrooms), "contains", filterNumberOfBedrooms);
+    }
+
+    // private async Task FilterNeighborhoods()
+    // {
+    //    await grid!.FilterByColumn(nameof(ClientIndexViewModel.ApplicantPreferredNeighborhood1Id), "contains", HashGenerator.Sha1(filterByApplicantPreferredNeighborhood?.Id));
+    // }
+
+    private async Task ClearFilters()
+    {
+        searchText = null;
+        filterByUrgency = false;
+        filterByApplicantNumberOfBedrooms1 = false;
+        filterByApplicantNumberOfBedrooms2 = false;
+        filterByApplicantNumberOfBedrooms3 = false;
+        filterByApplicantPreferredNeighborhood = null;
+
+        await grid!.Search(searchText);
+        await grid!.ClearFiltering();
+    }
+
+    private bool HasFilters()
+    {
+        return !searchText.IsNullOrEmpty() ||
+               filterByUrgency ||
+               filterByApplicantNumberOfBedrooms1 ||
+               filterByApplicantNumberOfBedrooms2 ||
+               filterByApplicantNumberOfBedrooms3 ||
+               filterByApplicantPreferredNeighborhood != null;
+    }
+
+}

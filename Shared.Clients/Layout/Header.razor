@@ -1,0 +1,102 @@
+﻿@inject ILocalizer<Translations> localizer
+@inject IJSRuntime jsRuntime
+@inject AppState appState
+
+<div id="header" class="header align-items-stretch">
+    <div class="container-fluid d-flex align-items-stretch justify-content-between">
+        <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1">
+            <div class="d-flex align-items-stretch">
+                <div class="header-menu align-items-center pt-2 pb-2">
+                    @if (Icon != null)
+                    {
+                        <i style="opacity: 80%;" class="text-white fas fa-2x fa-@Icon"></i>
+                    }
+                    <span class="fs-3 fw-bolder text-white ms-4">@Title</span>
+                </div>
+            </div>
+            <div class="d-flex align-items-stretch flex-shrink-0">
+                <div class="d-flex align-items-stretch flex-shrink-0">
+                    <AuthorizeView Policy="@SiteAdministratorRequirement.Name">
+                        @if (!appState.Site.Core)
+                        {
+                            <div class="d-flex align-items-center ms-1 ms-lg-3">
+                                <a href="/settings" class="btn btn-sm btn-icon btn-active-primary cursor-pointer symbol symbol-30px symbol-md-40px" @onclick="@ExpandSidebar">
+                                    <i class="text-white fal fa-2x fa-cog"></i>
+                                    <div class="tool-tip bottom-left">
+                                        <span class="tooltiptext">@localizer["settings"]</span>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                    </AuthorizeView>
+                    @if (appState.User!.SiteUsers.Count > 1)
+                    {
+                        <div class="d-flex align-items-center ms-1 ms-lg-3">
+                            <div class="btn btn-sm btn-icon btn-active-primary cursor-pointer symbol symbol-30px symbol-md-40px" @onclick="@OpenSitesMenu">
+                                <i class="text-white fal fa-2x fa-layer-group"></i>
+                                <div class="tool-tip bottom-left">
+                                    <span class="tooltiptext">@localizer["sites"]</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="d-flex align-items-center ms-1 ms-lg-3">
+                        <div class="btn btn-sm btn-icon btn-active-primary cursor-pointer symbol symbol-30px symbol-md-40px" @onclick="@ShowUserMenu">
+                            <i class="text-white fal fa-2x fa-user-circle"></i>
+                            <div class="tool-tip bottom-left">
+                                <span class="tooltiptext">@localizer["my_account"]</span>
+                            </div>
+                        </div>
+                        <UserMenu/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="sites-menu-view" class="bg-white drawer drawer-end w-300px">
+    @if (showSitesMenu)
+    {
+        <SitesMenu @bind-Show="@showSitesMenu"/>
+    }
+</div>
+<div id="sites-menu-view-overlay" style="z-index: 109;" @onclick="@CloseSitesMenu"></div>
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; } = null!;
+
+    [Parameter]
+    public string? Icon { get; set; }
+
+    private bool showSitesMenu;
+
+    private async Task ShowUserMenu()
+    {
+        await jsRuntime.InvokeVoidAsync("UserMenuShow");
+    }
+
+    private async Task OpenSitesMenu()
+    {
+        await jsRuntime.InvokeVoidAsync("OffCanvasShow", "sites-menu-view", true);
+        showSitesMenu = true;
+    }
+
+    private async Task CloseSitesMenu()
+    {
+        await jsRuntime.InvokeVoidAsync("OffCanvasHide", "sites-menu-view", true);
+
+    // Wait for the transition in JS to finish.
+        await Task.Delay(500);
+
+        showSitesMenu = false;
+    }
+
+    private async Task ExpandSidebar()
+    {
+        await jsRuntime.InvokeVoidAsync("ExpandSidebar");
+    }
+
+}

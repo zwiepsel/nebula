@@ -1,0 +1,16 @@
+﻿
+@layout PublicLayout
+@inject AppState appState
+@page "/"
+<SitePageTitle Title="Home"/>
+
+<p>You are site @appState.Site.Name</p>
+
+<AuthorizeView Policy="@SiteRequirement.Name">
+    <NotAuthorized>
+        <Redirect Uri="/security/sign-in"/>
+    </NotAuthorized>
+    <Authorized>
+        <Redirect Uri="/overview"/>
+    </Authorized>
+</AuthorizeView>

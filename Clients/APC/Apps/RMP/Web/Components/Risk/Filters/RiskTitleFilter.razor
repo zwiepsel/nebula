@@ -1,0 +1,46 @@
+﻿<input type="text" class="form-control form-control-solid" placeholder="Filter by title..." @bind="@Value" @bind:event="oninput" @onkeyup="@HandleKeyUp">
+
+@code {
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> ValueChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnChange { get; set; }
+
+    private readonly Timer timer = new(1000);
+
+    protected override void OnInitialized()
+    {
+        timer.Elapsed += OnInputFinished;
+        timer.AutoReset = false;
+    }
+
+    void HandleKeyUp(KeyboardEventArgs e)
+    {
+        timer.Stop();
+        timer.Start();
+    }
+
+    private async void OnInputFinished(object? source, ElapsedEventArgs e)
+    {
+        await InvokeAsync(async () =>
+        {
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(Value);
+            }
+
+            await OnChange.InvokeAsync();
+        });
+    }
+
+    void Dispose()
+    {
+        timer.Dispose();
+    }
+
+}

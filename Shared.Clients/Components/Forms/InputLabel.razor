@@ -1,0 +1,16 @@
+﻿<label class="form-label fw-bolder text-dark">@Value</label>
+
+@if (Required)
+{
+    <span class="text-danger ms-1">*</span>
+}
+
+@code {
+
+    [Parameter]
+    public string Value { get; set; } = null!;
+
+    [Parameter]
+    public bool Required { get; set; }
+
+}
